@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #e9ecf3;
+}
+.login-bg {
+    background: #faf8d3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.menu-bg {
+    background: #faf8d3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-container {
+    background: #b9bf9c;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    padding: 32px 40px;
+    width: 350px;
+    text-align: center;
+}
+.logo {
+    margin-bottom: 18px;
+}
+.moon {
+    font-size: 2.2em;
+    display: block;
+}
+h1 {
+    margin: 0;
+    color: #234080;
+    font-weight: 500;
+    font-size: 2em;
+}
+.subtitle {
+    color: #7a8ca5;
+    font-size: 1em;
+    margin-bottom: 18px;
+}
+form label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 4px 0;
+    color: #234080;
+    font-weight: 500;
+}
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #cfd8e3;
+    font-size: 1em;
+}
+form button {
+    width: 100%;
+    background: #234080;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+form button:hover {
+    background: #1a2e5b;
+}
+.menu-container {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    padding: 32px 40px;
+    min-width: 500px;
+    text-align: center;
+}
+.menu-logo {
+    margin-bottom: 24px;
+}
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin-top: 10px;
+}
+.menu-item {
+    background: #234080;
+    color: #fff;
+    border-radius: 12px;
+    padding: 32px 0;
+    font-size: 1.1em;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+.menu-item:hover {
+    background: #1a2e5b;
+    transform: scale(1.05);
+}
+@media (max-width: 700px) {
+    .grid-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .menu-container {
+        min-width: 90vw;
+        padding: 20px 10px;
+    }
+}

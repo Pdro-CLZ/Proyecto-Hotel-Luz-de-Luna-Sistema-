@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Luz de Luna - Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="login-bg">
+    <div class="login-container">
+        <div class="logo">
+            <span class="moon">🌙</span>
+            <h1>Luz de Luna</h1>
+            <p class="subtitle">Sistema de Gestión Hotelera</p>
+        </div>
+        <form id="loginForm">
+            <label for="tipoUsuario">Tipo de Usuario</label>
+            <select id="tipoUsuario" required>
+                <option value="">Seleccionar...</option>
+                <option value="admin">Administrador</option>
+                <option value="empleado">Empleado</option>
+            </select>
+            <label for="usuario">Usuario</label>
+            <input type="text" id="usuario" placeholder="Ingrese su usuario" required>
+            <label for="contrasena">Contraseña</label>
+            <input type="password" id="contrasena" placeholder="Ingrese su contraseña" required>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+    </div>
+        <script src="script.js"></script>
+</body>
+</html>
+
