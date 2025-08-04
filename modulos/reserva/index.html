@@ -3,17 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <title>Reserva - Luz de Luna</title>
-    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <style>
+        body {
+            margin: 0;
+            background-color: #f5f7f2;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-wrapper-outer {
+            width: 90%;
+            max-width: 1200px;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #4c6d3c;
+        }
+
+        .form-wrapper {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .form-box {
+            background: #f0f4e3;
+            border-radius: 12px;
+            padding: 20px;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        .form-box h2 {
+            margin-top: 0;
+            color: #4c6d3c;
+            font-size: 1.2em;
+            margin-bottom: 14px;
+        }
+
+        .form-box label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #5a5a5a;
+        }
+
+        .form-box input,
+        .form-box select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border-radius: 8px;
+            border: 1px solid #cfd8e3;
+            font-size: 1em;
+        }
+
+       .form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 12px;
+}
+
+.form-actions button {
+    padding: 6px 14px;
+    font-size: 0.9em;
+    border: none;
+    border-radius: 6px;
+    background-color: #4c6d3c;
+    color: white;
+    cursor: pointer;
+    width: auto; /* <--- IMPORTANTE: que el ancho lo defina el contenido */
+    min-width: 100px; /* opcional: para que no se vean tan pequeños */
+}
+
+.form-actions button + button {
+    background-color: #ccc;
+    color: #333;
+}
+
+    </style>
 </head>
-<body class="menu-bg">
-    <div class="menu-container">
-        <div class="logo menu-logo">
-            <span class="moon">🌙</span>
-            <h1>Reserva</h1>
-            <p class="subtitle">Módulo de Reserva</p>
+<body>
+    <div class="form-wrapper-outer">
+        <div class="form-header">
+            <span style="font-size: 2rem;">🌙</span>
+            <h1>Formulario de Reservación</h1>
         </div>
-        <!-- Aquí puedes agregar el menú específico del módulo -->
-        <a href="../../menu.html" class="menu-item" style="display:block;margin:0 auto;width:200px;">Volver al menú principal</a>
+
+        <form>
+            <div class="form-wrapper">
+                <!-- Contenedor: Datos del Cliente -->
+                <div class="form-box">
+                    <h2>🧑 Datos del Cliente</h2>
+
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
+
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" placeholder="Ej: juan@email.com" required>
+
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" placeholder="Ej: 8888-8888" required>
+                </div>
+
+                <!-- Contenedor: Datos de la Habitación -->
+                <div class="form-box">
+                    <h2>🛏️ Datos de la Habitación</h2>
+
+                    <label for="fechaEntrada">Fecha de entrada</label>
+                    <input type="date" id="fechaEntrada" required>
+
+                    <label for="fechaSalida">Fecha de salida</label>
+                    <input type="date" id="fechaSalida" required>
+
+                    <label for="habitacion">Tipo de habitación</label>
+                    <select id="habitacion" required>
+                        <option value="">-- Seleccione --</option>
+                        <option value="sencilla">Sencilla</option>
+                        <option value="doble">Doble</option>
+                        <option value="suite">Suite</option>
+                    </select>
+
+                    <label for="personas">Cantidad de personas</label>
+                    <input type="number" id="personas" min="1" max="10" required>
+
+                    <label for="desayuno">¿Desea desayuno incluido?</label>
+                    <select id="desayuno" required>
+                        <option value="">-- Seleccione --</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select>
+
+                    <label for="pago">Método de pago</label>
+                    <select id="pago" required>
+                        <option value="">-- Seleccione --</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="sinpe">SINPE</option>
+                        <option value="transferencia">Transferencia</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Confirmar Reservación</button>
+                <button type="button" onclick="window.location.href='../../menu.html'">Volver al Menú</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>

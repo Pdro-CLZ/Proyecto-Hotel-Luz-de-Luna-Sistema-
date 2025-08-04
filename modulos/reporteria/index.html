@@ -3,16 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <title>Reportería - Luz de Luna</title>
-    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <style>
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 10px;
+        }
+
+        .report-item {
+            background: #51a7da;
+            color: #fff;
+            border-radius: 12px;
+            padding: 24px 16px;
+            font-size: 1em;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .report-item:hover {
+            transform: scale(1.05);
+            background: #4296c7;
+        }
+
+        .report-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .report-desc {
+            font-size: 0.9em;
+            margin-top: 6px;
+            color: #e6f2fa;
+        }
+
+        @media (max-width: 900px) {
+            .report-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body class="menu-bg">
     <div class="menu-container">
-        <div class="logo menu-logo">
+        <div class="menu-logo">
             <span class="moon">🌙</span>
             <h1>Reportería</h1>
-            <p class="subtitle">Módulo de Reportería</p>
+            <p class="subtitle">Visualiza los diferentes reportes del sistema</p>
         </div>
-        <a href="../../menu.html" class="menu-item" style="display:block;margin:0 auto;width:200px;">Volver al menú principal</a>
+
+        <div class="report-grid">
+            <div class="report-item" onclick="alert('Accediendo a Reporte de Reservas')">
+                <div class="report-icon">📅</div>
+                <div>Reservas</div>
+                <div class="report-desc">Historial y estado de reservas del hotel.</div>
+            </div>
+
+            <div class="report-item" onclick="alert('Accediendo a Reporte de Limpieza')">
+                <div class="report-icon">🧹</div>
+                <div>Limpieza</div>
+                <div class="report-desc">Registro de limpieza por habitación.</div>
+            </div>
+
+            <div class="report-item" onclick="alert('Accediendo a Reporte Contable')">
+                <div class="report-icon">💰</div>
+                <div>Contabilidad</div>
+                <div class="report-desc">Ingresos, egresos y balances financieros.</div>
+            </div>
+
+            <div class="report-item" onclick="alert('Accediendo a Reporte de Inventario')">
+                <div class="report-icon">📦</div>
+                <div>Inventario</div>
+                <div class="report-desc">Stock de productos y suministros.</div>
+            </div>
+
+            <div class="report-item" onclick="alert('Accediendo a Reporte Administrativo')">
+                <div class="report-icon">📋</div>
+                <div>Administrativo</div>
+                <div class="report-desc">Tareas y procesos del hotel.</div>
+            </div>
+
+            <div class="report-item" onclick="alert('Accediendo a Reporte de Personal')">
+                <div class="report-icon">🧑‍💼</div>
+                <div>Personal</div>
+                <div class="report-desc">Desempeño y asistencia del equipo.</div>
+            </div>
+        </div>
+
+        <button style="margin-top: 30px;" onclick="window.location.href='../../menu.html'">Volver al Menú</button>
     </div>
 </body>
 </html>

@@ -11,7 +11,7 @@ body {
     justify-content: center;
 }
 .menu-bg {
-    background: #faf8d3;
+    background: #b6be85;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -34,7 +34,7 @@ body {
 }
 h1 {
     margin: 0;
-    color: #234080;
+    color: #51a7da;
     font-weight: 500;
     font-size: 2em;
 }
@@ -47,7 +47,7 @@ form label {
     display: block;
     text-align: left;
     margin: 10px 0 4px 0;
-    color: #234080;
+    color: #858b65;
     font-weight: 500;
 }
 form input, form select {
@@ -60,7 +60,7 @@ form input, form select {
 }
 form button {
     width: 100%;
-    background: #234080;
+    background: #51a7da;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -71,7 +71,7 @@ form button {
     transition: background 0.2s;
 }
 form button:hover {
-    background: #1a2e5b;
+    background: #51a7da;
 }
 .menu-container {
     background: #fff;
@@ -91,7 +91,7 @@ form button:hover {
     margin-top: 10px;
 }
 .menu-item {
-    background: #234080;
+    background: #51a7da;
     color: #fff;
     border-radius: 12px;
     padding: 32px 0;
@@ -102,7 +102,7 @@ form button:hover {
     transition: background 0.2s, transform 0.2s;
 }
 .menu-item:hover {
-    background: #1a2e5b;
+    background: #51a7da;
     transform: scale(1.05);
 }
 @media (max-width: 700px) {
