@@ -81,9 +81,27 @@ form button:hover {
     min-width: 500px;
     text-align: center;
 }
-.menu-logo {
-    margin-bottom: 24px;
+.menu-header {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff10; /* Ligero fondo transparente opcional */
+    margin-bottom: 20px;
 }
+
+.menu-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+.menu-logo .moon {
+    font-size: 32px;
+}
+
 .grid-menu {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -114,3 +132,7 @@ form button:hover {
         padding: 20px 10px;
     }
 }
+
+
+
+
