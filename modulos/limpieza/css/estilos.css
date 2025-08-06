@@ -130,22 +130,5 @@ a:hover {
   }
 }
 
-/* .main-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 60px); /* Ajusta 60px al alto real del navbar */
-  padding: 20px;
-  box-sizing: border-box;
-}
 
-#content {
-  background-color: #faf8d3;
-  padding: 30px;
-  border-radius: 12px;
-  max-width: 1200px;
-  width: 95%;
-  box-sizing: border-box;
-  margin: 0; /* importante: quita márgenes verticales */
-} */
 
