@@ -11,6 +11,21 @@
     <link rel="stylesheet" href="css/estilos.css" />
   </head>
   <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="#" class="nav-logo">Mi Empresa</a>
+        <ul class="nav-links">
+          <li><a href="../Inventario/index.html">Inventario</a></li>
+          <li><a href="../Limpieza/index.html">Limpieza</a></li>
+          <li><a href="../Administrativo/index.html">Administrativo</a></li>
+          <li><a href="../Marketing/index.html">Marketing</a></li>
+          <li><a href="../Reservas/index.html">Reservas</a></li>
+          <li><a href="../Contabilidad/index.html">Contabilidad</a></li>
+          <li><a href="../Reportería/index.html">Reportería</a></li>
+        </ul>
+        <div class="nav-toggle">&#9776;</div>
+      </div>
+    </nav>
     <div class="container my-4" id="content">
       <h1 class="titulo-primario mb-4">Estado de Limpieza</h1>
       <a href="registrar-zona.html" class="btn btn-personalizado mb-3"
@@ -46,5 +61,13 @@
         <a href="index.html" class="btn btn-personalizado mt-4">Volver</a>
       </div>
     </div>
+    <script>
+      const navToggle = document.querySelector(".nav-toggle");
+      const navbar = document.querySelector(".navbar");
+
+      navToggle.addEventListener("click", () => {
+        navbar.classList.toggle("open");
+      });
+    </script>
   </body>
 </html>

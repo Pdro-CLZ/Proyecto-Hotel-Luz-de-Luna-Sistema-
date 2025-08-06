@@ -1,121 +1,179 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registrar Producto</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="styles.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container py-4" id="content">
-    <h1 class="main-title text-center mb-4">Registrar Producto</h1>
-
-    <form id="productForm" onsubmit="return crearProducto(event)">
-      <div class="mb-3">
-        <label class="form-label">Nombre</label>
-        <input type="text" id="nombre" class="form-control" required>
-        <div class="invalid-feedback" id="nombreError">Este campo es obligatorio</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar Producto</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="#" class="nav-logo">Mi Empresa</a>
+        <ul class="nav-links">
+          <li><a href="../Inventario/index.html">Inventario</a></li>
+          <li><a href="../Limpieza/index.html">Limpieza</a></li>
+          <li><a href="../Administrativo/index.html">Administrativo</a></li>
+          <li><a href="../Marketing/index.html">Marketing</a></li>
+          <li><a href="../Reservas/index.html">Reservas</a></li>
+          <li><a href="../Contabilidad/index.html">Contabilidad</a></li>
+          <li><a href="../Reportería/index.html">Reportería</a></li>
+        </ul>
+        <div class="nav-toggle">&#9776;</div>
       </div>
+    </nav>
+    <div class="container py-4" id="content">
+      <h1 class="main-title text-center mb-4">Registrar Producto</h1>
 
-      <div class="mb-3">
-        <label class="form-label">Descripción</label>
-        <textarea id="descripcion" class="form-control" rows="2" required></textarea>
-        <div class="invalid-feedback" id="descripcionError">Este campo es obligatorio</div>
-      </div>
+      <form id="productForm" onsubmit="return crearProducto(event)">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" id="nombre" class="form-control" required />
+          <div class="invalid-feedback" id="nombreError">
+            Este campo es obligatorio
+          </div>
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Categoría</label>
-        <select id="categoria" class="form-select" required>
-          <option value="">Seleccione...</option>
-          <option value="activo">Activo</option>
-          <option value="insumo">Insumo</option>
-        </select>
-        <div class="invalid-feedback" id="categoriaError">Este campo es obligatorio</div>
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea
+            id="descripcion"
+            class="form-control"
+            rows="2"
+            required
+          ></textarea>
+          <div class="invalid-feedback" id="descripcionError">
+            Este campo es obligatorio
+          </div>
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Cantidad</label>
-        <input type="number" id="cantidad" class="form-control" required>
-        <div class="invalid-feedback" id="cantidadError">Este campo es obligatorio</div>
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Categoría</label>
+          <select id="categoria" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="activo">Activo</option>
+            <option value="insumo">Insumo</option>
+          </select>
+          <div class="invalid-feedback" id="categoriaError">
+            Este campo es obligatorio
+          </div>
+        </div>
 
-      <div id="alerta" class="alert d-none" role="alert"></div>
+        <div class="mb-3">
+          <label class="form-label">Cantidad</label>
+          <input type="number" id="cantidad" class="form-control" required />
+          <div class="invalid-feedback" id="cantidadError">
+            Este campo es obligatorio
+          </div>
+        </div>
 
-      <div class="d-flex justify-content-between mt-4">
-        <button type="submit" class="btn custom-btn">Registrar</button>
-        <button type="button" class="btn custom-btn" onclick="window.location.href='index.html'">Cancelar</button>
-      </div>
-    </form>
-  </div>
+        <div id="alerta" class="alert d-none" role="alert"></div>
 
-  <!-- Bootstrap Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function crearProducto(e) {
-      e.preventDefault();
+        <div class="d-flex justify-content-between mt-4">
+          <button type="submit" class="btn custom-btn">Registrar</button>
+          <button
+            type="button"
+            class="btn custom-btn"
+            onclick="window.location.href='index.html'"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
 
-      // Obtener datos
-      const nombre = document.getElementById('nombre').value.trim();
-      const descripcion = document.getElementById('descripcion').value.trim();
-      const categoria = document.getElementById('categoria').value;
-      const cantidad = document.getElementById('cantidad').value.trim();
-      const alerta = document.getElementById('alerta');
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function crearProducto(e) {
+        e.preventDefault();
 
-      // Validaciones
-      let errores = false;
-      document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('is-invalid'));
+        // Obtener datos
+        const nombre = document.getElementById("nombre").value.trim();
+        const descripcion = document.getElementById("descripcion").value.trim();
+        const categoria = document.getElementById("categoria").value;
+        const cantidad = document.getElementById("cantidad").value.trim();
+        const alerta = document.getElementById("alerta");
 
-      if (!nombre || /[^a-zA-Z0-9\sáéíóúÁÉÍÓÚüÜñÑ]/.test(nombre)) {
-        errores = true;
-        document.getElementById('nombre').classList.add('is-invalid');
-        document.getElementById('nombreError').textContent = nombre === '' 
-          ? 'Este campo es obligatorio' 
-          : 'El nombre contiene caracteres inválidos';
-        document.getElementById('nombreError').style.display = 'block';
-      }
+        // Validaciones
+        let errores = false;
+        document
+          .querySelectorAll(".invalid-feedback")
+          .forEach((el) => (el.style.display = "none"));
+        document
+          .querySelectorAll(".form-control, .form-select")
+          .forEach((el) => el.classList.remove("is-invalid"));
 
-      if (!descripcion) {
-        errores = true;
-        document.getElementById('descripcion').classList.add('is-invalid');
-        document.getElementById('descripcionError').style.display = 'block';
-      }
+        if (!nombre || /[^a-zA-Z0-9\sáéíóúÁÉÍÓÚüÜñÑ]/.test(nombre)) {
+          errores = true;
+          document.getElementById("nombre").classList.add("is-invalid");
+          document.getElementById("nombreError").textContent =
+            nombre === ""
+              ? "Este campo es obligatorio"
+              : "El nombre contiene caracteres inválidos";
+          document.getElementById("nombreError").style.display = "block";
+        }
 
-      if (!categoria) {
-        errores = true;
-        document.getElementById('categoria').classList.add('is-invalid');
-        document.getElementById('categoriaError').style.display = 'block';
-      }
+        if (!descripcion) {
+          errores = true;
+          document.getElementById("descripcion").classList.add("is-invalid");
+          document.getElementById("descripcionError").style.display = "block";
+        }
 
-      if (!cantidad || isNaN(cantidad) || parseInt(cantidad) < 0 || /[^\d]/.test(cantidad)) {
-        errores = true;
-        document.getElementById('cantidad').classList.add('is-invalid');
-        document.getElementById('cantidadError').textContent = cantidad === '' 
-          ? 'Este campo es obligatorio' 
-          : (parseInt(cantidad) < 0 ? 'No se permiten valores negativos' : 'Solo se permiten números');
-        document.getElementById('cantidadError').style.display = 'block';
-      }
+        if (!categoria) {
+          errores = true;
+          document.getElementById("categoria").classList.add("is-invalid");
+          document.getElementById("categoriaError").style.display = "block";
+        }
 
-      if (errores) {
+        if (
+          !cantidad ||
+          isNaN(cantidad) ||
+          parseInt(cantidad) < 0 ||
+          /[^\d]/.test(cantidad)
+        ) {
+          errores = true;
+          document.getElementById("cantidad").classList.add("is-invalid");
+          document.getElementById("cantidadError").textContent =
+            cantidad === ""
+              ? "Este campo es obligatorio"
+              : parseInt(cantidad) < 0
+              ? "No se permiten valores negativos"
+              : "Solo se permiten números";
+          document.getElementById("cantidadError").style.display = "block";
+        }
+
+        if (errores) {
+          return false;
+        }
+
+        // Simulación de generación de ID y guardado
+        const idGenerado = Math.floor(Math.random() * 1000) + 1;
+
+        alerta.className = "alert alert-success mt-3";
+        alerta.textContent = `Producto con ID ${idGenerado} creado correctamente.`;
+        alerta.classList.remove("d-none");
+
+        // Aquí puedes agregar el código para guardar en tu base de datos
+        // o redirigir a otra página si es necesario
+
+        // Reset del formulario
+        document.getElementById("productForm").reset();
         return false;
       }
+    </script>
+    <script>
+      const navToggle = document.querySelector(".nav-toggle");
+      const navbar = document.querySelector(".navbar");
 
-      // Simulación de generación de ID y guardado
-      const idGenerado = Math.floor(Math.random() * 1000) + 1;
-
-      alerta.className = 'alert alert-success mt-3';
-      alerta.textContent = `Producto con ID ${idGenerado} creado correctamente.`;
-      alerta.classList.remove('d-none');
-
-      // Aquí puedes agregar el código para guardar en tu base de datos
-      // o redirigir a otra página si es necesario
-
-      // Reset del formulario
-      document.getElementById('productForm').reset();
-      return false;
-    }
-  </script>
-</body>
+      navToggle.addEventListener("click", () => {
+        navbar.classList.toggle("open");
+      });
+    </script>
+  </body>
 </html>

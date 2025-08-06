@@ -1,79 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Inventario</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="styles.css" rel="stylesheet">
-</head>
-<body>
-  <nav class="navbar">
-  <div class="navbar-container">
-    <a href="#" class="nav-logo">Mi Empresa</a>
-    <ul class="nav-links">
-      <li><a href="../Inventario/index.html">Inventario</a></li>
-      <li><a href="../Limpieza/index.html">Limpieza</a></li>
-      <li><a href="../Administrativo/index.html">Administrativo</a></li>
-      <li><a href="../Marketing/index.html">Marketing</a></li>
-      <li><a href="../Reservas/index.html">Reservas</a></li>
-      <li><a href="../Contabilidad/index.html">Contabilidad</a></li>
-      <li><a href="../Reportería/index.html">Reportería</a></li>
-    </ul>
-    <div class="nav-toggle">&#9776;</div>
-  </div>
-</nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventario</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="#" class="nav-logo">Mi Empresa</a>
+        <ul class="nav-links">
+          <li><a href="../Inventario/index.html">Inventario</a></li>
+          <li><a href="../Limpieza/index.html">Limpieza</a></li>
+          <li><a href="../Administrativo/index.html">Administrativo</a></li>
+          <li><a href="../Marketing/index.html">Marketing</a></li>
+          <li><a href="../Reservas/index.html">Reservas</a></li>
+          <li><a href="../Contabilidad/index.html">Contabilidad</a></li>
+          <li><a href="../Reportería/index.html">Reportería</a></li>
+        </ul>
+        <div class="nav-toggle">&#9776;</div>
+      </div>
+    </nav>
 
-  <div class="container-fluid py-4" id="content">
-    <h1 class="main-title text-center mb-4">Inventario</h1>
-    <div class="d-flex justify-content-between mb-3 flex-wrap">
-      <button class="btn custom-btn mb-2" onclick="window.location.href='crear.html'">Crear Producto</button>
-      <div class="d-flex gap-2 flex-wrap">
-        <input type="text" id="filterName" class="form-control" placeholder="Filtrar por nombre">
-        <select id="filterType" class="form-select">
-          <option value="">Todos los tipos</option>
-          <option value="activo">Activo</option>
-          <option value="insumo">Insumo</option>
-        </select>
-        <button class="btn custom-btn" onclick="filterTable()">Filtrar</button>
-        <button class="btn custom-btn" onclick="clearFilters()">Quitar Filtros</button>
+    <div class="container-fluid py-4" id="content">
+      <h1 class="main-title text-center mb-4">Inventario</h1>
+      <div class="d-flex justify-content-between mb-3 flex-wrap">
+        <button
+          class="btn custom-btn mb-2"
+          onclick="window.location.href='crear.html'"
+        >
+          Crear Producto
+        </button>
+        <div class="d-flex gap-2 flex-wrap">
+          <input
+            type="text"
+            id="filterName"
+            class="form-control"
+            placeholder="Filtrar por nombre"
+          />
+          <select id="filterType" class="form-select">
+            <option value="">Todos los tipos</option>
+            <option value="activo">Activo</option>
+            <option value="insumo">Insumo</option>
+          </select>
+          <button class="btn custom-btn" onclick="filterTable()">
+            Filtrar
+          </button>
+          <button class="btn custom-btn" onclick="clearFilters()">
+            Quitar Filtros
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table
+          class="table table-bordered align-middle text-center table-hover"
+        >
+          <thead class="table-header">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th>Cantidad</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTable">
+            <!-- Ejemplo de fila -->
+            <tr>
+              <td>1</td>
+              <td>Producto Demo</td>
+              <td>Descripción breve</td>
+              <td>Activo</td>
+              <td>10</td>
+              <td><span class="badge bg-success">Activo</span></td>
+              <td>
+                <button
+                  class="btn btn-sm custom-btn"
+                  onclick="window.location.href='editar_manager.html'"
+                >
+                  Editar
+                </button>
+                <button
+                  class="btn btn-sm custom-btn"
+                  onclick="toggleStatus(this)"
+                >
+                  Inactivar
+                </button>
+              </td>
+            </tr>
+            <!-- Más filas dinámicas -->
+          </tbody>
+        </table>
       </div>
     </div>
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle text-center table-hover">
-        <thead class="table-header">
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Tipo</th>
-            <th>Cantidad</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="inventoryTable">
-          <!-- Ejemplo de fila -->
-          <tr>
-            <td>1</td>
-            <td>Producto Demo</td>
-            <td>Descripción breve</td>
-            <td>Activo</td>
-            <td>10</td>
-            <td><span class="badge bg-success">Activo</span></td>
-            <td>
-              <button class="btn btn-sm custom-btn" onclick="window.location.href='editar_manager.html'">Editar</button>
-              <button class="btn btn-sm custom-btn" onclick="toggleStatus(this)">Inactivar</button>
-            </td>
-          </tr>
-          <!-- Más filas dinámicas -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <!-- Bootstrap Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="script.js"></script>
-</body>
+    <script>
+      const navToggle = document.querySelector(".nav-toggle");
+      const navbar = document.querySelector(".navbar");
+
+      navToggle.addEventListener("click", () => {
+        navbar.classList.toggle("open");
+      });
+    </script>
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>
