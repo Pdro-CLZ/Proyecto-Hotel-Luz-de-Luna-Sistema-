@@ -1,0 +1,236 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #b9bf9c;
+    color: #222;
+}
+header {
+  background-color: #858b65;
+  color: white;
+  text-align: center;
+  padding: 1.5em 1em;
+}
+header h1 {
+    margin: 0;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #858b65;
+}
+
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+.modulo-menu {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 0px;
+}
+.modulo-menu button {
+  width: 80%;
+  max-width: 400px;
+  padding: 15px;
+  background-color: #858b65;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.modulo-menu button:hover {
+  background-color: #b6be85;
+}
+
+.formulario,
+.tabla,
+.permiso-box {
+  margin-top: 40px;
+  display: none;
+  background: #faf8d3;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+.formulario label,
+.permiso-box label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+.formulario input,
+.formulario select,
+.permiso-box input,
+.permiso-box select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.formulario .error,
+.permiso-box .error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+button.action {
+  padding: 10px 20px;
+  background: #858b65;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+button.action:hover {
+  background: #b6be85;
+}
+.tabla table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tabla th,
+.tabla td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+.tabla th {
+  background: #858b65;
+  color: #faf8d3;
+}
+.filtros {
+  margin-bottom: 10px;
+}
+.checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cerrar-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #888;
+  padding: 0;
+}
+.cerrar-btn:hover {
+  color: #222;
+}
+
+/* Navbar */
+.admin-nav {
+  background-color: #b6be85;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.admin-nav-logo {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+.admin-nav-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-nav-links li a:hover {
+  background-color: #858b65;
+}
+
+.admin-nav-toggle {
+  display: none;
+  font-size: 1.8em;
+  color: #fff;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .admin-nav-links {
+    width: 100%;
+    flex-direction: column;
+    display: none;
+    margin-top: 10px;
+  }
+
+  .admin-nav-links li {
+    width: 100%;
+  }
+
+  .admin-nav-links li a {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-nav-toggle {
+    display: block;
+  }
+
+  .admin-nav.open .admin-nav-links {
+    display: flex;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .modulo-menu button {
+    width: 95%;
+  }
+  .checkboxes {
+    flex-direction: column;
+  }
+}
