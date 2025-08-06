@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Reserva - Luz de Luna</title>
@@ -7,7 +8,7 @@
     <style>
         body {
             margin: 0;
-            background-color: #f5f7f2;
+            background-color: #b9bf9c;
             font-family: Arial, sans-serif;
             height: 100vh;
             display: flex;
@@ -18,7 +19,7 @@
         .form-wrapper-outer {
             width: 90%;
             max-width: 1200px;
-            background-color: #ffffff;
+            background-color: #faf8d3;
             padding: 40px;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -42,7 +43,7 @@
         }
 
         .form-box {
-            background: #f0f4e3;
+            background: #b6be85;
             border-radius: 12px;
             padding: 20px;
             width: 50%;
@@ -73,32 +74,34 @@
             font-size: 1em;
         }
 
-       .form-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 12px;
-}
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 12px;
+        }
 
-.form-actions button {
-    padding: 6px 14px;
-    font-size: 0.9em;
-    border: none;
-    border-radius: 6px;
-    background-color: #4c6d3c;
-    color: white;
-    cursor: pointer;
-    width: auto; /* <--- IMPORTANTE: que el ancho lo defina el contenido */
-    min-width: 100px; /* opcional: para que no se vean tan pequeños */
-}
+        .form-actions button {
+            padding: 6px 14px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 6px;
+            background-color: #858b65;
+            color: white;
+            cursor: pointer;
+            width: auto;
+            /* <--- IMPORTANTE: que el ancho lo defina el contenido */
+            min-width: 100px;
+            /* opcional: para que no se vean tan pequeños */
+        }
 
-.form-actions button + button {
-    background-color: #ccc;
-    color: #333;
-}
-
+        .form-actions button+button {
+            background-color: #858b65;
+            color: #858b65;
+        }
     </style>
 </head>
+
 <body>
     <div class="form-wrapper-outer">
         <div class="form-header">
@@ -161,10 +164,12 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit">Confirmar Reservación</button>
-                <button type="button" onclick="window.location.href='../../menu.html'">Volver al Menú</button>
+                <button type="submit" class="boton-verde">Confirmar Reservación</button>
+                <button type="submit" class="boton-verde" onclick="window.location.href='../../menu.html'">Volver al
+                    Menú</button>
             </div>
         </form>
     </div>
 </body>
+
 </html>
