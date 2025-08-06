@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lista de Empleados</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="content" class="form-container">
+      <h1>Empleados</h1>
+      <button onclick="location.href='empleados_create.html'">
+        Crear Empleado
+      </button>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Fecha Nac.</th>
+              <th>Puesto</th>
+              <th>Salario</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="empleadosTableBody">
+            <!-- Aquí se insertarán filas con JS o backend -->
+            <tr>
+              <td>001</td>
+              <td>Juan</td>
+              <td>Pérez</td>
+              <td>01/01/1980</td>
+              <td>Recepcionista</td>
+              <td>350000</td>
+              <td>88889999</td>
+              <td>Calle 123</td>
+              <td>Activo</td>
+              <td>
+                <button onclick="location.href='editar_empleado.html'">
+                  Editar
+                </button>
+                <button>Activar</button>
+              </td>
+            </tr>
+            <tr>
+              <td>002</td>
+              <td>Ana</td>
+              <td>Gómez</td>
+              <td>10/05/1990</td>
+              <td>Jardinera</td>
+              <td>320000</td>
+              <td>87776666</td>
+              <td>Ave. Central</td>
+              <td>Inactivo</td>
+              <td>
+                <button onclick="location.href='editar_empleado.html'">
+                  Editar
+                </button>
+                <button>Activar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <a href="index.html">
+          <button type="button">Volver</button>
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

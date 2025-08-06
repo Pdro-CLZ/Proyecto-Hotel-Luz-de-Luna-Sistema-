@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Editar Puesto</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      // Simulación de puestos para demo
+      const puestosData = {
+        1: { nombre: "Recepcionista" },
+        2: { nombre: "Cocinero" },
+        3: { nombre: "Jardinero" },
+      };
+
+      function cargarPuesto() {
+        const selectId = document.getElementById("puesto_id");
+        const id = selectId.value;
+        if (!id) {
+          alert("Por favor seleccione un puesto");
+          return;
+        }
+        const datos = puestosData[id];
+        if (!datos) {
+          alert("Puesto no encontrado");
+          return;
+        }
+        document.getElementById("nombre_puesto").value = datos.nombre;
+      }
+
+      function validarTexto(text) {
+        const regex = /^[a-zA-Z\s]+$/;
+        return regex.test(text);
+      }
+
+      function guardarCambios(event) {
+        event.preventDefault();
+
+        const nombre = document.getElementById("nombre_puesto").value.trim();
+
+        if (!nombre) {
+          alert("Celda en blanco");
+          return;
+        }
+        if (!validarTexto(nombre)) {
+          alert("Caracteres indebidos en nombre");
+          return;
+        }
+
+        alert("Puesto actualizado satisfactoriamente");
+        // Aquí enviarías los datos al backend
+      }
+    </script>
+  </head>
+  <body>
+    <main id="content" class="form-container">
+      <h1>Editar Puesto</h1>
+
+      <label for="puesto_id">Seleccione Puesto:</label>
+      <select id="puesto_id" onchange="cargarPuesto()">
+        <option value="">--Seleccione--</option>
+        <option value="1">1 - Recepcionista</option>
+        <option value="2">2 - Cocinero</option>
+        <option value="3">3 - Jardinero</option>
+      </select>
+
+      <form id="form_puesto" onsubmit="guardarCambios(event)">
+        <label for="nombre_puesto">Nombre del Puesto:</label>
+        <input type="text" id="nombre_puesto" name="nombre_puesto" />
+
+        <button type="submit">Guardar Cambios</button>
+        <a href="puestos_list.html">
+          <button type="button">Volver</button>
+        </a>
+      </form>
+    </main>
+  </body>
+</html>

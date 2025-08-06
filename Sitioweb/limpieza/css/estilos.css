@@ -1,0 +1,50 @@
+body {
+  background-color: #b9bf9c;
+  font-family: Optima, Lucida, 'MgOpen Cosmética', 'Lucida Sans Unicode', sans-serif;
+  color: #222;
+}
+
+#content {
+  background-color: #faf8d3;
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.titulo-primario {
+  font-family: 'museo_sans500', sans-serif;
+  color: #b6be85;
+  font-weight: 400;
+  font-size: 1.66em;
+}
+
+h2, h3 {
+  font-family: 'museo_sans500', sans-serif;
+  color: #f4f0bf;
+  letter-spacing: 1px;
+}
+
+a {
+  color: #51a7da;
+}
+
+a:hover {
+  color: #ee6a00;
+}
+
+.btn-personalizado {
+  background-color: #b6be85;
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: bold;
+}
+
+.btn-personalizado:hover {
+  background-color: #858b65;
+  color: #fff;
+}
+
+.table th {
+  background-color: #858b65;
+  color: #fff;
+}

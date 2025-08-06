@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crear Empleado</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      // Validaciones básicas ejemplo para teléfono y nombre
+      function validarFormulario() {
+        let nombre = document.getElementById("nombre").value.trim();
+        let apellido = document.getElementById("apellido").value.trim();
+        let fechaNac = document.getElementById("fecha_nac").value.trim();
+        let telefono = document.getElementById("telefono").value.trim();
+        let salario = document.getElementById("salario").value.trim();
+        let errores = false;
+
+        // Reset mensajes
+        document
+          .querySelectorAll(".error-message")
+          .forEach((e) => (e.textContent = ""));
+
+        // Validar nombre y apellido (sin números ni caracteres especiales)
+        const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+        if (!regexNombre.test(nombre)) {
+          document.getElementById("error_nombre").textContent =
+            "caracteres indebidos";
+          errores = true;
+        }
+        if (!regexNombre.test(apellido)) {
+          document.getElementById("error_apellido").textContent =
+            "caracteres indebidos";
+          errores = true;
+        }
+        // Fecha formato DD/MM/YYYY
+        if (!/^(\d{2})\/(\d{2})\/(\d{4})$/.test(fechaNac)) {
+          document.getElementById("error_fecha").textContent =
+            "ingrese una fecha válida con el siguiente formato: DD/MM/YYYY";
+          errores = true;
+        }
+        // Teléfono solo números y longitud 8
+        if (!/^\d{8}$/.test(telefono)) {
+          document.getElementById("error_telefono").textContent =
+            "teléfono con cantidad de números indebida";
+          errores = true;
+        }
+        // Salario solo números y no negativo
+        if (!/^\d+(\.\d+)?$/.test(salario)) {
+          document.getElementById("error_salario").textContent =
+            "solo se permiten números";
+          errores = true;
+        } else if (parseFloat(salario) < 0) {
+          document.getElementById("error_salario").textContent =
+            "número no puede ser negativo";
+          errores = true;
+        }
+        // Validar campos vacíos
+        if (nombre === "") {
+          document.getElementById("error_nombre").textContent =
+            "celda en blanco";
+          errores = true;
+        }
+        if (apellido === "") {
+          document.getElementById("error_apellido").textContent =
+            "celda en blanco";
+          errores = true;
+        }
+        if (fechaNac === "") {
+          document.getElementById("error_fecha").textContent =
+            "celda en blanco";
+          errores = true;
+        }
+        if (telefono === "") {
+          document.getElementById("error_telefono").textContent =
+            "celda en blanco";
+          errores = true;
+        }
+        if (salario === "") {
+          document.getElementById("error_salario").textContent =
+            "celda en blanco";
+          errores = true;
+        }
+        // Por simplicidad no valido dirección ni puesto aquí
+
+        return !errores;
+      }
+    </script>
+  </head>
+  <body>
+    <main id="content" class="form-container">
+      <h1>Crear Empleado</h1>
+      <form
+        onsubmit="if(!validarFormulario()) { event.preventDefault(); } else { alert('Registro añadido correctamente'); }"
+        novalidate
+      >
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" />
+        <div id="error_nombre" class="error-message"></div>
+
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" />
+        <div id="error_apellido" class="error-message"></div>
+
+        <label for="fecha_nac">Fecha de nacimiento (DD/MM/YYYY):</label>
+        <input
+          type="text"
+          id="fecha_nac"
+          name="fecha_nac"
+          placeholder="DD/MM/YYYY"
+        />
+        <div id="error_fecha" class="error-message"></div>
+
+        <label for="puesto">Puesto:</label>
+        <input type="text" id="puesto" name="puesto" />
+        <!-- Aquí se puede implementar búsqueda y selección luego -->
+
+        <label for="salario">Salario:</label>
+        <input type="text" id="salario" name="salario" />
+        <div id="error_salario" class="error-message"></div>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" />
+        <div id="error_telefono" class="error-message"></div>
+
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" />
+
+        <label for="estado">Estado:</label>
+        <select id="estado" name="estado">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+
+        <button type="submit">Registrar</button>
+        <a href="empleados_list.html">
+          <button type="button">Volver</button>
+        </a>
+      </form>
+    </main>
+  </body>
+</html>

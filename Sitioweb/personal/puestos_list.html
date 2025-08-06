@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lista de Puestos</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="content" class="form-container">
+      <h1>Puestos</h1>
+      <button onclick="location.href='puestos_create.html'">
+        Crear Puesto
+      </button>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre del Puesto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="puestosTableBody">
+          <tr>
+            <td>01</td>
+            <td>Recepcionista</td>
+            <td>Activo</td>
+            <td>
+              <button onclick="location.href='editar_puesto.html'">
+                Editar
+              </button>
+              <button>Activar</button>
+            </td>
+          </tr>
+          <tr>
+            <td>02</td>
+            <td>Jardinero</td>
+            <td>Inactivo</td>
+            <td>
+              <button onclick="location.href='editar_puesto.html'">
+                Editar
+              </button>
+              <button>Activar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <a href="index.html">
+        <button type="button">Volver</button>
+      </a>
+    </main>
+  </body>
+</html>

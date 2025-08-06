@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crear Puesto</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      function validarPuesto() {
+        const nombre = document.getElementById("nombre").value.trim();
+        let error = false;
+        document.getElementById("error_nombre").textContent = "";
+
+        const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+        if (nombre === "") {
+          document.getElementById("error_nombre").textContent =
+            "celda en blanco";
+          error = true;
+        } else if (!regexNombre.test(nombre)) {
+          document.getElementById("error_nombre").textContent =
+            "caracteres indebidos";
+          error = true;
+        }
+        return !error;
+      }
+    </script>
+  </head>
+  <body>
+    <main id="content" class="form-container">
+      <h1>Crear Puesto</h1>
+      <form
+        onsubmit="if(!validarPuesto()){ event.preventDefault(); } else { alert('Puesto registrado satisfactoriamente'); }"
+        novalidate
+      >
+        <label for="nombre">Nombre del Puesto:</label>
+        <input type="text" id="nombre" name="nombre" />
+        <div id="error_nombre" class="error-message"></div>
+
+        <button type="submit">Registrar</button>
+        <a href="puestos_list.html">
+          <button type="button">Volver</button>
+        </a>
+      </form>
+    </main>
+  </body>
+</html>
