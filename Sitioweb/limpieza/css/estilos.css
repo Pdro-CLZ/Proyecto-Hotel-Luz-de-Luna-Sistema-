@@ -48,3 +48,104 @@ a:hover {
   background-color: #858b65;
   color: #fff;
 }
+
+.navbar {
+  background-color: #b6be85;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.nav-logo {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  background-color: #858b65;
+}
+
+.nav-toggle {
+  display: none;
+  font-size: 1.8em;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Responsive: menú hamburguesa */
+@media (max-width: 768px) {
+  .nav-links {
+    width: 100%;
+    flex-direction: column;
+    display: none;
+    margin-top: 10px;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links li a {
+    display: block;
+    width: 100%;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .navbar.open .nav-links {
+    display: flex;
+  }
+}
+
+/* .main-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* Ajusta 60px al alto real del navbar */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#content {
+  background-color: #faf8d3;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 1200px;
+  width: 95%;
+  box-sizing: border-box;
+  margin: 0; /* importante: quita márgenes verticales */
+} */
+
