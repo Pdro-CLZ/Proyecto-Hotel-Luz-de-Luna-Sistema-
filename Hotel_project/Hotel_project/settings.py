@@ -37,6 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Apps
+    'marketing',
+    'personal',
+    'limpieza',
+    'reporteria',
+    'reservas',
+    'contabilidad',
+    'inventario',
+    'administracion',
 ]
 
 MIDDLEWARE = [
@@ -74,10 +83,18 @@ WSGI_APPLICATION = 'Hotel_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hotelprojectbd',   # Cambia por el nombre de tu BD
+        'USER': 'hotel_admin',          # Usuario MySQL
+        'PASSWORD': '12password34?!',     # Contraseña
+        'HOST': 'localhost',           # O la IP del servidor MySQL
+        'PORT': '3306',                # Puerto por defecto de MySQL
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
     }
 }
+
 
 
 # Password validation
