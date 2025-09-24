@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Apps
+    # Apps propias
     'marketing',
     'personal',
     'limpieza',
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'reservas',
     'contabilidad',
     'inventario',
-    'administracion',
+    'administracion.apps.AdministracionConfig',  # <--- así
 ]
 
 MIDDLEWARE = [
@@ -137,3 +137,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "administracion.Usuario"

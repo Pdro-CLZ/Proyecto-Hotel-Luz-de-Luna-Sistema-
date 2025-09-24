@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Luz de Luna - Dashboard</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+<body class="menu-bg">
+
+    <div class="menu-container">
+        <!-- Header con acciones -->
+        <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+            <a class="boton-verde" href="{% url 'registro' %}">Registrar usuario</a>
+            <a class="boton-verde" href="{% url 'logout' %}">Cerrar sesión</a>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <div style="overflow-x:auto; margin-top: 20px;">
+            <table class="menu-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.rol }}</td>
+                        <td>{{ u.is_active }}</td>
+                        <td>
+                            <a href="{% url 'modificar_usuario' u.id %}">Editar</a> |
+                            <a href="{% url 'activar_inactivar_usuario' u.id %}">
+                                {% if u.is_active %}Inactivar{% else %}Activar{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Luz de Luna - Login</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+<body class="login-bg">
+    <div class="login-container">
+        <div class="logo">
+            <span class="moon">🌙</span>
+            <h1>Luz de Luna</h1>
+            <p class="subtitle">Sistema de Gestión Hotelera</p>
+        </div>
+
+        <form method="post" id="loginForm">
+            {% csrf_token %}
+            <label for="{{ form.username.id_for_label }}">Usuario</label>
+            {{ form.username }}
+
+            <label for="{{ form.password.id_for_label }}">Contraseña</label>
+            {{ form.password }}
+
+            <button type="submit" id="loginBtn" {% if is_blocked %}disabled{% endif %}>
+                Iniciar Sesión
+            </button>
+        </form>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById("loginBtn");
+        const loginForm = document.getElementById("loginForm");
+
+        // Bloqueo dinámico si campos vacíos
+        const usuario = document.getElementById("id_username");
+        const contrasena = document.getElementById("id_password");
+
+        function checkFields() {
+            loginBtn.disabled = usuario.value === "" || contrasena.value === "" || loginBtn.dataset.blocked === "true";
+        }
+
+        usuario.addEventListener("input", checkFields);
+        contrasena.addEventListener("input", checkFields);
+
+        // Si el botón estaba bloqueado por backend
+        {% if is_blocked %}
+            loginBtn.dataset.blocked = "true";
+            let countdown = 15; // segundos de bloqueo, deben coincidir con backend
+            loginBtn.innerText = `Bloqueado (${countdown}s)`;
+
+            const timer = setInterval(() => {
+                countdown--;
+                if(countdown <= 0){
+                    clearInterval(timer);
+                    loginBtn.disabled = false;
+                    loginBtn.dataset.blocked = "false";
+                    loginBtn.innerText = "Iniciar Sesión";
+                } else {
+                    loginBtn.innerText = `Bloqueado (${countdown}s)`;
+                }
+            }, 1000);
+        {% else %}
+            loginBtn.dataset.blocked = "false";
+            loginBtn.disabled = true; // botón inicialmente deshabilitado si campos vacíos
+        {% endif %}
+    </script>
+</body>
+</html>

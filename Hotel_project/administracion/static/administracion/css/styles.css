@@ -1,0 +1,254 @@
+/* ===== General ===== */
+body {
+    background-color: #b9bf9c;
+    font-family: Optima, Lucida, 'MgOpen Cosmética', 'Lucida Sans Unicode', sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== Login ===== */
+.login-bg {
+    background: #faf8d3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* asegura espacio en móviles */
+}
+
+/* Base */
+.login-container {
+    background: #b9bf9c;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    padding: 40px 50px;
+    width: 90%;
+    max-width: 600px;
+    min-width: 320px;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 20px auto;
+    overflow-y: auto; /* permite scroll si el contenido es más grande */
+    transition: transform 0.3s ease; /* para animar el zoom */
+}
+
+.logo {
+    margin-bottom: 18px;
+}
+
+.moon {
+    font-size: 2.5em;
+    display: block;
+}
+
+h1, .login-container h2 {
+    margin: 0 0 20px 0;
+    color: #858b65;
+    font-weight: 600;
+    font-size: 2.2em;
+}
+
+.subtitle {
+    color: #858b65;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 6px 0;
+    color: #858b65;
+    font-weight: 500;
+}
+
+form input, form select {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    border: 1px solid #cfd8e3;
+    font-size: 1.1em;
+    box-sizing: border-box;
+}
+
+form button {
+    width: 100%;
+    background: #b6be85;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+form button:hover {
+    background: #858b65;
+    transform: scale(1.02);
+}
+
+/* Botón verde adicional */
+.boton-verde {
+    background-color: #c0c68a;
+    color: #fff;
+    border: none;
+    padding: 14px 26px;
+    font-size: 1.1em;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 10px 0;
+}
+
+.boton-verde:hover {
+    background-color: #b0ba7a;
+    transform: scale(1.05);
+}
+
+/* ===== Menu ===== */
+.menu-bg {
+    background: #b9bf9c;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-container {
+    background: #faf8d3;
+    border-radius: 12px;
+    padding: 40px;
+    width: 95%;
+    max-width: 900px;
+    min-width: 320px;
+    margin: 30px auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.menu-header {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff10;
+    margin-bottom: 20px;
+}
+
+.menu-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+}
+
+.menu-logo .moon {
+    font-size: 36px;
+}
+
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin-top: 10px;
+}
+
+.menu-item {
+    background: #b6be85;
+    color: #fff;
+    border-radius: 12px;
+    padding: 36px 0;
+    font-size: 1.2em;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.menu-item:hover {
+    background: #858b65;
+    transform: scale(1.05);
+}
+
+/* ===== Tabla menú ===== */
+.menu-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.menu-table th, .menu-table td {
+    border: 1px solid #222;
+    padding: 14px 16px;
+    text-align: center;
+}
+
+.menu-table th {
+    background-color: #b6be85;
+    color: #fff;
+}
+
+.menu-table tr:nth-child(even) {
+    background-color: #f0efda;
+}
+
+.menu-table a {
+    color: #222;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu-table a:hover {
+    color: #858b65;
+}
+
+/* ===== Media Queries ===== */
+@media (max-width: 900px) {
+    .menu-container {
+        width: 98%;
+        padding: 25px;
+    }
+    .menu-table {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 700px) {
+    .grid-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .menu-container {
+        padding: 20px 15px;
+    }
+}
+
+/* Media Query Móviles */
+@media (max-width: 600px) {
+    .login-container {
+        width: 100%;
+        height: 100vh; /* ocupar toda la pantalla */
+        margin: 0;
+        border-radius: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    form input, form select, form button, .boton-verde {
+        font-size: 1.2em;
+        padding: 14px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .login-container form div[style*="display: flex"] {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
