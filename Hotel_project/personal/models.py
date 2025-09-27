@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 
 class Pais(models.Model):
@@ -59,3 +60,18 @@ class Empleado(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+    
+
+class Asistencia(models.Model):
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    fecha = models.DateField(default=timezone.now) 
+    hora_llegada = models.TimeField(null=True, blank=True)
+    hora_salida = models.TimeField(null=True, blank=True)
+    horas_trabajadas = models.DecimalField(max_digits=5,decimal_places=2,null=True, blank=True)
+    observaciones = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('empleado', 'fecha')
+
+    def __str__(self):
+        return f"Asistencia {self.empleado} - {self.fecha}"

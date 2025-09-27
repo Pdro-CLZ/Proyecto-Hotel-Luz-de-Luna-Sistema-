@@ -1,0 +1,72 @@
+/* ===== Personal View ===== */
+body {
+    background-color: #b9bf9c;
+    font-family: Optima, Lucida, 'MgOpen Cosmética', 'Lucida Sans Unicode', sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+main {
+    background: #faf8d3;
+    border-radius: 18px;
+    padding: 40px 50px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #858b65;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.button-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.button-group button {
+    background-color: #c0c68a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 26px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    min-width: 200px;
+}
+
+.button-group button:hover {
+    background-color: #b0ba7a;
+    transform: scale(1.05);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    main {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+}
