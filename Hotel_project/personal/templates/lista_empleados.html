@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Empleados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+</head>
+
+<body class="menu-bg">
+
+    <div class="menu-container">
+        <button class="boton-verde" onclick="window.location.href='/personal'">Volver</button>
+        <button class="boton-verde" onclick="window.location.href='/personal/empleados/agregar'">Agregar Empleado</button>
+        <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+            <h2>Gestión de Empleados</h2>
+        </div>
+        <div style="overflow-x:auto; margin-top: 20px;">
+            <table class="menu-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Cédula</th>
+                        <th>Puesto</th>
+                        <th>Salario</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for empleado in empleados %}
+                    <tr>
+                        <td>{{ empleado.nombre }}</td>
+                        <td>{{ empleado.apellido }}</td>
+                        <td>{{ empleado.cedula }}</td>
+                        <td>{{ empleado.puesto.nombre }}</td>
+                        <td>{{ empleado.salario }}</td>
+                        <td>
+                            <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal"
+                                data-bs-target="#modalEmpleado{{ empleado.id }}">Ver más</a> |
+                            <a class="btn btn-sm btn-dark text-white" href="{% url 'editar_empleado' empleado.id %}">Editar</a>
+                            <a class="btn btn-sm btn-danger text-white my-2" href="{% url 'eliminar_empleado' empleado.id %}" 
+                            onclick="return confirm('¿Estás seguro de eliminar este empleado?')">Eliminar</a>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="modalEmpleado{{ empleado.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalLabel{{ empleado.id }}">Detalles del Empleado</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
+                                    <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
+                                    <p><strong>Cédula:</strong> {{ empleado.cedula }}</p>
+                                    <p><strong>Teléfono:</strong> {{ empleado.telefono }}</p>
+                                    <p><strong>Correo:</strong> {{ empleado.correo }}</p>
+                                    <p><strong>Dirección:</strong> {{ empleado.direccion.direccion_exacta }}</p>
+                                    <p><strong>País:</strong> {{ empleado.direccion.pais.nombre }}</p>
+                                    <p><strong>Provincia:</strong> {{ empleado.direccion.provincia.nombre }}</p>
+                                    <p><strong>Cantón:</strong> {{ empleado.direccion.canton.nombre }}</p>
+                                    <p><strong>Distrito:</strong> {{ empleado.direccion.distrito.nombre }}</p>
+                                    <p><strong>Fecha de Contratación:</strong> {{ empleado.fecha_contratacion }}</p>
+                                    <p><strong>Salario:</strong> {{ empleado.salario }}</p>
+                                    <p><strong>Rol:</strong> {{ empleado.rol.nombre }}</p>
+                                    <p><strong>Puesto:</strong> {{ empleado.puesto.nombre }}</p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">OK</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align:center;">No hay empleados registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

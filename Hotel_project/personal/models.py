@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 
 class Pais(models.Model):
@@ -46,9 +47,18 @@ class Rol(models.Model):
         return self.nombre
 
 
+class Puesto(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+
 class Empleado(models.Model):
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
     direccion = models.ForeignKey(Direccion, on_delete=models.CASCADE)
+    puesto = models.ForeignKey(Puesto, on_delete=models.SET_NULL, null=True, blank=True) 
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     cedula = models.CharField(max_length=20)
@@ -59,3 +69,18 @@ class Empleado(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+    
+
+class Asistencia(models.Model):
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    fecha = models.DateField(default=timezone.now) 
+    hora_llegada = models.TimeField(null=True, blank=True)
+    hora_salida = models.TimeField(null=True, blank=True)
+    horas_trabajadas = models.DecimalField(max_digits=5,decimal_places=2,null=True, blank=True)
+    observaciones = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('empleado', 'fecha')
+
+    def __str__(self):
+        return f"Asistencia {self.empleado} - {self.fecha}"

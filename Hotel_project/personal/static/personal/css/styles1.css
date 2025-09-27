@@ -1,0 +1,152 @@
+/* ===== Personal View ===== */
+body {
+    background-color: #b9bf9c;
+    font-family: Optima, Lucida, 'MgOpen Cosmética', 'Lucida Sans Unicode', sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* ===== Vista principal ===== */
+main {
+    background: #faf8d3;
+    border-radius: 18px;
+    padding: 40px 50px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    box-sizing: border-box;
+    margin: auto;
+}
+
+h1 {
+    color: #858b65;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.button-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.button-group button {
+    background-color: #c0c68a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 26px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    min-width: 200px;
+}
+
+.button-group button:hover {
+    background-color: #b0ba7a;
+    transform: scale(1.05);
+}
+
+/* ===== Listado de empleados ===== */
+.menu-bg {
+    background: #b9bf9c;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-container {
+    background: #faf8d3;
+    border-radius: 12px;
+    padding: 40px;
+    width: 95%;
+    max-width: 900px;
+    min-width: 320px;
+    margin: 30px auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.menu-header {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff10;
+    margin-bottom: 20px;
+}
+
+.menu-header h2 {
+    color: #858b65;
+    margin: 0;
+}
+
+.menu-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.menu-table th, .menu-table td {
+    border: 1px solid #222;
+    padding: 14px 16px;
+    text-align: center;
+}
+
+.menu-table th {
+    background-color: #b6be85;
+    color: #fff;
+}
+
+.menu-table tr:nth-child(even) {
+    background-color: #f0efda;
+}
+
+.menu-table a {
+    color: #222;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu-table a:hover {
+    color: #858b65;
+}
+
+.error {
+    color: rgb(231, 34, 34);         
+    font-weight: bold;    
+    padding: 2px 3px;
+    margin-top: 2px;
+    font-size: 0.8rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    main {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    .menu-container {
+        width: 98%;
+        padding: 20px;
+    }
+
+    .menu-table {
+        font-size: 0.9em;
+    }
+}
