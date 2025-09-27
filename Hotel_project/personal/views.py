@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from datetime import time, datetime, timedelta
-from .models import Empleado, Asistencia
+from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion
+from .forms import EmpleadoForm
 
 # Create your views here.
 def marcar_asistencia(request):
@@ -66,9 +67,95 @@ def marcar_asistencia(request):
     hora_marca_ingreso = asistencia.hora_llegada.strftime("%H:%M:%S") if asistencia.hora_llegada else "No registrada"
     hora_marca_salida = asistencia.hora_salida.strftime("%H:%M:%S") if asistencia.hora_salida else "No registrada"
 
-    return render(request, "index.html", {
+    datos = {
         "empleado": empleado,
         "mensaje": mensaje,
         "hora_marca_ingreso": hora_marca_ingreso,
         "hora_marca_salida": hora_marca_salida,
-    })
+    }
+    return render(request, "index.html", datos)
+
+
+def lista_empleados(request):
+    empleados = Empleado.objects.all()
+    return render(request, "lista_empleados.html", {"empleados": empleados})
+
+
+def agregar_empleado(request):
+    roles = Rol.objects.all()
+    paises = Pais.objects.all()
+    provincias = Provincia.objects.all()
+    cantones = Canton.objects.all()
+    distritos = Distrito.objects.all()
+
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST)
+        if form.is_valid():
+            empleado = form.save(commit=False)
+
+            direccion = Direccion.objects.create(
+                direccion_exacta=request.POST['direccion_exacta'],
+                pais_id=request.POST['pais'],
+                provincia_id=request.POST['provincia'],
+                canton_id=request.POST['canton'],
+                distrito_id=request.POST['distrito']
+            )
+            empleado.direccion = direccion
+            empleado.save()
+            return redirect('/personal/empleados') 
+    else:
+        form = EmpleadoForm()
+
+    datos = {
+        'form': form,
+        'roles': roles,
+        'paises': paises,
+        'provincias': provincias,
+        'cantones': cantones,
+        'distritos': distritos,
+    }
+    return render(request, 'agregar_empleado.html', datos)
+
+
+def editar_empleado(request, id):
+    empleado = get_object_or_404(Empleado, id=id)
+    roles = Rol.objects.all()
+    paises = Pais.objects.all()
+    provincias = Provincia.objects.all()
+    cantones = Canton.objects.all()
+    distritos = Distrito.objects.all()
+
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST, instance=empleado)
+        if form.is_valid():
+            empleado = form.save(commit=False)
+
+            direccion = empleado.direccion
+            direccion.direccion_exacta = request.POST['direccion_exacta']
+            direccion.pais_id = request.POST['pais']
+            direccion.provincia_id = request.POST['provincia']
+            direccion.canton_id = request.POST['canton']
+            direccion.distrito_id = request.POST['distrito']
+            direccion.save()
+
+            empleado.save()
+            return redirect('/personal/empleados')
+    else:
+        form = EmpleadoForm(instance=empleado)
+
+    datos = {
+        'form': form,
+        'empleado': empleado,
+        'roles': roles,
+        'paises': paises,
+        'provincias': provincias,
+        'cantones': cantones,
+        'distritos': distritos,
+    }
+    return render(request, 'editar_empleado.html', datos)
+
+
+def eliminar_empleado(request, id):
+    empleado = get_object_or_404(Empleado, id=id)
+    empleado.delete()
+    return redirect('/personal/empleados')
