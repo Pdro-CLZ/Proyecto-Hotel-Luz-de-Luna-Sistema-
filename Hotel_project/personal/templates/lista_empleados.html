@@ -35,7 +35,7 @@
                         <td>{{ empleado.nombre }}</td>
                         <td>{{ empleado.apellido }}</td>
                         <td>{{ empleado.cedula }}</td>
-                        <td>{{ empleado.puesto }}</td>
+                        <td>{{ empleado.puesto.nombre }}</td>
                         <td>{{ empleado.salario }}</td>
                         <td>
                             <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal"
@@ -68,6 +68,7 @@
                                     <p><strong>Fecha de Contratación:</strong> {{ empleado.fecha_contratacion }}</p>
                                     <p><strong>Salario:</strong> {{ empleado.salario }}</p>
                                     <p><strong>Rol:</strong> {{ empleado.rol.nombre }}</p>
+                                    <p><strong>Puesto:</strong> {{ empleado.puesto.nombre }}</p>
                                 </div>
 
                                 <div class="modal-footer">

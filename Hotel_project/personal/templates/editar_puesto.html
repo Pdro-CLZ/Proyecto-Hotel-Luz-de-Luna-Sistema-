@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Puesto</title>
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+</head>
+
+<body class="menu-bg">
+<main>
+    <h1>Editar Puesto</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+        <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <div class="error my-1">{{ field.errors|striptags }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="button-group">
+            <button type="submit">Guardar Cambios</button>
+            <button type="button" onclick="window.location.href='/personal/puestos'">Cancelar</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

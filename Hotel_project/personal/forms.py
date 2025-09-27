@@ -1,5 +1,5 @@
 from django import forms
-from .models import Empleado
+from .models import Empleado, Puesto
 from django.forms import DateInput
 import re
 
@@ -10,7 +10,7 @@ class EmpleadoForm(forms.ModelForm):
     class Meta:
         model = Empleado
         fields = [
-            'rol', 'nombre', 'apellido', 'cedula', 'telefono', 'correo',
+            'rol', 'puesto', 'nombre', 'apellido', 'cedula', 'telefono', 'correo',
             'fecha_contratacion', 'salario'
         ]
 
@@ -45,3 +45,16 @@ class EmpleadoForm(forms.ModelForm):
         if fecha is None:
             raise forms.ValidationError("Ingrese una fecha válida")
         return fecha
+    
+    
+class PuestoForm(forms.ModelForm):
+
+    class Meta:
+        model = Puesto
+        fields = ['nombre', 'descripcion']
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$', nombre):
+            raise forms.ValidationError("Nombre con caracteres indebidos")
+        return nombre

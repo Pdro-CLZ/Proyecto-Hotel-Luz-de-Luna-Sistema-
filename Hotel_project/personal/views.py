@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from datetime import time, datetime, timedelta
-from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion
-from .forms import EmpleadoForm
+from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion, Puesto
+from .forms import EmpleadoForm, PuestoForm
 
 # Create your views here.
 def marcar_asistencia(request):
@@ -159,3 +159,47 @@ def eliminar_empleado(request, id):
     empleado = get_object_or_404(Empleado, id=id)
     empleado.delete()
     return redirect('/personal/empleados')
+
+
+def lista_puestos(request):
+    puestos = Puesto.objects.all()
+    return render(request, "lista_puestos.html", {"puestos": puestos})
+
+
+def agregar_puesto(request):
+    if request.method == 'POST':
+        form = PuestoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/personal/puestos') 
+    else:
+        form = PuestoForm()
+
+    datos = {
+        'form': form
+    }
+    return render(request, 'agregar_puesto.html', datos)
+
+
+def editar_puesto(request, id):
+    puesto = get_object_or_404(Puesto, id=id)
+
+    if request.method == 'POST':
+        form = PuestoForm(request.POST, instance=puesto)
+        if form.is_valid():
+            form.save()
+            return redirect('/personal/puestos')
+    else:
+        form = PuestoForm(instance=puesto)
+
+    datos = {
+        'form': form,
+        'puesto': puesto
+    }
+    return render(request, 'editar_puesto.html', datos)
+
+
+def eliminar_puesto(request, id):
+    puesto = get_object_or_404(Puesto, id=id)
+    puesto.delete()
+    return redirect('/personal/puestos')
