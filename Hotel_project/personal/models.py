@@ -50,9 +50,11 @@ class Rol(models.Model):
 class Puesto(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(null=True, blank=True)
+    activo = models.BooleanField(default=True)  # Indica si el puesto está activo
 
     def __str__(self):
         return self.nombre
+
 
 
 class Empleado(models.Model):
@@ -66,6 +68,7 @@ class Empleado(models.Model):
     correo = models.EmailField(max_length=100)
     fecha_contratacion = models.DateField()
     salario = models.DecimalField(max_digits=10, decimal_places=2)
+    activo = models.BooleanField(default=True)  # Indica si el empleado está activo o no
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"

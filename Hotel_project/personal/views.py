@@ -3,6 +3,8 @@ from django.utils import timezone
 from datetime import time, datetime, timedelta
 from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion, Puesto
 from .forms import EmpleadoForm, PuestoForm
+from django.contrib import messages
+from .forms import EmpleadoSeleccionForm
 
 # Create your views here.
 def marcar_asistencia(request):
@@ -73,12 +75,29 @@ def marcar_asistencia(request):
         "hora_marca_ingreso": hora_marca_ingreso,
         "hora_marca_salida": hora_marca_salida,
     }
-    return render(request, "index.html", datos)
+    return render(request, "personal/index.html", datos)
 
 
 def lista_empleados(request):
-    empleados = Empleado.objects.all()
-    return render(request, "lista_empleados.html", {"empleados": empleados})
+    empleados = Empleado.objects.filter(activo=True)
+    puestos = Puesto.objects.filter(activo=True)  
+    
+    buscar = request.GET.get("buscar")  
+    puesto_id = request.GET.get("puesto")
+
+    if buscar:
+        empleados = empleados.filter(nombre__icontains=buscar) | empleados.filter(apellido__icontains=buscar)
+
+    if puesto_id:
+        empleados = empleados.filter(puesto_id=puesto_id)
+
+    context = {
+        "empleados": empleados,
+        "puestos": puestos,
+        "puesto_id": puesto_id,
+    }
+    return render(request, "personal/lista_empleados.html", context)
+
 
 
 def agregar_empleado(request):
@@ -114,7 +133,7 @@ def agregar_empleado(request):
         'cantones': cantones,
         'distritos': distritos,
     }
-    return render(request, 'agregar_empleado.html', datos)
+    return render(request, 'personal/agregar_empleado.html', datos)
 
 
 def editar_empleado(request, id):
@@ -152,18 +171,31 @@ def editar_empleado(request, id):
         'cantones': cantones,
         'distritos': distritos,
     }
-    return render(request, 'editar_empleado.html', datos)
+    return render(request, 'personal/editar_empleado.html', datos)
 
 
-def eliminar_empleado(request, id):
+def inactivar_empleado(request, id):
     empleado = get_object_or_404(Empleado, id=id)
-    empleado.delete()
-    return redirect('/personal/empleados')
+
+    if empleado.activo:
+        empleado.activo = False
+        empleado.save()
+        messages.success(request, "Empleado inactivado satisfactoriamente")
+    else:
+        messages.info(request, "El empleado ya estaba inactivo")
+
+    return redirect('empleados')
+
 
 
 def lista_puestos(request):
-    puestos = Puesto.objects.all()
-    return render(request, "lista_puestos.html", {"puestos": puestos})
+    query = request.GET.get('buscar')
+    if query:
+        puestos = Puesto.objects.filter(nombre__icontains=query, activo=True)
+    else:
+        puestos = Puesto.objects.filter(activo=True)
+    return render(request, "personal/lista_puestos.html", {"puestos": puestos})
+
 
 
 def agregar_puesto(request):
@@ -178,7 +210,7 @@ def agregar_puesto(request):
     datos = {
         'form': form
     }
-    return render(request, 'agregar_puesto.html', datos)
+    return render(request, 'personal/agregar_puesto.html', datos)
 
 
 def editar_puesto(request, id):
@@ -203,3 +235,30 @@ def eliminar_puesto(request, id):
     puesto = get_object_or_404(Puesto, id=id)
     puesto.delete()
     return redirect('/personal/puestos')
+
+def inactivar_puesto(request, id):
+    puesto = get_object_or_404(Puesto, id=id)
+
+    if puesto.activo:
+        puesto.activo = False
+        puesto.save()
+        messages.success(request, "Puesto inactivado satisfactoriamente")
+    else:
+        messages.info(request, "El puesto ya estaba inactivo")
+
+    return redirect('puestos')
+
+def seleccionar_empleado(request):
+    if request.method == "POST":
+        form = EmpleadoSeleccionForm(request.POST)
+        if form.is_valid():
+            empleado = form.cleaned_data['empleado']
+            # Redirigir a la página de edición del empleado seleccionado
+            return redirect('editar_empleado', id=empleado.id)
+        else:
+            mensaje = "Por favor escoja un ID"
+    else:
+        form = EmpleadoSeleccionForm()
+        mensaje = None
+
+    return render(request, "personal/seleccionar_empleado.html", {"form": form, "mensaje": mensaje})
