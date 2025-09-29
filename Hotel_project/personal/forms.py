@@ -58,3 +58,13 @@ class PuestoForm(forms.ModelForm):
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$', nombre):
             raise forms.ValidationError("Nombre con caracteres indebidos")
         return nombre
+
+
+class EmpleadoSeleccionForm(forms.Form):
+    empleado = forms.ModelChoiceField(
+        queryset=Empleado.objects.all(),
+        empty_label="Seleccione un ID",
+        label="Empleado",
+        to_field_name="id"
+    )
+
