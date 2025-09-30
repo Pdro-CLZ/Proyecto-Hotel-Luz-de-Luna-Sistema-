@@ -81,24 +81,38 @@ def marcar_asistencia(request):
 
 
 def lista_empleados(request):
-    empleados = Empleado.objects.filter(activo=True)
-    puestos = Puesto.objects.filter(activo=True)  
-    
-    buscar = request.GET.get("buscar")  
-    puesto_id = request.GET.get("puesto")
+    empleados = Empleado.objects.all()
+    puestos = Puesto.objects.all()
 
+    # Filtro por búsqueda
+    buscar = request.GET.get("buscar")
     if buscar:
-        empleados = empleados.filter(nombre__icontains=buscar) | empleados.filter(apellido__icontains=buscar)
+        empleados = empleados.filter(
+            Q(nombre__icontains=buscar) |
+            Q(apellido__icontains=buscar) |
+            Q(cedula__icontains=buscar)
+        )
 
+    # Filtro por puesto
+    puesto_id = request.GET.get("puesto")
     if puesto_id:
         empleados = empleados.filter(puesto_id=puesto_id)
+
+    # Filtro por estado (activo/inactivo)
+    estado = request.GET.get("estado")
+    if estado == "1":  # Activos
+        empleados = empleados.filter(activo=True)
+    elif estado == "0":  # Inactivos
+        empleados = empleados.filter(activo=False)
 
     context = {
         "empleados": empleados,
         "puestos": puestos,
         "puesto_id": puesto_id,
+        "estado": estado,
     }
     return render(request, "personal/lista_empleados.html", context)
+
 
 
 
@@ -181,12 +195,14 @@ def inactivar_empleado(request, id):
 
     if empleado.activo:
         empleado.activo = False
-        empleado.save()
-        messages.success(request, "Empleado inactivado satisfactoriamente")
+        messages.success(request, f"Empleado {empleado.nombre} inactivado satisfactoriamente")
     else:
-        messages.info(request, "El empleado ya estaba inactivo")
+        empleado.activo = True
+        messages.success(request, f"Empleado {empleado.nombre} activado satisfactoriamente")
 
+    empleado.save()
     return redirect('empleados')
+
 
 def seleccionar_empleado(request):
     if request.method == "POST":

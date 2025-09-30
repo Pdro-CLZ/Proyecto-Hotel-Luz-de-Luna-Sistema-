@@ -20,20 +20,31 @@
             <h2>Gestión de Empleados</h2>
         </div>
 
+        <!-- Filtros -->
         <form method="get" style="margin-bottom: 20px; display:flex; gap:10px; align-items:center;">
             <input type="text" name="buscar" placeholder="Buscar empleado" value="{{ request.GET.buscar }}"
                 class="form-control" style="width: 250px; display:inline-block;">
+
             <select name="puesto" class="form-select" style="width: 250px; display:inline-block;">
                 <option value="">-- Todos los Puestos --</option>
                 {% for puesto in puestos %}
-                    <option value="{{ puesto.id }}" {% if puesto.id|stringformat:"s" == puesto_id %}selected{% endif %}>
-                        {{ puesto.nombre }}
-                    </option>
+                <option value="{{ puesto.id }}"
+                    {% if puesto_id and puesto.id|stringformat:"s" == puesto_id|stringformat:"s" %}selected{% endif %}>
+                    {{ puesto.nombre }}
+                </option>
                 {% endfor %}
             </select>
+
+            <select name="estado" class="form-select" style="width: 200px;">
+                <option value="">-- Todos --</option>
+                <option value="1" {% if request.GET.estado == "1" %}selected{% endif %}>Activos</option>
+                <option value="0" {% if request.GET.estado == "0" %}selected{% endif %}>Inactivos</option>
+            </select>
+
             <button type="submit" class="btn btn-primary">Filtrar</button>
         </form>
 
+        <!-- Tabla de empleados -->
         <div style="overflow-x:auto; margin-top: 20px;">
             <table class="menu-table">
                 <thead>
@@ -43,6 +54,7 @@
                         <th>Cédula</th>
                         <th>Puesto</th>
                         <th>Salario</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -55,16 +67,36 @@
                         <td>{{ empleado.puesto.nombre }}</td>
                         <td>{{ empleado.salario }}</td>
                         <td>
+                            {% if empleado.activo %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal"
-                               data-bs-target="#modalEmpleado{{ empleado.id }}">Ver más</a>
-                            <a class="btn btn-sm btn-dark text-white" href="{% url 'editar_empleado' empleado.id %}">Editar</a>
-                            <a class="btn btn-sm btn-danger text-white my-2" href="{% url 'inactivar_empleado' empleado.id %}" 
-                               onclick="return confirm('¿Estás seguro de inactivar este empleado?')">Inactivar</a>
+                                data-bs-target="#modalEmpleado{{ empleado.id }}">Ver más</a>
+                            <a class="btn btn-sm btn-dark text-white"
+                                href="{% url 'editar_empleado' empleado.id %}">Editar</a>
+
+                            {% if empleado.activo %}
+                            <a class="btn btn-sm btn-danger text-white my-2"
+                                href="{% url 'inactivar_empleado' empleado.id %}"
+                                onclick="return confirm('¿Estás seguro de inactivar este empleado?')">
+                                Inactivar
+                            </a>
+                            {% else %}
+                            <a class="btn btn-sm btn-success text-white my-2"
+                                href="{% url 'inactivar_empleado' empleado.id %}"
+                                onclick="return confirm('¿Deseas activar este empleado?')">
+                                Activar
+                            </a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" style="text-align:center;">No hay empleados registrados</td>
+                        <td colspan="7" style="text-align:center;">No hay empleados registrados</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -72,6 +104,7 @@
         </div>
     </div>
 
+    <!-- Modales de detalle -->
     {% for empleado in empleados %}
     <div class="modal fade" id="modalEmpleado{{ empleado.id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -110,4 +143,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
