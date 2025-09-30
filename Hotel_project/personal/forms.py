@@ -68,3 +68,18 @@ class EmpleadoSeleccionForm(forms.Form):
         to_field_name="id"
     )
 
+class FiltroAsistenciaForm(forms.Form):
+    fecha = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    puesto = forms.ModelChoiceField(queryset=Puesto.objects.all(), required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha = cleaned_data.get("fecha")
+        puesto = cleaned_data.get("puesto")
+
+        if not puesto:
+            self.add_error("puesto", "Debe seleccionar un puesto.")
+        if fecha and not puesto:
+            self.add_error("puesto", "Debe seleccionar un puesto para filtrar por fecha.")
+
+        return cleaned_data

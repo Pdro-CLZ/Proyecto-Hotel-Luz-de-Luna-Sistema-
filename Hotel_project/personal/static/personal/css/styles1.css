@@ -150,3 +150,71 @@ h1 {
         font-size: 0.9em;
     }
 }
+
+/* ===== Visualizar Tiempos de Empleados ===== */
+.tabla-tiempos {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Evita que las columnas se aplasten demasiado */
+}
+
+.tabla-tiempos th, .tabla-tiempos td {
+    border: 1px solid #222;
+    padding: 12px 14px;
+    text-align: center;
+}
+
+.tabla-tiempos th {
+    background-color: #b6be85;
+    color: #fff;
+}
+
+.tabla-tiempos tr:nth-child(even) {
+    background-color: #f0efda;
+}
+
+.filtros {
+    margin-bottom: 25px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filtros input, .filtros select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.boton-volver {
+    background-color: #c0c68a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 20px;
+}
+
+.boton-volver:hover {
+    background-color: #b0ba7a;
+    transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+    .tabla-tiempos {
+        font-size: 0.85em;
+    }
+
+    .filtros {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .boton-volver {
+        width: 100%;
+    }
+}
