@@ -9,6 +9,8 @@ urlpatterns = [
     path('empleados/editar/<int:id>/', views.editar_empleado, name='editar_empleado'),
     path('empleados/inactivar/<int:id>/', views.inactivar_empleado, name='inactivar_empleado'),
     path("empleados/tiempos/", views.visualizar_tiempos, name="visualizar_tiempos"),
+    path("empleados/seleccionar/", views.seleccionar_empleado, name="seleccionar_empleado"),
+
 
 
 
