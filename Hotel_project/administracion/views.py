@@ -14,6 +14,11 @@ class LoginView(FormView):
     template_name = "administracion/login.html"
     form_class = LoginForm
 
+    def get(self, request, *args, **kwargs):
+        # Limpiar mensajes antiguos
+        list(messages.get_messages(request))
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         request = self.request
         username = form.cleaned_data["username"]
@@ -39,6 +44,8 @@ class LoginView(FormView):
                 request.session["is_blocked"] = False
 
         user = authenticate(request, username=username, password=password)
+
+        
 
         if user is not None:
             if request.session.get("is_blocked", False):

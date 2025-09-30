@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from .forms import FiltroAsistenciaForm
+from .models import Asistencia
 from django.utils import timezone
 from datetime import time, datetime, timedelta
 from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion, Puesto
@@ -8,7 +10,7 @@ from .forms import EmpleadoSeleccionForm
 
 # Create your views here.
 def marcar_asistencia(request):
-    empleado_id = 2 # Cambiar cuando se implemente la logica de login
+    empleado_id = 1 # Cambiar cuando se implemente la logica de login
     empleado = get_object_or_404(Empleado, pk=empleado_id)
 
     fecha_actual = timezone.localdate()
@@ -121,7 +123,7 @@ def agregar_empleado(request):
             )
             empleado.direccion = direccion
             empleado.save()
-            return redirect('/personal/empleados') 
+            return redirect('empleados') 
     else:
         form = EmpleadoForm()
 
@@ -158,7 +160,7 @@ def editar_empleado(request, id):
             direccion.save()
 
             empleado.save()
-            return redirect('/personal/empleados')
+            return redirect('empleados')
     else:
         form = EmpleadoForm(instance=empleado)
 
@@ -186,7 +188,20 @@ def inactivar_empleado(request, id):
 
     return redirect('empleados')
 
+def seleccionar_empleado(request):
+    if request.method == "POST":
+        form = EmpleadoSeleccionForm(request.POST)
+        if form.is_valid():
+            empleado = form.cleaned_data['empleado']
+            # Redirigir a la página de edición del empleado seleccionado
+            return redirect('editar_empleado', id=empleado.id)
+        else:
+            mensaje = "Por favor escoja un ID"
+    else:
+        form = EmpleadoSeleccionForm()
+        mensaje = None
 
+    return render(request, "personal/seleccionar_empleado.html", {"form": form, "mensaje": mensaje})
 
 def lista_puestos(request):
     query = request.GET.get('buscar')
@@ -203,7 +218,7 @@ def agregar_puesto(request):
         form = PuestoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/personal/puestos') 
+            return redirect('puestos') 
     else:
         form = PuestoForm()
 
@@ -220,7 +235,7 @@ def editar_puesto(request, id):
         form = PuestoForm(request.POST, instance=puesto)
         if form.is_valid():
             form.save()
-            return redirect('/personal/puestos')
+            return redirect('puestos')
     else:
         form = PuestoForm(instance=puesto)
 
@@ -228,13 +243,13 @@ def editar_puesto(request, id):
         'form': form,
         'puesto': puesto
     }
-    return render(request, 'editar_puesto.html', datos)
+    return render(request, 'personal/editar_puesto.html', datos)
 
 
 def eliminar_puesto(request, id):
     puesto = get_object_or_404(Puesto, id=id)
     puesto.delete()
-    return redirect('/personal/puestos')
+    return redirect('puestos')
 
 def inactivar_puesto(request, id):
     puesto = get_object_or_404(Puesto, id=id)
@@ -248,17 +263,29 @@ def inactivar_puesto(request, id):
 
     return redirect('puestos')
 
-def seleccionar_empleado(request):
-    if request.method == "POST":
-        form = EmpleadoSeleccionForm(request.POST)
-        if form.is_valid():
-            empleado = form.cleaned_data['empleado']
-            # Redirigir a la página de edición del empleado seleccionado
-            return redirect('editar_empleado', id=empleado.id)
-        else:
-            mensaje = "Por favor escoja un ID"
-    else:
-        form = EmpleadoSeleccionForm()
-        mensaje = None
+def visualizar_tiempos(request):
+    empleados = Empleado.objects.filter(activo=True)
+    puestos = Puesto.objects.filter(activo=True)
 
-    return render(request, "personal/seleccionar_empleado.html", {"form": form, "mensaje": mensaje})
+    fecha = request.GET.get("fecha")      # Usamos solo un campo "fecha"
+    puesto_id = request.GET.get("puesto") # Filtrado por puesto
+
+    asistencias = None  # Para que el template no truene si no hay datos
+
+    if fecha:
+        asistencias = Asistencia.objects.filter(fecha=fecha)
+    else:
+        asistencias = Asistencia.objects.all()
+
+    if puesto_id:
+        empleados = empleados.filter(puesto_id=puesto_id)
+        asistencias = asistencias.filter(empleado__puesto_id=puesto_id)
+
+    context = {
+        "empleados": empleados,
+        "puestos": puestos,
+        "asistencias": asistencias,
+        "fecha": fecha,
+        "puesto_id": puesto_id,
+    }
+    return render(request, "personal/visualizar_tiempos.html", context)
