@@ -58,3 +58,8 @@ class EditarUsuarioForm(forms.ModelForm):
         widgets = {
             "rol": forms.Select(),
         }
+
+class ModificarMiUsuarioForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ["first_name", "last_name", "telefono", "email", "direccion", "cedula"]

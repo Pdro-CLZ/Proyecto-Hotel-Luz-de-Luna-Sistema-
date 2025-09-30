@@ -7,8 +7,19 @@ from django.contrib import messages
 from django.views.generic import FormView
 
 from .models import Usuario
-from .forms import RegistroUsuarioForm, LoginForm, EditarUsuarioForm
+from .forms import ModificarMiUsuarioForm, RegistroUsuarioForm, LoginForm, EditarUsuarioForm
 
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware, now
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth.hashers import check_password
+from django.shortcuts import redirect
+from django.views.generic.edit import FormView
+from .forms import LoginForm
+
+
+User = get_user_model()
 
 class LoginView(FormView):
     template_name = "administracion/login.html"
@@ -26,62 +37,68 @@ class LoginView(FormView):
 
         # Revisar si está bloqueado
         block_until_ts = request.session.get("block_until")
-        is_blocked = False
         if block_until_ts:
             block_until = make_aware(datetime.fromtimestamp(block_until_ts))
             if now() < block_until:
-                is_blocked = True
+                request.session["is_blocked"] = True
                 messages.error(
                     request,
                     "Has superado el límite de intentos. Intenta de nuevo en 15 segundos."
                 )
-                request.session["is_blocked"] = True
                 return self.form_invalid(form)
             else:
-                # tiempo de bloqueo pasado, desbloquear
+                # desbloquear después del tiempo
                 request.session.pop("block_until", None)
                 request.session["failed_attempts"] = 0
                 request.session["is_blocked"] = False
 
-        user = authenticate(request, username=username, password=password)
+        # Obtener usuario por username
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            user = None
 
-        
-
-        if user is not None:
-            if request.session.get("is_blocked", False):
+        if user:
+            if not user.is_active:
+                # Usuario existe pero está inactivo
                 messages.error(
                     request,
-                    "Cuenta temporalmente bloqueada, espera antes de intentar."
+                    "Usuario inactivo, por favor contacte con el admin."
                 )
                 return self.form_invalid(form)
 
-            login(request, user)
-            request.session["failed_attempts"] = 0
-            request.session.pop("block_until", None)
-            request.session["is_blocked"] = False
-            return redirect("dashboard_admin")
-        else:
-            # Credenciales incorrectas
-            attempts = request.session.get("failed_attempts", 0) + 1
-            request.session["failed_attempts"] = attempts
-
-            if attempts >= 5:
-                unblock_time = now() + timedelta(seconds=15)
-                request.session["block_until"] = unblock_time.timestamp()
-                request.session["is_blocked"] = True
-                messages.error(
-                    request,
-                    "Cuenta bloqueada por intentos fallidos. Intenta de nuevo en 15 segundos."
-                )
-            else:
-                messages.error(request, "Usuario o contraseña incorrectos.")
+            # Verificar contraseña
+            if check_password(password, user.password):
+                login(request, user)
+                request.session["failed_attempts"] = 0
+                request.session.pop("block_until", None)
                 request.session["is_blocked"] = False
+                return redirect("apps_home")
+            else:
+                # Contraseña incorrecta
+                attempts = request.session.get("failed_attempts", 0) + 1
+                request.session["failed_attempts"] = attempts
 
+                if attempts >= 5:
+                    unblock_time = now() + timedelta(seconds=15)
+                    request.session["block_until"] = unblock_time.timestamp()
+                    request.session["is_blocked"] = True
+                    messages.error(
+                        request,
+                        "Cuenta bloqueada por intentos fallidos. Intenta de nuevo en 15 segundos."
+                    )
+                else:
+                    messages.error(request, "Usuario o contraseña incorrectos.")
+                    request.session["is_blocked"] = False
+
+                return self.form_invalid(form)
+        else:
+            # Usuario no existe
+            messages.error(request, "Usuario o contraseña incorrectos.")
             return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Variable para frontend que controla el botón dinámico
         context["is_blocked"] = self.request.session.get("is_blocked", False)
         return context
 
@@ -93,8 +110,24 @@ def logout_view(request):
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def dashboard_admin(request):
+    error = None
     usuarios = Usuario.objects.all()
-    return render(request, "administracion/dashboard_admin.html", {"usuarios": usuarios})
+
+    # Obtener filtro de rol del GET
+    rol_filter = request.GET.get("rol", "")
+
+    try:
+        if rol_filter:
+            usuarios = usuarios.filter(rol__nombre=rol_filter)
+    except Exception:
+        usuarios = []
+        error = "Hubo un problema, por favor verifique su conexión, inténtelo de nuevo o vuelva a iniciar sesión"
+
+    return render(request, "administracion/dashboard_admin.html", {
+        "usuarios": usuarios,
+        "error": error,
+        "rol_filter": rol_filter
+    })
 
 @login_required
 def perfil_empleado(request):
@@ -170,3 +203,57 @@ def activar_inactivar_usuario(request, usuario_id):
     usuario.is_active = not usuario.is_active
     usuario.save()
     return redirect("dashboard_admin")
+
+
+def apps_home(request):
+    apps = [
+        # {"name": "Marketing", "url": "marketing_home"},
+        {"name": "Personal", "url": "empleados"},
+        # {"name": "Limpieza", "url": "limpieza_home"},
+        # {"name": "Reportería", "url": "reporteria_home"},
+        # {"name": "Reservas", "url": "reservas_home"},
+        # {"name": "Contabilidad", "url": "contabilidad_home"},
+        # {"name": "Inventario", "url": "inventario_home"},
+        {"name": "Administración", "url": "dashboard_admin"},
+    ]
+    return render(request, "administracion/apps_home.html", {"apps": apps})
+
+@login_required
+def modificar_mi_usuario(request):
+    usuario = request.user  # Usuario actual
+
+    if request.method == "POST":
+        form = ModificarMiUsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            # Validaciones personalizadas
+            telefono = form.cleaned_data["telefono"]
+            cedula = form.cleaned_data["cedula"]
+            first_name = form.cleaned_data["first_name"]
+            last_name = form.cleaned_data["last_name"]
+
+            # Teléfono solo números y 8 dígitos
+            if not telefono.isdigit() or len(telefono) != 8:
+                form.add_error("telefono", "Teléfono con cantidad de números indebida o caracteres inválidos")
+
+            # Cédula solo números y longitud 9
+            if not cedula.isdigit() or len(cedula) != 9:
+                form.add_error("cedula", "Formato de cédula inválido")
+
+            # Nombre y apellido sin números ni caracteres especiales
+            if not first_name.isalpha():
+                form.add_error("first_name", "Caracteres indebidos")
+            if not last_name.isalpha():
+                form.add_error("last_name", "Caracteres indebidos")
+
+            # Si hay errores, devolver el formulario con los mensajes
+            if form.errors:
+                return render(request, "administracion/modificar_mi_usuario.html", {"form": form, "usuario": usuario})
+
+            # Guardar cambios si todo ok
+            form.save()
+            messages.success(request, "Información actualizada correctamente")
+            return redirect("apps_home")
+    else:
+        form = ModificarMiUsuarioForm(instance=usuario)
+
+    return render(request, "administracion/modificar_mi_usuario.html", {"form": form, "usuario": usuario})
