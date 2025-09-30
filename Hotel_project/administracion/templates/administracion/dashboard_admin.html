@@ -15,6 +15,8 @@
         <!-- Header con acciones -->
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <a class="boton-verde" href="{% url 'registro' %}">Registrar usuario</a>
+            <a class="boton-amarillo" href="{% url 'linkear_usuario_empleado' %}">Linkear Usuario con Empleado</a>
+
             <a class="boton-verde" href="{% url 'logout' %}">Cerrar sesión</a>
         </div>
 
@@ -24,12 +26,15 @@
                 <label for="rol">Filtrar por rol:</label>
                 <select name="rol" id="rol">
                     <option value="">Todos</option>
-                    <option value="Administrador" {% if rol_filter == "Administrador" %}selected{% endif %}>Administrador</option>
+                    <option value="Administrador" {% if rol_filter == "Administrador" %}selected{% endif %}>Administrador
+                    </option>
                     <option value="Recepción" {% if rol_filter == "Recepción" %}selected{% endif %}>Recepción</option>
                     <option value="Limpieza" {% if rol_filter == "Limpieza" %}selected{% endif %}>Limpieza</option>
-                    <option value="Empleado Limpieza" {% if rol_filter == "Empleado Limpieza" %}selected{% endif %}>Empleado Limpieza</option>
+                    <option value="Empleado Limpieza" {% if rol_filter == "Empleado Limpieza" %}selected{% endif %}>
+                        Empleado Limpieza</option>
                     <option value="Manager" {% if rol_filter == "Manager" %}selected{% endif %}>Manager</option>
-                    <option value="Mantenimiento" {% if rol_filter == "Mantenimiento" %}selected{% endif %}>Mantenimiento</option>
+                    <option value="Mantenimiento" {% if rol_filter == "Mantenimiento" %}selected{% endif %}>Mantenimiento
+                    </option>
                     <option value="Cocina" {% if rol_filter == "Cocina" %}selected{% endif %}>Cocina</option>
 
 

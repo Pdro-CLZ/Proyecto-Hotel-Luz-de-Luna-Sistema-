@@ -257,3 +257,31 @@ def modificar_mi_usuario(request):
         form = ModificarMiUsuarioForm(instance=usuario)
 
     return render(request, "administracion/modificar_mi_usuario.html", {"form": form, "usuario": usuario})
+
+@login_required
+@user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
+def linkear_usuario_empleado(request):
+    usuarios = Usuario.objects.all()
+    empleados = Usuario.objects.all()  
+
+    if request.method == "POST":
+        usuario_id = request.POST.get("usuario")
+        empleado_id = request.POST.get("empleado")
+
+        try:
+            usuario = Usuario.objects.get(id=usuario_id)
+            empleado = Empleado.objects.get(id=empleado_id)
+
+            empleado.usuario = usuario
+            empleado.save()
+
+            messages.success(request, "Linkeo exitoso")
+            return redirect("linkear_usuario_empleado")
+        except Exception as e:
+            print(e)
+            messages.error(request, "Hubo un problema al realizar el linkeo, por favor probar de nuevo")
+
+    return render(request, "administracion/linkear_usuario_empleado.html", {
+        "usuarios": usuarios,
+        "empleados": empleados
+    })

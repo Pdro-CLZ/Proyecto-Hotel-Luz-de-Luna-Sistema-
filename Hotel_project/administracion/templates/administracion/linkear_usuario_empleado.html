@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Linkear Usuario con Empleado</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+
+<body class="menu-bg">
+
+    <div class="menu-container">
+        <h1>Linkear Usuario con Empleado</h1>
+
+        <!-- Mensajes de éxito o error -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags == 'error' %}message-error{% else %}message-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Formulario de linkeo -->
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="usuario">Seleccionar Usuario:</label>
+            <select name="usuario" id="usuario" required>
+                <option value="">-- Seleccione un usuario --</option>
+                {% for u in usuarios %}
+                    <option value="{{ u.id }}">{{ u.username }} - {{ u.rol.nombre }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="empleado">Seleccionar Empleado:</label>
+            <select name="empleado" id="empleado" required>
+                <option value="">-- Seleccione un empleado --</option>
+                {% for e in empleados %}
+                    <option value="{{ e.id }}">{{ e.first_name }} {{ e.last_name }} - {{ e.cedula }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="boton-verde">Linkear</button>
+        </form>
+
+        <a href="{% url 'dashboard_admin' %}" class="boton-verde" style="margin-top: 20px; display: inline-block;">Volver al Dashboard</a>
+    </div>
+
+</body>
+</html>
