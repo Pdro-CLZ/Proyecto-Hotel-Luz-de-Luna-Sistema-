@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.db import models
-from administracion.models import Rol
+from administracion.models import Rol, Usuario
 
 class Pais(models.Model):
     nombre = models.CharField(max_length=100)
@@ -42,16 +42,15 @@ class Direccion(models.Model):
 
 
 class Empleado(models.Model):
-    rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
+    usuario = models.OneToOneField(Usuario, on_delete=models.PROTECT, null=False, blank=True)  
     direccion = models.ForeignKey(Direccion, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    cedula = models.CharField(max_length=20)
     telefono = models.CharField(max_length=15)
     correo = models.EmailField(max_length=100)
     fecha_contratacion = models.DateField()
     salario = models.DecimalField(max_digits=10, decimal_places=2)
-    activo = models.BooleanField(default=True)  # Indica si el empleado está activo o no
+    activo = models.BooleanField(default=True) 
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"

@@ -64,8 +64,8 @@
                     <tr>
                         <td>{{ empleado.nombre }}</td>
                         <td>{{ empleado.apellido }}</td>
-                        <td>{{ empleado.cedula }}</td>
-                        <td>{{ empleado.rol.nombre }}</td>
+                        <td>{{ empleado.usuario.cedula }}</td>
+                        <td>{{ empleado.usuario.rol.nombre }}</td>
                         <td>{{ empleado.salario }}</td>
                         <td>
                             {% if empleado.activo %}
@@ -119,9 +119,9 @@
                 <div class="modal-body">
                     <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
                     <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
-                    <p><strong>Cédula:</strong> {{ empleado.cedula }}</p>
+                    <p><strong>Cédula:</strong> {{ empleado.usuario.cedula }}</p>
                     <p><strong>Teléfono:</strong> {{ empleado.telefono }}</p>
-                    <p><strong>Correo:</strong> {{ empleado.correo }}</p>
+                    <p><strong>Correo:</strong> {{ empleado.usuario.email }}</p>
                     <p><strong>Dirección:</strong> {{ empleado.direccion.direccion_exacta }}</p>
                     <p><strong>País:</strong> {{ empleado.direccion.pais.nombre }}</p>
                     <p><strong>Provincia:</strong> {{ empleado.direccion.provincia.nombre }}</p>
@@ -129,7 +129,7 @@
                     <p><strong>Distrito:</strong> {{ empleado.direccion.distrito.nombre }}</p>
                     <p><strong>Fecha de Contratación:</strong> {{ empleado.fecha_contratacion }}</p>
                     <p><strong>Salario:</strong> {{ empleado.salario }}</p>
-                    <p><strong>Rol:</strong> {{ empleado.rol.nombre }}</p>
+                    <p><strong>Rol:</strong> {{ empleado.usuario.rol.nombre }}</p>
                 </div>
 
                 <div class="modal-footer">
