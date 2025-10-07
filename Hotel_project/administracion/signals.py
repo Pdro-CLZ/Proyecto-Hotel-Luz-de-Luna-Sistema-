@@ -28,4 +28,4 @@ def crear_roles_y_admin(sender, **kwargs):
     # Crear otros roles
     otros_roles = ["Empleado Limpieza", "Manager", "Mantenimiento", "Cocina", "Recepcion"]
     for nombre_rol in otros_roles:
-        Rol.objects.get_or_create(nombre=nombre_rol)
+        Rol.objects.get_or_create(nombre=nombre_rol, activo=True)

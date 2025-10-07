@@ -63,3 +63,16 @@ class ModificarMiUsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = ["first_name", "last_name", "telefono", "email", "direccion", "cedula"]
+
+
+class RolForm(forms.ModelForm):
+
+    class Meta:
+        model = Rol
+        fields = ['nombre', 'descripcion']
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$', nombre):
+            raise forms.ValidationError("Nombre con caracteres indebidos")
+        return nombre

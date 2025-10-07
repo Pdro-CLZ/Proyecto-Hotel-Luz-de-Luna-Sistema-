@@ -3,10 +3,12 @@ from .forms import FiltroAsistenciaForm
 from .models import Asistencia
 from django.utils import timezone
 from datetime import time, datetime, timedelta
-from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion, Puesto
-from .forms import EmpleadoForm, PuestoForm
+from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion
+from .forms import EmpleadoForm
+from administracion.forms import RolForm
 from django.contrib import messages
 from .forms import EmpleadoSeleccionForm
+from django.db.models import Q 
 
 # Create your views here.
 def marcar_asistencia(request):
@@ -82,7 +84,7 @@ def marcar_asistencia(request):
 
 def lista_empleados(request):
     empleados = Empleado.objects.all()
-    puestos = Puesto.objects.all()
+    roles = Rol.objects.all()
 
     # Filtro por búsqueda
     buscar = request.GET.get("buscar")
@@ -93,10 +95,10 @@ def lista_empleados(request):
             Q(cedula__icontains=buscar)
         )
 
-    # Filtro por puesto
-    puesto_id = request.GET.get("puesto")
-    if puesto_id:
-        empleados = empleados.filter(puesto_id=puesto_id)
+    # Filtro por rol
+    rol_id = request.GET.get("rol")
+    if rol_id:
+        empleados = empleados.filter(rol_id=rol_id)
 
     # Filtro por estado (activo/inactivo)
     estado = request.GET.get("estado")
@@ -107,8 +109,8 @@ def lista_empleados(request):
 
     context = {
         "empleados": empleados,
-        "puestos": puestos,
-        "puesto_id": puesto_id,
+        "roles": roles,
+        "rol_id": rol_id,
         "estado": estado,
     }
     return render(request, "personal/lista_empleados.html", context)
@@ -219,72 +221,84 @@ def seleccionar_empleado(request):
 
     return render(request, "personal/seleccionar_empleado.html", {"form": form, "mensaje": mensaje})
 
-def lista_puestos(request):
+def lista_roles(request):
     query = request.GET.get('buscar')
+    estado = request.GET.get("estado")
+
+    roles = Rol.objects.all()
+
     if query:
-        puestos = Puesto.objects.filter(nombre__icontains=query, activo=True)
-    else:
-        puestos = Puesto.objects.filter(activo=True)
-    return render(request, "personal/lista_puestos.html", {"puestos": puestos})
+        roles = roles.filter(nombre__icontains=query)
+    if estado == "1":
+        roles = roles.filter(activo=True)
+    elif estado == "0":
+        roles = roles.filter(activo=False)
+    return render(request, "personal/lista_roles.html", {
+        "roles": roles,
+        "query": query,
+        "estado": estado,
+    })
 
 
-
-def agregar_puesto(request):
+def agregar_rol(request):
     if request.method == 'POST':
-        form = PuestoForm(request.POST)
+        form = RolForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('puestos') 
+            return redirect('roles') 
     else:
-        form = PuestoForm()
+        form = RolForm()
 
     datos = {
         'form': form
     }
-    return render(request, 'personal/agregar_puesto.html', datos)
+    return render(request, 'personal/agregar_rol.html', datos)
 
 
-def editar_puesto(request, id):
-    puesto = get_object_or_404(Puesto, id=id)
+def editar_rol(request, id):
+    rol = get_object_or_404(Rol, id=id)
 
     if request.method == 'POST':
-        form = PuestoForm(request.POST, instance=puesto)
+        form = RolForm(request.POST, instance=rol)
         if form.is_valid():
             form.save()
-            return redirect('puestos')
+            return redirect('roles')
     else:
-        form = PuestoForm(instance=puesto)
+        form = RolForm(instance=rol)
 
     datos = {
         'form': form,
-        'puesto': puesto
+        'rol': rol
     }
-    return render(request, 'personal/editar_puesto.html', datos)
+    return render(request, 'personal/editar_rol.html', datos)
 
 
-def eliminar_puesto(request, id):
-    puesto = get_object_or_404(Puesto, id=id)
-    puesto.delete()
-    return redirect('puestos')
+def eliminar_rol(request, id):
+    rol = get_object_or_404(Rol, id=id)
+    rol.delete()
+    return redirect('roles')
 
-def inactivar_puesto(request, id):
-    puesto = get_object_or_404(Puesto, id=id)
 
-    if puesto.activo:
-        puesto.activo = False
-        puesto.save()
-        messages.success(request, "Puesto inactivado satisfactoriamente")
+def inactivar_rol(request, id):
+    rol = get_object_or_404(Rol, id=id)
+
+    if rol.activo:
+        rol.activo = False
+        messages.success(request, f"Rol {rol.nombre} inactivado satisfactoriamente")
     else:
-        messages.info(request, "El puesto ya estaba inactivo")
+        rol.activo = True
+        messages.success(request, f"Rol {rol.nombre} activado satisfactoriamente")
 
-    return redirect('puestos')
+    rol.save()
+    return redirect('roles')
+
 
 def visualizar_tiempos(request):
     empleados = Empleado.objects.filter(activo=True)
-    puestos = Puesto.objects.filter(activo=True)
+    roles = Rol.objects.filter(activo=True)
 
     fecha = request.GET.get("fecha")      # Usamos solo un campo "fecha"
-    puesto_id = request.GET.get("puesto") # Filtrado por puesto
+    rol_id = request.GET.get("rol") # Filtrado por rol
 
     asistencias = None  # Para que el template no truene si no hay datos
 
@@ -293,15 +307,15 @@ def visualizar_tiempos(request):
     else:
         asistencias = Asistencia.objects.all()
 
-    if puesto_id:
-        empleados = empleados.filter(puesto_id=puesto_id)
-        asistencias = asistencias.filter(empleado__puesto_id=puesto_id)
+    if rol_id:
+        empleados = empleados.filter(rol_id=rol_id)
+        asistencias = asistencias.filter(empleado__rol_id=rol_id)
 
     context = {
         "empleados": empleados,
-        "puestos": puestos,
+        "roles": roles,
         "asistencias": asistencias,
         "fecha": fecha,
-        "puesto_id": puesto_id,
+        "rol_id": rol_id,
     }
     return render(request, "personal/visualizar_tiempos.html", context)

@@ -1,5 +1,6 @@
 from django import forms
-from .models import Empleado, Puesto
+from .models import Empleado
+from administracion.models import Rol
 from django.forms import DateInput
 import re
 
@@ -10,7 +11,7 @@ class EmpleadoForm(forms.ModelForm):
     class Meta:
         model = Empleado
         fields = [
-            'rol', 'puesto', 'nombre', 'apellido', 'cedula', 'telefono', 'correo',
+            'rol', 'nombre', 'apellido', 'cedula', 'telefono', 'correo',
             'fecha_contratacion', 'salario'
         ]
 
@@ -30,9 +31,21 @@ class EmpleadoForm(forms.ModelForm):
         telefono = self.cleaned_data.get('telefono')
         if not telefono.isdigit():
             raise forms.ValidationError("Solo se permiten números")
-        if len(telefono) < 8 or len(telefono) > 10:
+        if len(telefono) != 8:
             raise forms.ValidationError("Teléfono con cantidad de números indebida")
         return telefono
+
+    def clean_cedula(self):
+        cedula = self.cleaned_data.get('cedula')
+        if not cedula.isdigit() or len(cedula) != 9:
+            raise forms.ValidationError("Formato de cédula inválido")
+        empleadoQs = Empleado.objects.filter(cedula=cedula)
+        if self.instance and self.instance.pk:
+            empleadoQs = empleadoQs.exclude(pk=self.instance.pk)
+        if empleadoQs.exists():
+            raise forms.ValidationError("Este usuario ya se encuentra registrado")
+        return cedula
+
 
     def clean_salario(self):
         salario = self.cleaned_data.get('salario')
@@ -45,19 +58,6 @@ class EmpleadoForm(forms.ModelForm):
         if fecha is None:
             raise forms.ValidationError("Ingrese una fecha válida")
         return fecha
-    
-    
-class PuestoForm(forms.ModelForm):
-
-    class Meta:
-        model = Puesto
-        fields = ['nombre', 'descripcion']
-
-    def clean_nombre(self):
-        nombre = self.cleaned_data.get('nombre')
-        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$', nombre):
-            raise forms.ValidationError("Nombre con caracteres indebidos")
-        return nombre
 
 
 class EmpleadoSeleccionForm(forms.Form):
@@ -70,16 +70,16 @@ class EmpleadoSeleccionForm(forms.Form):
 
 class FiltroAsistenciaForm(forms.Form):
     fecha = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    puesto = forms.ModelChoiceField(queryset=Puesto.objects.all(), required=False)
+    rol = forms.ModelChoiceField(queryset=Rol.objects.all(), required=False)
 
     def clean(self):
         cleaned_data = super().clean()
         fecha = cleaned_data.get("fecha")
-        puesto = cleaned_data.get("puesto")
+        rol = cleaned_data.get("rol")
 
-        if not puesto:
-            self.add_error("puesto", "Debe seleccionar un puesto.")
-        if fecha and not puesto:
-            self.add_error("puesto", "Debe seleccionar un puesto para filtrar por fecha.")
+        if not rol:
+            self.add_error("rol", "Debe seleccionar un rol.")
+        if fecha and not rol:
+            self.add_error("rol", "Debe seleccionar un rol para filtrar por fecha.")
 
         return cleaned_data
