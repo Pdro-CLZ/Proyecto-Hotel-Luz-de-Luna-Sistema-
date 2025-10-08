@@ -1,73 +1,82 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import FiltroAsistenciaForm
-from .models import Asistencia
+from .forms import FiltroAsistenciaForm, EmpleadoForm, EmpleadoSeleccionForm
+from administracion.forms import RolForm
+from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion
 from django.utils import timezone
 from datetime import time, datetime, timedelta
-from .models import Empleado, Asistencia, Rol, Pais, Provincia, Canton, Distrito, Direccion, Puesto
-from .forms import EmpleadoForm, PuestoForm
 from django.contrib import messages
-from .forms import EmpleadoSeleccionForm
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
+
+# -------------------- MARCAR ASISTENCIA --------------------
+@login_required
 def marcar_asistencia(request):
-    empleado_id = 1 # Cambiar cuando se implemente la logica de login
-    empleado = get_object_or_404(Empleado, pk=empleado_id)
+    user = request.user 
+    mensaje = None
+    empleado = None
 
+    try:
+        empleado = Empleado.objects.get(usuario=user)
+    except Empleado.DoesNotExist:
+        mensaje = "No eres un empleado registrado. No puedes marcar asistencia."
+
+        datos = {
+            "empleado": None,
+            "mensaje": mensaje,
+            "hora_marca_ingreso": "No registrada",
+            "hora_marca_salida": "No registrada",
+        }
+        return render(request, "personal/index.html", datos)
+    
     fecha_actual = timezone.localdate()
     asistencia, created = Asistencia.objects.get_or_create(empleado=empleado, fecha=fecha_actual)
-    mensaje = None
 
     if request.method == "POST" and request.POST.get("action") == "llegada":
         now = timezone.localtime()
         now_time = now.time()
 
         if asistencia.hora_salida:
-            mensaje = f"Hora de salida ya registrada: {asistencia.hora_salida.strftime('%H:%M:%S')}, NO se puede registrar hora de entrada, por favor comunicarse con el administrador"
+            mensaje = f"Hora de salida ya registrada: {asistencia.hora_salida.strftime('%H:%M:%S')}, no se puede registrar hora de entrada."
         else:
             if asistencia.hora_llegada:
                 mensaje = f"Hora de llegada ya registrada: {asistencia.hora_llegada.strftime('%H:%M:%S')}"
-            else: 
+            else:
                 asistencia.hora_llegada = now_time
-
                 if (now_time >= time(19, 0)) or (now_time <= time(5, 30)):
-                    asistencia.observaciones = "Hora de llegada inusual, por favor comunicarse con el administrador"
-                    mensaje = asistencia.observaciones
+                    asistencia.observaciones = "Hora de llegada inusual, por favor comunicarse con el administrador."
                 else:
-                    asistencia.observaciones = "Registro Añadido Correctamente"
-                    mensaje = asistencia.observaciones
-                
+                    asistencia.observaciones = "Registro añadido correctamente."
+                mensaje = asistencia.observaciones
                 asistencia.save()
 
-    if request.method == "POST" and request.POST.get("action") == "salida":
+    elif request.method == "POST" and request.POST.get("action") == "salida":
         now = timezone.localtime()
         now_time = now.time()
 
         if asistencia.hora_salida:
             mensaje = f"Hora de salida ya registrada: {asistencia.hora_salida.strftime('%H:%M:%S')}"
-        else: 
+        else:
             asistencia.hora_salida = now_time
 
-            if asistencia.hora_llegada: 
+            if asistencia.hora_llegada:
                 hora_llegada_dt = datetime.combine(asistencia.fecha, asistencia.hora_llegada)
                 hora_salida_dt = datetime.combine(asistencia.fecha, asistencia.hora_salida)
                 total_horas = hora_salida_dt - hora_llegada_dt
-
                 horas_trabajadas = total_horas.total_seconds() / 3600
                 asistencia.horas_trabajadas = horas_trabajadas
 
                 if total_horas < timedelta(hours=1):
-                    asistencia.observaciones = "Hora de salida inusual, por favor comunicarse con el administrador"
-                    mensaje = asistencia.observaciones
-
+                    asistencia.observaciones = "Hora de salida inusual, por favor comunicarse con el administrador."
                 else:
-                    asistencia.observaciones = "Registro Añadido Correctamente"
-                    mensaje = asistencia.observaciones
+                    asistencia.observaciones = "Registro añadido correctamente."
+                mensaje = asistencia.observaciones
             else:
-                    asistencia.observaciones = "No hay hora de llegada registrada, por favor comunicarse con el administrador"
-                    mensaje = asistencia.observaciones
-                    
+                asistencia.observaciones = "No hay hora de llegada registrada, por favor comunicarse con el administrador."
+                mensaje = asistencia.observaciones
+
             asistencia.save()
-    
+
     hora_marca_ingreso = asistencia.hora_llegada.strftime("%H:%M:%S") if asistencia.hora_llegada else "No registrada"
     hora_marca_salida = asistencia.hora_salida.strftime("%H:%M:%S") if asistencia.hora_salida else "No registrada"
 
@@ -80,9 +89,10 @@ def marcar_asistencia(request):
     return render(request, "personal/index.html", datos)
 
 
+# -------------------- LISTA EMPLEADOS --------------------
 def lista_empleados(request):
     empleados = Empleado.objects.all()
-    puestos = Puesto.objects.all()
+    roles = Rol.objects.all()
 
     # Filtro por búsqueda
     buscar = request.GET.get("buscar")
@@ -90,13 +100,13 @@ def lista_empleados(request):
         empleados = empleados.filter(
             Q(nombre__icontains=buscar) |
             Q(apellido__icontains=buscar) |
-            Q(cedula__icontains=buscar)
+            Q(usuario__cedula__icontains=buscar)
         )
 
-    # Filtro por puesto
-    puesto_id = request.GET.get("puesto")
-    if puesto_id:
-        empleados = empleados.filter(puesto_id=puesto_id)
+    # Filtro por rol (vía usuario)
+    rol_id = request.GET.get("rol")
+    if rol_id:
+        empleados = empleados.filter(usuario__rol_id=rol_id)
 
     # Filtro por estado (activo/inactivo)
     estado = request.GET.get("estado")
@@ -107,15 +117,14 @@ def lista_empleados(request):
 
     context = {
         "empleados": empleados,
-        "puestos": puestos,
-        "puesto_id": puesto_id,
+        "roles": roles,
+        "rol_id": rol_id,
         "estado": estado,
     }
     return render(request, "personal/lista_empleados.html", context)
 
 
-
-
+# -------------------- AGREGAR EMPLEADO --------------------
 def agregar_empleado(request):
     roles = Rol.objects.all()
     paises = Pais.objects.all()
@@ -137,7 +146,7 @@ def agregar_empleado(request):
             )
             empleado.direccion = direccion
             empleado.save()
-            return redirect('empleados') 
+            return redirect('empleados')
     else:
         form = EmpleadoForm()
 
@@ -148,10 +157,12 @@ def agregar_empleado(request):
         'provincias': provincias,
         'cantones': cantones,
         'distritos': distritos,
+        'no_usuarios_disponibles': getattr(form, 'no_usuarios_disponibles', False)
     }
     return render(request, 'personal/agregar_empleado.html', datos)
 
 
+# -------------------- EDITAR EMPLEADO --------------------
 def editar_empleado(request, id):
     empleado = get_object_or_404(Empleado, id=id)
     roles = Rol.objects.all()
@@ -190,118 +201,114 @@ def editar_empleado(request, id):
     return render(request, 'personal/editar_empleado.html', datos)
 
 
+# -------------------- INACTIVAR EMPLEADO --------------------
 def inactivar_empleado(request, id):
     empleado = get_object_or_404(Empleado, id=id)
 
-    if empleado.activo:
-        empleado.activo = False
-        messages.success(request, f"Empleado {empleado.nombre} inactivado satisfactoriamente")
-    else:
-        empleado.activo = True
-        messages.success(request, f"Empleado {empleado.nombre} activado satisfactoriamente")
-
+    empleado.activo = not empleado.activo
+    estado_texto = "activado" if empleado.activo else "inactivado"
+    messages.success(request, f"Empleado {empleado.nombre} {estado_texto} satisfactoriamente")
     empleado.save()
     return redirect('empleados')
 
 
+# -------------------- SELECCIONAR EMPLEADO --------------------
 def seleccionar_empleado(request):
+    mensaje = None
     if request.method == "POST":
         form = EmpleadoSeleccionForm(request.POST)
         if form.is_valid():
             empleado = form.cleaned_data['empleado']
-            # Redirigir a la página de edición del empleado seleccionado
             return redirect('editar_empleado', id=empleado.id)
         else:
             mensaje = "Por favor escoja un ID"
     else:
         form = EmpleadoSeleccionForm()
-        mensaje = None
 
     return render(request, "personal/seleccionar_empleado.html", {"form": form, "mensaje": mensaje})
 
-def lista_puestos(request):
+
+# -------------------- ROLES --------------------
+def lista_roles(request):
     query = request.GET.get('buscar')
+    estado = request.GET.get("estado")
+    roles = Rol.objects.all()
+
     if query:
-        puestos = Puesto.objects.filter(nombre__icontains=query, activo=True)
-    else:
-        puestos = Puesto.objects.filter(activo=True)
-    return render(request, "personal/lista_puestos.html", {"puestos": puestos})
+        roles = roles.filter(nombre__icontains=query)
+    if estado == "1":
+        roles = roles.filter(activo=True)
+    elif estado == "0":
+        roles = roles.filter(activo=False)
+
+    return render(request, "personal/lista_roles.html", {
+        "roles": roles,
+        "query": query,
+        "estado": estado,
+    })
 
 
-
-def agregar_puesto(request):
+def agregar_rol(request):
     if request.method == 'POST':
-        form = PuestoForm(request.POST)
+        form = RolForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('puestos') 
+            return redirect('roles')
     else:
-        form = PuestoForm()
+        form = RolForm()
 
-    datos = {
-        'form': form
-    }
-    return render(request, 'personal/agregar_puesto.html', datos)
+    return render(request, 'personal/agregar_rol.html', {'form': form})
 
 
-def editar_puesto(request, id):
-    puesto = get_object_or_404(Puesto, id=id)
-
+def editar_rol(request, id):
+    rol = get_object_or_404(Rol, id=id)
     if request.method == 'POST':
-        form = PuestoForm(request.POST, instance=puesto)
+        form = RolForm(request.POST, instance=rol)
         if form.is_valid():
             form.save()
-            return redirect('puestos')
+            return redirect('roles')
     else:
-        form = PuestoForm(instance=puesto)
+        form = RolForm(instance=rol)
 
-    datos = {
-        'form': form,
-        'puesto': puesto
-    }
-    return render(request, 'personal/editar_puesto.html', datos)
+    return render(request, 'personal/editar_rol.html', {'form': form, 'rol': rol})
 
 
-def eliminar_puesto(request, id):
-    puesto = get_object_or_404(Puesto, id=id)
-    puesto.delete()
-    return redirect('puestos')
+def eliminar_rol(request, id):
+    rol = get_object_or_404(Rol, id=id)
+    rol.delete()
+    return redirect('roles')
 
-def inactivar_puesto(request, id):
-    puesto = get_object_or_404(Puesto, id=id)
 
-    if puesto.activo:
-        puesto.activo = False
-        puesto.save()
-        messages.success(request, "Puesto inactivado satisfactoriamente")
-    else:
-        messages.info(request, "El puesto ya estaba inactivo")
+def inactivar_rol(request, id):
+    rol = get_object_or_404(Rol, id=id)
+    rol.activo = not rol.activo
+    estado_texto = "activado" if rol.activo else "inactivado"
+    messages.success(request, f"Rol {rol.nombre} {estado_texto} satisfactoriamente")
+    rol.save()
+    return redirect('roles')
 
-    return redirect('puestos')
 
+# -------------------- VISUALIZAR TIEMPOS --------------------
 def visualizar_tiempos(request):
     empleados = Empleado.objects.filter(activo=True)
-    puestos = Puesto.objects.filter(activo=True)
+    roles = Rol.objects.filter(activo=True)
 
-    fecha = request.GET.get("fecha")      # Usamos solo un campo "fecha"
-    puesto_id = request.GET.get("puesto") # Filtrado por puesto
+    fecha = request.GET.get("fecha")
+    rol_id = request.GET.get("rol")
 
-    asistencias = None  # Para que el template no truene si no hay datos
+    asistencias = Asistencia.objects.all()
 
     if fecha:
-        asistencias = Asistencia.objects.filter(fecha=fecha)
-    else:
-        asistencias = Asistencia.objects.all()
-
-    if puesto_id:
-        empleados = empleados.filter(puesto_id=puesto_id)
-        asistencias = asistencias.filter(empleado__puesto_id=puesto_id)
+        asistencias = asistencias.filter(fecha=fecha)
+    if rol_id:
+        empleados = empleados.filter(usuario__rol_id=rol_id)
+        asistencias = asistencias.filter(empleado__usuario__rol_id=rol_id)
 
     context = {
         "empleados": empleados,
-        "puestos": puestos,
+        "roles": roles,
         "asistencias": asistencias,
         "fecha": fecha,
-        "puesto_id": puesto_id,
+        "rol_id": rol_id,
     }
     return render(request, "personal/visualizar_tiempos.html", context)

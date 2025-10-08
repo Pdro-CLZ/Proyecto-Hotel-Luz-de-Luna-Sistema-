@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Empleados - Registrar{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -70,7 +75,14 @@
                 {% endfor %}
             </select>
         </div>
-
+        <div style="margin-top: 20px;">
+                {% if no_usuarios_disponibles %}
+            <div style="background-color: #e2c43e; color: #000; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
+                No hay usuarios disponibles sin empleado asignado.<br>
+                Debe crear un usuario primero antes de crear el empleado. Aquí: <a href="{% url 'registro' %}"></a>.
+            </div>
+            {% endif %}
+        </div>
         <div class="button-group">
             <button type="submit">Agregar Empleado</button>
             <button type="button" onclick="window.location.href='/personal/empleados'">Cancelar</button>
@@ -79,3 +91,4 @@
 </main>
 </body>
 </html>
+{% endblock %}

@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Empleados - Tiempos{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -13,7 +18,7 @@
 
 <div class="menu-container">
     <div class="d-flex justify-content-between mb-3">
-        <button class="boton-verde" onclick="window.location.href='/personal/empleados'">Volver</button>
+        <button class="boton-verde" onclick="window.location.href='/personal/'">Volver</button>
     </div>
 
     <div class="menu-header d-flex justify-content-center align-items-center mb-3">
@@ -80,3 +85,4 @@
 </body>
 
 </html>
+{% endblock %}

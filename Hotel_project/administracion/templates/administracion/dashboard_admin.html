@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -15,9 +20,8 @@
         <!-- Header con acciones -->
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <a class="boton-verde" href="{% url 'registro' %}">Registrar usuario</a>
-            <a class="boton-amarillo" href="{% url 'linkear_usuario_empleado' %}">Linkear Usuario con Empleado</a>
-
-            <a class="boton-verde" href="{% url 'logout' %}">Cerrar sesión</a>
+            <!-- Boton desactivado -->
+            <!-- <a class="boton-amarillo" href="{% url 'linkear_usuario_empleado' %}">Linkear Usuario con Empleado</a> -->
         </div>
 
         <!-- Filtro por rol -->
@@ -89,3 +93,4 @@
 </body>
 
 </html>
+{% endblock %}

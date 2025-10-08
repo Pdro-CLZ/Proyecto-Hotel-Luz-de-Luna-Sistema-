@@ -14,9 +14,9 @@ urlpatterns = [
 
 
 
-    path("puestos/", views.lista_puestos, name="puestos"),
-    path("puestos/agregar/", views.agregar_puesto, name="agregar_puesto"),
-    path("puestos/editar/<int:id>/", views.editar_puesto, name="editar_puesto"),
-    path("puestos/inactivar/<int:id>/", views.inactivar_puesto, name="inactivar_puesto"),
+    path("roles/", views.lista_roles, name="roles"),
+    path("roles/agregar/", views.agregar_rol, name="agregar_rol"),
+    path("roles/editar/<int:id>/", views.editar_rol, name="editar_rol"),
+    path("roles/inactivar/<int:id>/", views.inactivar_rol, name="inactivar_rol"),
 
 ]

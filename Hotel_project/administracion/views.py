@@ -1,23 +1,15 @@
-from datetime import datetime, timedelta  # datetime y timedelta de la librería estándar
-from django.utils.timezone import now, make_aware  # now y make_aware de Django
+from datetime import datetime, timedelta
+from django.utils.timezone import now, make_aware
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.views.generic import FormView
+from django.views.generic.edit import FormView
+from django.contrib.auth.hashers import check_password
 
 from .models import Usuario
+from personal.models import Empleado
 from .forms import ModificarMiUsuarioForm, RegistroUsuarioForm, LoginForm, EditarUsuarioForm
-
-from datetime import datetime, timedelta
-from django.utils.timezone import make_aware, now
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, get_user_model
-from django.contrib.auth.hashers import check_password
-from django.shortcuts import redirect
-from django.views.generic.edit import FormView
-from .forms import LoginForm
-
 
 User = get_user_model()
 
@@ -26,7 +18,6 @@ class LoginView(FormView):
     form_class = LoginForm
 
     def get(self, request, *args, **kwargs):
-        # Limpiar mensajes antiguos
         list(messages.get_messages(request))
         return super().get(request, *args, **kwargs)
 
@@ -47,12 +38,10 @@ class LoginView(FormView):
                 )
                 return self.form_invalid(form)
             else:
-                # desbloquear después del tiempo
                 request.session.pop("block_until", None)
                 request.session["failed_attempts"] = 0
                 request.session["is_blocked"] = False
 
-        # Obtener usuario por username
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
@@ -60,14 +49,9 @@ class LoginView(FormView):
 
         if user:
             if not user.is_active:
-                # Usuario existe pero está inactivo
-                messages.error(
-                    request,
-                    "Usuario inactivo, por favor contacte con el admin."
-                )
+                messages.error(request, "Usuario inactivo, por favor contacte con el admin.")
                 return self.form_invalid(form)
 
-            # Verificar contraseña
             if check_password(password, user.password):
                 login(request, user)
                 request.session["failed_attempts"] = 0
@@ -75,7 +59,6 @@ class LoginView(FormView):
                 request.session["is_blocked"] = False
                 return redirect("apps_home")
             else:
-                # Contraseña incorrecta
                 attempts = request.session.get("failed_attempts", 0) + 1
                 request.session["failed_attempts"] = attempts
 
@@ -93,7 +76,6 @@ class LoginView(FormView):
 
                 return self.form_invalid(form)
         else:
-            # Usuario no existe
             messages.error(request, "Usuario o contraseña incorrectos.")
             return self.form_invalid(form)
 
@@ -107,13 +89,12 @@ def logout_view(request):
     logout(request)
     return redirect("login")
 
+
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def dashboard_admin(request):
     error = None
     usuarios = Usuario.objects.all()
-
-    # Obtener filtro de rol del GET
     rol_filter = request.GET.get("rol", "")
 
     try:
@@ -129,30 +110,55 @@ def dashboard_admin(request):
         "rol_filter": rol_filter
     })
 
+
 @login_required
 def perfil_empleado(request):
     if request.method == "POST":
         form = EditarUsuarioForm(request.POST, instance=request.user)
         if form.is_valid():
+            # Validación solo de campos existentes
+            cedula = form.cleaned_data.get("cedula")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+
+            if cedula and (not cedula.isdigit() or len(cedula) != 9):
+                form.add_error("cedula", "Formato de cédula inválido")
+
+            if first_name and not first_name.isalpha():
+                form.add_error("first_name", "Caracteres indebidos")
+            if last_name and not last_name.isalpha():
+                form.add_error("last_name", "Caracteres indebidos")
+
+            if form.errors:
+                return render(request, "administracion/perfil_empleado.html", {"form": form})
+
             form.save()
             messages.success(request, "Perfil actualizado correctamente")
             return redirect("perfil_empleado")
     else:
         form = EditarUsuarioForm(instance=request.user)
+
     return render(request, "administracion/perfil_empleado.html", {"form": form})
+
 
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def registrar_usuario(request):
+    mostrar_modal = False
+
     if request.method == "POST":
         form = RegistroUsuarioForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Usuario creado correctamente")
-            return redirect("dashboard_admin")
+            mostrar_modal = True 
+            form = RegistroUsuarioForm() 
     else:
         form = RegistroUsuarioForm()
-    return render(request, "administracion/registro.html", {"form": form})
+
+    return render(request, "administracion/registro.html", {
+        "form": form,
+        "mostrar_modal": mostrar_modal
+    })
 
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
@@ -162,30 +168,20 @@ def modificar_usuario(request, usuario_id):
     if request.method == "POST":
         form = EditarUsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
-            # Validaciones personalizadas
-            telefono = form.cleaned_data["telefono"]
-            cedula = form.cleaned_data["cedula"]
-            first_name = form.cleaned_data["first_name"]
-            last_name = form.cleaned_data["last_name"]
+            cedula = form.cleaned_data.get("cedula")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
 
-            # Teléfono solo números y 8 dígitos
-            if not telefono.isdigit() or len(telefono) != 8:
-                form.add_error("telefono", "Teléfono con cantidad de números indebida o caracteres inválidos")
-
-            # Cedula solo números y longitud 9
-            if not cedula.isdigit() or len(cedula) != 9:
+            if cedula and (not cedula.isdigit() or len(cedula) != 9):
                 form.add_error("cedula", "Formato de cédula inválido")
-
-            # Nombre y apellido sin números ni caracteres especiales
-            if not first_name.isalpha():
+            if first_name and not first_name.isalpha():
                 form.add_error("first_name", "Caracteres indebidos")
-            if not last_name.isalpha():
+            if last_name and not last_name.isalpha():
                 form.add_error("last_name", "Caracteres indebidos")
 
             if form.errors:
                 return render(request, "administracion/modificar_usuario.html", {"form": form, "usuario": usuario})
 
-            # Guardar cambios si todo ok
             form.save()
             messages.success(request, "Modificación exitosa")
             return redirect("dashboard_admin")
@@ -193,7 +189,6 @@ def modificar_usuario(request, usuario_id):
         form = EditarUsuarioForm(instance=usuario)
 
     return render(request, "administracion/modificar_usuario.html", {"form": form, "usuario": usuario})
-
 
 
 @login_required
@@ -207,62 +202,44 @@ def activar_inactivar_usuario(request, usuario_id):
 
 def apps_home(request):
     apps = [
-        # {"name": "Marketing", "url": "marketing_home"},
-        {"name": "Personal", "url": "empleados"},
-        # {"name": "Limpieza", "url": "limpieza_home"},
-        # {"name": "Reportería", "url": "reporteria_home"},
-        # {"name": "Reservas", "url": "reservas_home"},
-        # {"name": "Contabilidad", "url": "contabilidad_home"},
-        # {"name": "Inventario", "url": "inventario_home"},
         {"name": "Administración", "url": "dashboard_admin"},
+        {"name": "Personal", "url": "marcar_asistencia"},
+        {"name": "Contabilidad", "url": "apps_home"},
+        {"name": "Inventario", "url": "apps_home"},
+        {"name": "Limpieza", "url": "apps_home"},
+        {"name": "Marketing", "url": "apps_home"},
+        {"name": "Reportería", "url": "apps_home"},
+        {"name": "Reservas", "url": "apps_home"},
     ]
     return render(request, "administracion/apps_home.html", {"apps": apps})
 
+
 @login_required
 def modificar_mi_usuario(request):
-    usuario = request.user  # Usuario actual
+    usuario = request.user
+    tiene_empleado = hasattr(usuario, 'empleado')
 
     if request.method == "POST":
         form = ModificarMiUsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
-            # Validaciones personalizadas
-            telefono = form.cleaned_data["telefono"]
-            cedula = form.cleaned_data["cedula"]
-            first_name = form.cleaned_data["first_name"]
-            last_name = form.cleaned_data["last_name"]
-
-            # Teléfono solo números y 8 dígitos
-            if not telefono.isdigit() or len(telefono) != 8:
-                form.add_error("telefono", "Teléfono con cantidad de números indebida o caracteres inválidos")
-
-            # Cédula solo números y longitud 9
-            if not cedula.isdigit() or len(cedula) != 9:
-                form.add_error("cedula", "Formato de cédula inválido")
-
-            # Nombre y apellido sin números ni caracteres especiales
-            if not first_name.isalpha():
-                form.add_error("first_name", "Caracteres indebidos")
-            if not last_name.isalpha():
-                form.add_error("last_name", "Caracteres indebidos")
-
-            # Si hay errores, devolver el formulario con los mensajes
-            if form.errors:
-                return render(request, "administracion/modificar_mi_usuario.html", {"form": form, "usuario": usuario})
-
-            # Guardar cambios si todo ok
             form.save()
             messages.success(request, "Información actualizada correctamente")
             return redirect("apps_home")
     else:
         form = ModificarMiUsuarioForm(instance=usuario)
 
-    return render(request, "administracion/modificar_mi_usuario.html", {"form": form, "usuario": usuario})
+    return render(request, "administracion/modificar_mi_usuario.html", {
+        "form": form,
+        "usuario": usuario,
+        "tiene_empleado": tiene_empleado
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def linkear_usuario_empleado(request):
     usuarios = Usuario.objects.all()
-    empleados = Usuario.objects.all()  
+    empleados = Empleado.objects.all()  # CORREGIDO: traer Empleados reales
 
     if request.method == "POST":
         usuario_id = request.POST.get("usuario")

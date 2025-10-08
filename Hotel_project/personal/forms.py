@@ -1,18 +1,31 @@
 from django import forms
-from .models import Empleado, Puesto
+from .models import Empleado, Direccion
 from django.forms import DateInput
+from administracion.models import Usuario
+from django.db.models import Q
 import re
 
 class EmpleadoForm(forms.ModelForm):
-
     fecha_contratacion = forms.DateField(widget=DateInput(attrs={'type': 'date'}), required=True)
 
     class Meta:
         model = Empleado
         fields = [
-            'rol', 'puesto', 'nombre', 'apellido', 'cedula', 'telefono', 'correo',
-            'fecha_contratacion', 'salario'
+            'usuario', 'nombre', 'apellido', 'telefono', 'fecha_contratacion', 'salario'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            usuarios_disponibles = Usuario.objects.filter(
+                Q(empleado__isnull=True) | Q(id=self.instance.usuario.id)
+            )
+        else:
+            usuarios_disponibles = Usuario.objects.filter(empleado__isnull=True)
+
+        self.fields['usuario'].queryset = usuarios_disponibles
+        self.fields['usuario'].required = True 
 
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
@@ -30,7 +43,7 @@ class EmpleadoForm(forms.ModelForm):
         telefono = self.cleaned_data.get('telefono')
         if not telefono.isdigit():
             raise forms.ValidationError("Solo se permiten números")
-        if len(telefono) < 8 or len(telefono) > 10:
+        if len(telefono) != 8:
             raise forms.ValidationError("Teléfono con cantidad de números indebida")
         return telefono
 
@@ -45,20 +58,6 @@ class EmpleadoForm(forms.ModelForm):
         if fecha is None:
             raise forms.ValidationError("Ingrese una fecha válida")
         return fecha
-    
-    
-class PuestoForm(forms.ModelForm):
-
-    class Meta:
-        model = Puesto
-        fields = ['nombre', 'descripcion']
-
-    def clean_nombre(self):
-        nombre = self.cleaned_data.get('nombre')
-        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$', nombre):
-            raise forms.ValidationError("Nombre con caracteres indebidos")
-        return nombre
-
 
 class EmpleadoSeleccionForm(forms.Form):
     empleado = forms.ModelChoiceField(
@@ -70,16 +69,15 @@ class EmpleadoSeleccionForm(forms.Form):
 
 class FiltroAsistenciaForm(forms.Form):
     fecha = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    puesto = forms.ModelChoiceField(queryset=Puesto.objects.all(), required=False)
+    # Para filtrar por rol del usuario asociado al empleado
+    rol_nombre = forms.CharField(required=False, label="Nombre del rol")
 
     def clean(self):
         cleaned_data = super().clean()
         fecha = cleaned_data.get("fecha")
-        puesto = cleaned_data.get("puesto")
+        rol_nombre = cleaned_data.get("rol_nombre")
 
-        if not puesto:
-            self.add_error("puesto", "Debe seleccionar un puesto.")
-        if fecha and not puesto:
-            self.add_error("puesto", "Debe seleccionar un puesto para filtrar por fecha.")
+        if fecha and not rol_nombre:
+            self.add_error("rol_nombre", "Debe seleccionar un rol para filtrar por fecha.")
 
         return cleaned_data

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Roles - Editar{% endblock %}
+
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Rol</title>
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+</head>
+
+<body class="menu-bg">
+<main>
+    <h1>Editar Rol</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+        <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <div class="error my-1">{{ field.errors|striptags }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="button-group my-3">
+            <button type="submit">Guardar Cambios</button>
+            <button type="button" onclick="window.location.href='/personal/roles'">Cancelar</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
+{% endblock %}

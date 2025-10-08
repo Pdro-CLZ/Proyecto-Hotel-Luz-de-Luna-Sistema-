@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Empleados{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -14,7 +19,8 @@
     <div class="menu-container">
         <button class="boton-verde" onclick="window.location.href='/personal'">Volver</button>
         <button class="boton-verde" onclick="window.location.href='/personal/empleados/agregar'">Agregar Empleado</button>
-        <button class="boton-verde" onclick="window.location.href='/personal/empleados/seleccionar'">Seleccionar por ID</button>
+        <!-- Boton Desactivado -->
+        <!-- <button class="boton-verde" onclick="window.location.href='/personal/empleados/seleccionar'">Seleccionar por ID</button> -->
 
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <h2>Gestión de Empleados</h2>
@@ -25,12 +31,12 @@
             <input type="text" name="buscar" placeholder="Buscar empleado" value="{{ request.GET.buscar }}"
                 class="form-control" style="width: 250px; display:inline-block;">
 
-            <select name="puesto" class="form-select" style="width: 250px; display:inline-block;">
-                <option value="">-- Todos los Puestos --</option>
-                {% for puesto in puestos %}
-                <option value="{{ puesto.id }}"
-                    {% if puesto_id and puesto.id|stringformat:"s" == puesto_id|stringformat:"s" %}selected{% endif %}>
-                    {{ puesto.nombre }}
+            <select name="rol" class="form-select" style="width: 250px; display:inline-block;">
+                <option value="">-- Todos los Roles --</option>
+                {% for rol in roles %}
+                <option value="{{ rol.id }}"
+                    {% if rol_id and rol.id|stringformat:"s" == rol_id|stringformat:"s" %}selected{% endif %}>
+                    {{ rol.nombre }}
                 </option>
                 {% endfor %}
             </select>
@@ -52,7 +58,7 @@
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>Cédula</th>
-                        <th>Puesto</th>
+                        <th>Rol</th>
                         <th>Salario</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -63,8 +69,8 @@
                     <tr>
                         <td>{{ empleado.nombre }}</td>
                         <td>{{ empleado.apellido }}</td>
-                        <td>{{ empleado.cedula }}</td>
-                        <td>{{ empleado.puesto.nombre }}</td>
+                        <td>{{ empleado.usuario.cedula }}</td>
+                        <td>{{ empleado.usuario.rol.nombre }}</td>
                         <td>{{ empleado.salario }}</td>
                         <td>
                             {% if empleado.activo %}
@@ -118,9 +124,9 @@
                 <div class="modal-body">
                     <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
                     <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
-                    <p><strong>Cédula:</strong> {{ empleado.cedula }}</p>
+                    <p><strong>Cédula:</strong> {{ empleado.usuario.cedula }}</p>
                     <p><strong>Teléfono:</strong> {{ empleado.telefono }}</p>
-                    <p><strong>Correo:</strong> {{ empleado.correo }}</p>
+                    <p><strong>Correo:</strong> {{ empleado.usuario.email }}</p>
                     <p><strong>Dirección:</strong> {{ empleado.direccion.direccion_exacta }}</p>
                     <p><strong>País:</strong> {{ empleado.direccion.pais.nombre }}</p>
                     <p><strong>Provincia:</strong> {{ empleado.direccion.provincia.nombre }}</p>
@@ -128,8 +134,7 @@
                     <p><strong>Distrito:</strong> {{ empleado.direccion.distrito.nombre }}</p>
                     <p><strong>Fecha de Contratación:</strong> {{ empleado.fecha_contratacion }}</p>
                     <p><strong>Salario:</strong> {{ empleado.salario }}</p>
-                    <p><strong>Rol:</strong> {{ empleado.rol.nombre }}</p>
-                    <p><strong>Puesto:</strong> {{ empleado.puesto.nombre }}</p>
+                    <p><strong>Rol:</strong> {{ empleado.usuario.rol.nombre }}</p>
                 </div>
 
                 <div class="modal-footer">
@@ -145,3 +150,4 @@
 </body>
 
 </html>
+{% endblock %}

@@ -3,3 +3,9 @@ venv/
 
 # Archivos de VS Code
 .vscode/
+
+# Archivos cache Django y Python 
+__pycache__/
+*.pyc
+*$py.class
+*/migrations/__pycache__/

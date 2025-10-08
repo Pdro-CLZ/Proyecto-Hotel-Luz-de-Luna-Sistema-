@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Luz de Luna{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -39,7 +44,6 @@
             <h1>Mis Aplicaciones</h1>
             <div>
                 <a class="boton-verde" href="{% url 'modificar_mi_usuario' %}">Mi Perfil</a>
-                <a class="boton-verde" href="{% url 'logout' %}">Cerrar sesión</a>
             </div>
         </div>
 
@@ -55,3 +59,4 @@
 
 </body>
 </html>
+{% endblock %}

@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
 <h2>Mi Perfil</h2>
 <form method="post">
     {% csrf_token %}
@@ -5,3 +10,4 @@
     <button type="submit">Guardar</button>
 </form>
 <a href="{% url 'logout' %}">Cerrar sesión</a>
+{% endblock %}

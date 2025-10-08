@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Información{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -22,10 +27,33 @@
 
         <form method="post" id="modificarForm">
             {% csrf_token %}
-            {{ form.as_p }}
+            <h3>Datos de Usuario</h3>
+            <div>
+                {{ form.username.label_tag }} {{ form.username }}
+                {{ form.cedula.label_tag }} {{ form.cedula }}
+                {{ form.email.label_tag }} {{ form.email }}
+            </div>
 
-            <div style="display: flex; gap: 15px; margin-top: 20px;">
+            {% if tiene_empleado %}
+            <h3>Datos del Empleado</h3>
+            <div>
+                {{ form.nombre.label_tag }} {{ form.nombre }}
+                {{ form.apellido.label_tag }} {{ form.apellido }}
+                {{ form.telefono.label_tag }} {{ form.telefono }}
+                
+                <h4>Dirección</h4>
+                {{ form.direccion_exacta.label_tag }} {{ form.direccion_exacta }}
+                {{ form.pais.label_tag }} {{ form.pais }}
+                {{ form.provincia.label_tag }} {{ form.provincia }}
+                {{ form.canton.label_tag }} {{ form.canton }}
+                {{ form.distrito.label_tag }} {{ form.distrito }}
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 20px;">
                 <button type="submit" id="guardarBtn" class="boton-verde">Guardar cambios</button>
+            </div>
+            <div style="margin-top: 20px;"></div>
                 <a href="{% url 'apps_home' %}" class="boton-verde">Volver</a>
             </div>
         </form>
@@ -34,3 +62,4 @@
 </body>
 
 </html>
+{% endblock %}
