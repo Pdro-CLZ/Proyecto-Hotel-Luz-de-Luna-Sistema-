@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Hotel Project{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Hotel Admin</h2>
+        <a href="{% url 'apps_home' %}">Inicio</a>
+        <a href="{% url 'dashboard_admin' %}">Administración</a>
+        <a href="{% url 'marcar_asistencia' %}">Personal</a>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </div>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

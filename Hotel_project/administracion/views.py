@@ -203,7 +203,7 @@ def activar_inactivar_usuario(request, usuario_id):
 def apps_home(request):
     apps = [
         {"name": "Administración", "url": "dashboard_admin"},
-        {"name": "Personal", "url": "empleados"},
+        {"name": "Personal", "url": "marcar_asistencia"},
         {"name": "Contabilidad", "url": "apps_home"},
         {"name": "Inventario", "url": "apps_home"},
         {"name": "Limpieza", "url": "apps_home"},
