@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Marketing - Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Luz de Luna - Dashboard Marketing</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+
+<body class="menu-bg" style="display:flex; justify-content:center; align-items:center; height:100vh;">
+    <div class="menu-container" style="text-align:center;">
+        <div class="menu-header" style="margin-bottom: 30px;">
+            <h1>Panel de Marketing</h1>
+        </div>
+
+        <div style="display:flex; gap:20px; justify-content:center;">
+            <a href="{% url 'lista_plantillas' %}" class="boton-verde">Administrar Plantillas</a>
+            <a href="{% url 'crear_campania' %}" class="boton-verde">Hacer Campaña</a>
+        </div>
+    </div>
+</body>
+
+</html>
+{% endblock %}

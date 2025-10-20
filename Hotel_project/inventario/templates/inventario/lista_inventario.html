@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Inventario{% endblock %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+<body class="menu-bg">
+
+<div class="menu-container">
+
+    
+
+    <!-- Filtros -->
+    <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px; width:100%;">
+        <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; width:100%;">
+            <label>Tipo:</label>
+            <select name="tipo" class="select-box" style="width:200px;">
+                <option value="">Todos</option>
+                <option value="Activo" {% if tipo_filter|default:'' == "Activo" %}selected{% endif %}>Activo</option>
+                <option value="Insumo" {% if tipo_filter|default:'' == "Insumo" %}selected{% endif %}>Insumo</option>
+            </select>
+
+            <label>Estado:</label>
+            <select name="estado" class="select-box" style="width:200px;">
+                <option value="">Todos</option>
+                <option value="Activo" {% if estado_filter|default:'' == "Activo" %}selected{% endif %}>Activo</option>
+                <option value="Inactivo" {% if estado_filter|default:'' == "Inactivo" %}selected{% endif %}>Inactivo</option>
+            </select>
+        </div>
+
+        <div style="display:flex; justify-content:center; margin-top:10px;">
+            <button type="submit" class="boton-verde">Filtrar</button>
+        </div>
+    </div>
+
+
+    <!-- Botón Registrar Item alineado a la izquierda -->
+    <div style="display:flex; justify-content:flex-start; margin-top:20px;">
+        <a class="boton-verde" href="{% url 'crear_inventario' %}">Registrar Item</a>
+    </div>
+
+    <!-- Tabla de inventario -->
+    <div style="overflow-x:auto; margin-top: 10px;">
+        <table class="menu-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in inventario %}
+                <tr>
+                    <td>{{ i.nombre }}</td>
+                    <td>{{ i.descripcion }}</td>
+                    <td>{{ i.tipo }}</td>
+                    <td>{{ i.cantidad }}</td>
+                    <td>{{ i.activo|yesno:"Sí,No" }}</td>
+                    <td>
+                        {% if user.rol and user.rol.nombre in "Administrador Manager" %}
+                            <a href="{% url 'editar_inventario' i.id %}">Editar</a> |
+                        
+                        <a href="{% url 'activar_inactivar_inventario' i.id %}">
+                            {% if i.activo %}Inactivar{% else %}Activar{% endif %}
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'editar_cantidad_inventario' i.id %}">Editar Cantidad</a>
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No hay items en el inventario</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+</body>
+</html>
+{% endblock %}
