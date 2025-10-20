@@ -205,9 +205,9 @@ def apps_home(request):
         {"name": "Administración", "url": "dashboard_admin"},
         {"name": "Personal", "url": "marcar_asistencia"},
         {"name": "Contabilidad", "url": "apps_home"},
-        {"name": "Inventario", "url": "apps_home"},
+        {"name": "Inventario", "url": "lista_inventario"},
         {"name": "Limpieza", "url": "apps_home"},
-        {"name": "Marketing", "url": "apps_home"},
+        {"name": "Marketing", "url": "dashboard_marketing"},
         {"name": "Reportería", "url": "apps_home"},
         {"name": "Reservas", "url": "apps_home"},
     ]

@@ -22,11 +22,11 @@ urlpatterns = [
     path('', lambda request: redirect('login')),  # redirige "/" al login
     path('admin/', admin.site.urls),
     path('administracion/', include('administracion.urls')),  # apps_home estará aquí
-    # path('marketing/', include('marketing.urls')),
+    path('marketing/', include('marketing.urls')),
     path('personal/', include('personal.urls')),
     path('limpieza/', include('limpieza.urls')),
     # path('reporteria/', include('reporteria.urls')),
     # path('reservas/', include('reservas.urls')),
     # path('contabilidad/', include('contabilidad.urls')),
-    # path('inventario/', include('inventario.urls')),
+    path('inventario/', include('inventario.urls')),
 ]
