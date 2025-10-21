@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Zona de Limpieza{% endblock %}
+
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Zona de Limpieza</title>
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="menu-bg">
+<main>
+    <h1>Registrar Zona de Limpieza</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ zona_form.non_field_errors }}
+
+        {% for field in zona_form %}
+        <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+                <div class="error my-1">{{ field.errors|striptags }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <h3 style="margin-top: 30px;">Tareas de la Zona</h3>
+        <div id="tareas-container">
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <div class="tarea-item" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            
+            {% for field in form.hidden_fields %}
+                {{ field }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+            {% if field.name != 'DELETE' %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                <div class="error my-1">
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+            <div class="error my-1">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        <button type="button" class="btn btn-danger remove-tarea">Eliminar Tarea</button>
+    </div>
+    {% endfor %}
+</div>
+
+        <button type="button" id="add-tarea" class="btn btn-secondary">Agregar Tarea</button>
+
+        <div class="button-group" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">Guardar Zona</button>
+            <button type="button" onclick="window.location.href='/limpieza/zonas'" class="btn btn-dark">Cancelar</button>
+        </div>
+    </form>
+</main>
+
+<script>
+$(document).ready(function() {
+    let formIndex = {{ formset.total_form_count }};
+    $('#add-tarea').click(function() {
+        let newForm = $('#tareas-container .tarea-item:first').clone(true);
+        newForm.find('input, textarea').each(function() {
+            let name = $(this).attr('name').replace(/-\d+-/, '-' + formIndex + '-');
+            let id = 'id_' + name;
+            $(this).attr({'name': name, 'id': id}).val('');
+        });
+        newForm.find('.error').remove();
+        newForm.insertBefore('#add-tarea');
+        $('#id_form-TOTAL_FORMS').val(++formIndex);
+    });
+
+    $(document).on('click', '.remove-tarea', function() {
+        if ($('.tarea-item').length > 1) {
+            $(this).closest('.tarea-item').remove();
+        }
+    });
+});
+</script>
+</body>
+</html>
+{% endblock %}
