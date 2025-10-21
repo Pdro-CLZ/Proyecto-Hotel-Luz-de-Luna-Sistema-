@@ -13,5 +13,9 @@ urlpatterns = [
     path("modificar/<int:usuario_id>/", views.modificar_usuario, name="modificar_usuario"),
     path("activar/<int:usuario_id>/", views.activar_inactivar_usuario, name="activar_inactivar_usuario"),
     path("linkear/", views.linkear_usuario_empleado, name="linkear_usuario_empleado"),
+    path('generar-reset/<int:user_id>/', views.generar_reset_link, name='generar_reset_link'),
+    path('reset-password/<str:token>/', views.reset_password_view, name='reset_password_view'),
+
+
 
 ]
