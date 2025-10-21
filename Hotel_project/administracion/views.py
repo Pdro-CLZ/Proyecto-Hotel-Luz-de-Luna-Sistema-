@@ -213,7 +213,7 @@ def apps_home(request):
     apps = [
         {"name": "Administración", "url": "dashboard_admin"},
         {"name": "Personal", "url": "marcar_asistencia"},
-        {"name": "Contabilidad", "url": "apps_home"},
+        {"name": "Contabilidad", "url": "contabilidad_panel"},
         {"name": "Inventario", "url": "lista_inventario"},
         {"name": "Limpieza", "url": "apps_home"},
         {"name": "Marketing", "url": "dashboard_marketing"},

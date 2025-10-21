@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cierre Mensual</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <h1 style="text-align:center;">Cierre Mensual</h1>
+
+
+ {% if messages %}
+  <div class="mensajes" style="text-align:center; margin:10px 0;">
+    {% for message in messages %}
+      {% if 'error' in message.tags %}
+        <p style="color:red; font-weight:bold;">{{ message }}</p>
+      {% else %}
+        <p style="color:green; font-weight:bold;">{{ message }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+  <form method="POST" style="text-align:center;">
+    {% csrf_token %}
+    <label>Mes:</label>
+    <select name="mes">
+      <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+      <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+      <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+      <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+    </select>
+
+    <label>Año:</label>
+    <input type="number" name="anio" value="{{ anio|default:2025 }}">
+    <button type="submit" class="btn-guardar">Generar Cierre</button>
+  </form>
+
+  {% if ingresos is not None %}
+  <section class="totales">
+    <div class="total-box"><h3>Total Ingresos</h3><p>₡{{ ingresos|floatformat:2 }}</p></div>
+    <div class="total-box"><h3>Total Gastos</h3><p>₡{{ gastos|floatformat:2 }}</p></div>
+    <div class="total-box"><h3>Utilidad</h3><p>₡{{ utilidad|floatformat:2 }}</p></div>
+  </section>
+  {% endif %}
+
+  <div style="text-align:center; margin-top:20px;">
+    <a href="{% url 'contabilidad_panel' %}" class="btn-volver">Volver al Panel</a>
+  </div>
+
+</body>
+</html>

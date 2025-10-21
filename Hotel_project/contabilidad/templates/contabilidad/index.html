@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo de Contabilidad</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="admin-nav">
+    <div class="admin-nav-container">
+      <a href="#" class="admin-nav-logo">Hotel Luz de Luna</a>
+      <ul class="admin-nav-links">
+        <li><a href="#">Inventario</a></li>
+        <li><a href="#">Limpieza</a></li>
+        <li><a href="#">Administrativo</a></li>
+        <li><a href="#">Marketing</a></li>
+        <li><a href="#">Reservas</a></li>
+        <li><a href="{% url 'contabilidad_panel' %}" class="activo">Contabilidad</a></li>
+        <li><a href="#">Reportería</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ENCABEZADO -->
+  <header>
+    <h1>Módulo de Contabilidad</h1>
+  </header>
+
+  <!-- MENSAJES -->
+  {% if messages %}
+  <div class="mensajes">
+    {% for message in messages %}
+      <p class="mensaje {% if 'error' in message.tags %}error{% else %}success{% endif %}">
+        {{ message }}
+      </p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+<!-- FILTRO DE MES Y AÑO -->
+<section class="filtros">
+  <form method="get" action="{% url 'contabilidad_panel' %}">
+    <label for="mes">Mes:</label>
+    <select name="mes" id="mes">
+      <option value="1" {% if mes == 1 %}selected{% endif %}>Enero</option>
+      <option value="2" {% if mes == 2 %}selected{% endif %}>Febrero</option>
+      <option value="3" {% if mes == 3 %}selected{% endif %}>Marzo</option>
+      <option value="4" {% if mes == 4 %}selected{% endif %}>Abril</option>
+      <option value="5" {% if mes == 5 %}selected{% endif %}>Mayo</option>
+      <option value="6" {% if mes == 6 %}selected{% endif %}>Junio</option>
+      <option value="7" {% if mes == 7 %}selected{% endif %}>Julio</option>
+      <option value="8" {% if mes == 8 %}selected{% endif %}>Agosto</option>
+      <option value="9" {% if mes == 9 %}selected{% endif %}>Septiembre</option>
+      <option value="10" {% if mes == 10 %}selected{% endif %}>Octubre</option>
+      <option value="11" {% if mes == 11 %}selected{% endif %}>Noviembre</option>
+      <option value="12" {% if mes == 12 %}selected{% endif %}>Diciembre</option>
+    </select>
+
+    <label for="anio">Año:</label>
+    <input type="number" name="anio" value="{{ anio }}" min="2020" max="2100" style="width:100px;">
+    <button type="submit" class="btn-guardar">Filtrar</button>
+  </form>
+</section>
+
+
+  <!-- TOTALES -->
+  <section class="totales">
+    <div class="total-box">
+      <h3>Ingresos del mes</h3>
+      <p>₡{{ total_ingresos|floatformat:2 }}</p>
+    </div>
+    <div class="total-box">
+      <h3>Gastos del mes</h3>
+      <p>₡{{ total_gastos|floatformat:2 }}</p>
+    </div>
+    <div class="total-box">
+      <h3>Utilidad</h3>
+      <p>₡{{ utilidad|floatformat:2 }}</p>
+    </div>
+  </section>
+
+  {% if sin_datos %}
+  <p class="mensaje error" style="text-align:center;">No existen registros disponibles</p>
+  {% endif %}
+
+  <!-- ACCIONES -->
+  <section class="acciones">
+    <a href="{% url 'agregar_ingreso' %}" class="btn-volver" style="background-color:#858b65;">Registrar Ingreso</a>
+    <a href="{% url 'agregar_gasto' %}" class="btn-volver" style="background-color:#858b65;">Registrar Gasto</a>
+    <a href="{% url 'cierre_mensual' %}" class="btn-volver" style="background-color:#858b65;">Cierre Mensual</a>
+    <a href="{% url 'cierre_anual' %}" class="btn-volver" style="background-color:#858b65;">Cierre Anual</a>
+  </section>
+
+  <!-- TABLA DE INGRESOS -->
+  <section class="tabla-container">
+    <div class="tabla-header">
+      <h2>Ingresos</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Método de Pago</th>
+          <th>Categoría</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ingreso in ingresos %}
+        <tr>
+          <td>{{ ingreso.fecha }}</td>
+          <td>{{ ingreso.metodo_pago }}</td>
+          <td>{{ ingreso.categoria }}</td>
+          <td>{{ ingreso.descripcion }}</td>
+          <td>₡{{ ingreso.monto|floatformat:2 }}</td>
+          <td><a href="{% url 'editar_ingreso' ingreso.id %}" class="btn-editar">Editar</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align:center; color:gray;">No hay registros</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TABLA DE GASTOS -->
+  <section class="tabla-container">
+    <div class="tabla-header">
+      <h2>Gastos</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Método de Pago</th>
+          <th>Categoría</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gasto in gastos %}
+        <tr>
+          <td>{{ gasto.fecha }}</td>
+          <td>{{ gasto.metodo_pago }}</td>
+          <td>{{ gasto.categoria }}</td>
+          <td>{{ gasto.descripcion }}</td>
+          <td>₡{{ gasto.monto|floatformat:2 }}</td>
+          <td><a href="{% url 'editar_gasto' gasto.id %}" class="btn-editar">Editar</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align:center; color:gray;">No hay registros</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+</body>
+</html>

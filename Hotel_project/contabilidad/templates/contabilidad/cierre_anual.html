@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cierre Anual</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+  <h1 style="text-align:center;">Cierre Anual</h1>
+
+ 
+  {% if messages %}
+  <div class="mensajes" style="text-align:center; margin:10px 0;">
+    {% for message in messages %}
+    {% if 'error' in message.tags %}
+    <p style="color:red; font-weight:bold;">{{ message }}</p>
+    {% else %}
+    <p style="color:green; font-weight:bold;">{{ message }}</p>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="POST" style="text-align:center;">
+    {% csrf_token %}
+    <label>Año:</label>
+    <input type="number" name="anio" value="{{ anio|default:2025 }}" min="2020" max="2100">
+    <button type="submit" class="btn-guardar">Generar Cierre</button>
+  </form>
+
+  {% if ingresos is not None %}
+  <section class="totales">
+    <div class="total-box">
+      <h3>Total Ingresos</h3>
+      <p>₡{{ ingresos|floatformat:2 }}</p>
+    </div>
+    <div class="total-box">
+      <h3>Total Gastos</h3>
+      <p>₡{{ gastos|floatformat:2 }}</p>
+    </div>
+    <div class="total-box">
+      <h3>Utilidad</h3>
+      <p>₡{{ utilidad|floatformat:2 }}</p>
+    </div>
+  </section>
+  {% endif %}
+
+ <div style="text-align:center; margin:40px 0 60px 0;">
+  <a href="{% url 'contabilidad_panel' %}" class="btn-volver">Volver al Panel</a>
+</div>
+
+
+  {% if ingresos_lista or gastos_lista %}
+  <section class="tabla-container">
+    <h2>Resumen del año {{ anio }}</h2>
+
+    <h3>Ingresos</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Método de Pago</th>
+          <th>Categoría</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ingreso in ingresos_lista %}
+        <tr>
+          <td>{{ ingreso.fecha }}</td>
+          <td>{{ ingreso.metodo_pago }}</td>
+          <td>{{ ingreso.categoria }}</td>
+          <td>{{ ingreso.descripcion }}</td>
+          <td>₡{{ ingreso.monto|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center;">No hay ingresos registrados</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:30px;">Gastos</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Método de Pago</th>
+          <th>Categoría</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gasto in gastos_lista %}
+        <tr>
+          <td>{{ gasto.fecha }}</td>
+          <td>{{ gasto.metodo_pago }}</td>
+          <td>{{ gasto.categoria }}</td>
+          <td>{{ gasto.descripcion }}</td>
+          <td>₡{{ gasto.monto|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center;">No hay gastos registrados</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+</body>
+
+</html>

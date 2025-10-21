@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Ingreso - Contabilidad</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="admin-nav">
+    <div class="admin-nav-container">
+      <a href="#" class="admin-nav-logo">Mi Empresa</a>
+      <ul class="admin-nav-links">
+        <li><a href="{% url 'contabilidad_panel' %}">Volver al Panel</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header>
+    <h1>Registrar Ingreso</h1>
+  </header>
+
+  <!-- MENSAJES -->
+  {% if messages %}
+    <div class="mensajes">
+      {% for message in messages %}
+        <p class="mensaje {% if 'error' in message.tags %}error{% else %}success{% endif %}">
+          {{ message }}
+        </p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- FORMULARIO DE INGRESO -->
+  <section class="formulario-container">
+    <form method="POST" class="formulario">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" name="fecha" required>
+      </div>
+
+      <div class="form-group">
+        <label>Método de Pago</label>
+        <select name="metodo_pago" required>
+          <option value="">Seleccione</option>
+          <option>Efectivo</option>
+          <option>Tarjeta</option>
+          <option>Sinpe</option>
+          <option>Transferencia</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Categoría</label>
+        <select name="categoria" required>
+          <option>Habitación</option>
+          <option>Servicio</option>
+          <option>Otro</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <input type="text" name="descripcion" placeholder="Ejemplo: Pago por habitación" required>
+      </div>
+
+      <div class="form-group">
+        <label>Monto</label>
+        <input type="number" name="monto" step="0.01" min="0" placeholder="₡0.00" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-guardar">Guardar Ingreso</button>
+        <a href="{% url 'contabilidad_panel' %}" class="btn-volver">Cancelar</a>
+      </div>
+    </form>
+  </section>
+
+</body>
+</html>
