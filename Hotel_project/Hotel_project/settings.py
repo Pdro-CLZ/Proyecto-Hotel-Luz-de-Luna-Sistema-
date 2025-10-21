@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'contabilidad',
     'inventario',
     'administracion.apps.AdministracionConfig',  # <--- así
+    'sitio_web',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,13 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "administracion.Usuario"
+
+
+# Configuración de correo
+# Configuración de correo (solo para desarrollo)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'pedroiclop25@gmail.com'
+
+print("DEBUG =", DEBUG)
+print("EMAIL_BACKEND =", EMAIL_BACKEND)
+print("DEFAULT_FROM_EMAIL =", DEFAULT_FROM_EMAIL)
