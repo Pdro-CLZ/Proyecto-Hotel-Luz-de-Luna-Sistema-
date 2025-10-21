@@ -11,7 +11,6 @@ class Rol(models.Model):
 
 class Usuario(AbstractUser):
     cedula = models.CharField(max_length=9, unique=True)
-    email = models.EmailField(unique=True)
     rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     is_active = models.BooleanField(default=True)
 

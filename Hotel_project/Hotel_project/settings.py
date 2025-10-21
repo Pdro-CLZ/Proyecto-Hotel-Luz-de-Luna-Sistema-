@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'contabilidad',
     'inventario',
     'administracion.apps.AdministracionConfig',  # <--- así
-    'sitio_web',
 ]
 
 MIDDLEWARE = [
@@ -146,8 +145,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "administracion.Usuario"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # settings.py
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
