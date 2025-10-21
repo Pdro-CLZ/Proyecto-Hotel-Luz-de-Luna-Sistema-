@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Inventario - Actualizar Cantidad{% endblock %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar Cantidad</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+<body class="menu-bg">
+<div class="menu-container">
+
+    <!-- Header con título y botón de volver -->
+    <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+        <h1>Actualizar Cantidad: {{ item.nombre }}</h1>
+        <a class="boton-azul" href="{% url 'lista_inventario' %}">Volver al Inventario</a>
+    </div>
+
+    <!-- Formulario -->
+    <form method="POST" style="margin-top:20px;">
+        {% csrf_token %}
+        <label>Cantidad:</label>
+        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="0" class="input-text" style="width:200px;">
+        
+        <div style="margin-top:15px;">
+            <button type="submit" class="boton-verde">Actualizar</button>
+            <a href="{% url 'lista_inventario' %}" class="boton-gris">Cancelar</a>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>
+{% endblock %}

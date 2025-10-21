@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Marketing - Crear Plantilla{% endblock %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Plantilla - Marketing</title>
+    <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+</head>
+
+<body class="menu-bg">
+    <div class="menu-container">
+        <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+            <h1>Crear Nueva Plantilla</h1>
+            <a class="boton-azul" href="{% url 'lista_plantillas' %}">Volver a Plantillas</a>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" style="margin-top:20px;">
+            {% csrf_token %}
+            <label>Nombre:</label><br>
+            <input type="text" name="nombre" required class="input-text"><br><br>
+
+            <label>Asunto:</label><br>
+            <input type="text" name="asunto" required class="input-text"><br><br>
+
+            <label>Contenido HTML:</label><br>
+            <textarea name="contenido_html" rows="10" class="textarea"></textarea><br><br>
+
+            <label>Imagen (opcional):</label><br>
+            <input type="file" name="imagen"><br><br>
+
+            <button type="submit" class="boton-verde">Guardar Plantilla</button>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

@@ -146,12 +146,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "administracion.Usuario"
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# settings.py
 
-# Configuración de correo
-# Configuración de correo (solo para desarrollo)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'pedroiclop25@gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+DEFAULT_FROM_EMAIL = 'test@localhost'
 
-print("DEBUG =", DEBUG)
-print("EMAIL_BACKEND =", EMAIL_BACKEND)
-print("DEFAULT_FROM_EMAIL =", DEFAULT_FROM_EMAIL)
+
+
+

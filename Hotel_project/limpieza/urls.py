@@ -1,13 +1,12 @@
 from django.urls import path
 from . import views
 
-app_name = "limpieza" 
-
 urlpatterns = [
-    path("visualizar/", views.visualizar_estados, name="visualizar_estados"),
-    path("registrar/<int:habitacion_id>/", views.registrar_estado, name="registrar_estado"),
-    path("detalle/<int:habitacion_id>/", views.visualizar_estado, name="visualizar_estado"),
-    path("registrar_zona/", views.registrar_zona, name="registrar_zona"),
-    path("actualizar_zona/<int:zona_id>/", views.actualizar_zona, name="actualizar_zona"),
-
+    path("", views.index_limpieza, name='index_limpieza'),
+    path('zonas/', views.lista_zonas, name='lista_zonas'),
+    path('zonas/agregar/', views.registrar_zona, name='registrar_zona'),
+    path('zonas/editar/<int:zona_id>/', views.editar_zona, name='editar_zona'),
+    path('zonas/estado/', views.lista_zonas_empleado, name='lista_zonas_empleado'),
+    path('zonas/<int:zona_id>/gestionar/', views.gestionar_zona, name='gestionar_zona'),
+    path('zonas/tareas/<int:tarea_id>/cambiar_estado/', views.cambiar_estado_tarea, name='cambiar_estado_tarea'),
 ]
