@@ -28,31 +28,39 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Detalles</th>
+                        <th>¿Es Habitación?</th>
                         <th>Estado</th>
-                        <th>Fecha Registro</th>
                         <th>Acciones</th>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for zona in zonas %}
-                    <tr>
-                        <td>{{ zona.nombre }}</td>
-                        <td>{{ zona.detalles }}</td>
-                        <td>
-                            <span class="badge bg-info">{{ zona.estado }}</span>
-                        </td>
-                        <td>{{ zona.fecha_registro|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal" data-bs-target="#modalZona{{ zona.id }}">Ver más</a>
-                            <a class="btn btn-sm btn-dark text-white" href="{% url 'editar_zona' zona.id %}">Editar</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="text-align:center;">No hay zonas registradas</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+            </thead>
+            <tbody>
+                {% for zona in zonas %}
+                <tr>
+                    <td>{{ zona.nombre }}</td>
+                    <td>{{ zona.detalles }}</td>
+                    <td>
+                        {% if zona.is_habitacion %}
+                            <span class="badge bg-primary">Sí</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if zona.estado == "Limpio (Disponible)" %}
+                            <span class="badge bg-success">{{ zona.estado }}</span>
+                        {% elif zona.estado == "Sucio (Disponible)" or zona.estado == "Sucio (No Disponible)" %}
+                            <span class="badge bg-danger">{{ zona.estado }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ zona.estado }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal" data-bs-target="#modalZona{{ zona.id }}">Ver más</a>
+                        <a class="btn btn-sm btn-dark text-white" href="{% url 'editar_zona' zona.id %}">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
             </table>
         </div>
     </div>
@@ -71,6 +79,7 @@
                 <div class="modal-body">
                     <p><strong>Nombre:</strong> {{ zona.nombre }}</p>
                     <p><strong>Descripción:</strong> {{ zona.detalles }}</p>
+                    <p><strong>¿Es habitación?:</strong> {{ zona.is_habitacion|yesno:"Sí,No" }}</p>
                     <p><strong>Estado:</strong> {{ zona.estado }}</p>
                     <p><strong>Fecha Registro:</strong> {{ zona.fecha_registro|date:"d/m/Y H:i" }}</p>
                     <p><strong>Registrada por:</strong> {{ zona.usuario_registro.username }}</p>

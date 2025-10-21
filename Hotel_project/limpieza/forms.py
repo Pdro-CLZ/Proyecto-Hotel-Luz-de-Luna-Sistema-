@@ -13,11 +13,12 @@ class ZonaLimpiezaForm(forms.ModelForm):
 
     class Meta:
         model = ZonaLimpieza
-        fields = ['nombre', 'detalles', 'foto']
+        fields = ['nombre', 'detalles', 'foto', 'is_habitacion']
         labels = {
             'nombre': 'Nombre de la Zona',
             'detalles': 'Detalles',
             'foto': 'Foto de la Zona (opcional)',
+            'is_habitacion': '¿Es una habitación?',
         }
         widgets = {
             'detalles': forms.Textarea(attrs={'rows': 3}),

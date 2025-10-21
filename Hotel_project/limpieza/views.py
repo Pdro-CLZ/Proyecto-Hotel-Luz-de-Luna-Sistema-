@@ -34,10 +34,8 @@ def registrar_zona(request):
 
                 messages.success(request, "Registro satisfactorio")
                 return redirect('lista_zonas')
-
         else:
             messages.error(request, "Por favor revise los campos marcados.")
-
     else:
         zona_form = ZonaLimpiezaForm()
         formset = TareaFormSet(queryset=TareaLimpieza.objects.none())
@@ -46,6 +44,7 @@ def registrar_zona(request):
         'zona_form': zona_form,
         'formset': formset
     })
+
 
 @login_required
 def index_limpieza(request):
@@ -61,13 +60,7 @@ def lista_zonas(request):
 @login_required
 def editar_zona(request, zona_id):
     zona = get_object_or_404(ZonaLimpieza, id=zona_id)
-    TareaFormSet = modelformset_factory(
-        TareaLimpieza, 
-        form=TareaLimpiezaForm, 
-        extra=0, 
-        can_delete=True, 
-        max_num=10
-    )
+    TareaFormSet = modelformset_factory(TareaLimpieza, form=TareaLimpiezaForm, extra=0, can_delete=True, max_num=10)
 
     if request.method == 'POST':
         zona_form = ZonaLimpiezaForm(request.POST, request.FILES, instance=zona)
@@ -82,22 +75,17 @@ def editar_zona(request, zona_id):
 
             for i, form in enumerate(formset):
                 tarea = form.save(commit=False)
-
                 if tarea.pk is None:
                     tarea.zona = zona
-
                 if f'eliminar_tarea_{i}' in request.POST and tarea.foto:
                     tarea.foto.delete()
                     tarea.foto = None
-
                 tarea.usuario_modifica = request.user
                 tarea.save()
-
                 if form.cleaned_data.get('DELETE'):
                     tarea.delete()
 
             return redirect('lista_zonas')
-
     else:
         zona_form = ZonaLimpiezaForm(instance=zona)
         formset = TareaFormSet(queryset=zona.tareas.all())
@@ -107,3 +95,52 @@ def editar_zona(request, zona_id):
         'formset': formset,
         'zona': zona
     })
+
+
+@login_required
+def lista_zonas_empleado(request):
+    habitaciones = ZonaLimpieza.objects.filter(is_habitacion=True).order_by('nombre')
+    otras_zonas = ZonaLimpieza.objects.filter(is_habitacion=False).order_by('nombre')
+    return render(request, 'limpieza/lista_zonas_empleado.html', {
+        'habitaciones': habitaciones,
+        'otras_zonas': otras_zonas
+    })
+
+
+@login_required
+def gestionar_zona(request, zona_id):
+    zona = get_object_or_404(ZonaLimpieza, id=zona_id)
+    tareas = TareaLimpieza.objects.filter(zona=zona)
+    mensaje_alerta = None
+
+    if request.method == "POST" and "cambiar_estado_zona" in request.POST:
+        nuevo_estado = request.POST.get("nuevo_estado", "").strip()
+        if nuevo_estado:
+            tareas_pendientes = zona.tareas.filter(estado="Pendiente").count()
+            if nuevo_estado == "Limpio (Disponible)" and tareas_pendientes > 0:
+                mensaje_alerta = "No se puede cambiar a Limpio (Disponible) hasta que se completen todas las tareas."
+            else:
+                zona.estado = nuevo_estado
+                zona.save()
+                messages.success(request, f"Estado de la zona actualizado a {nuevo_estado}")
+                return redirect("gestionar_zona", zona_id=zona.id)
+
+    return render(request, 'limpieza/gestionar_zona.html', {
+        'zona': zona,
+        'tareas': tareas,
+        'mensaje_alerta': mensaje_alerta
+    })
+
+
+@login_required
+def cambiar_estado_tarea(request, tarea_id):
+    tarea = get_object_or_404(TareaLimpieza, id=tarea_id)
+    if request.method == "POST":
+        nueva_observacion = request.POST.get("observaciones", "").strip()
+        if tarea.estado == "Pendiente":
+            tarea.estado = "Realizada"
+        else:
+            tarea.estado = "Pendiente"
+        tarea.observaciones_empleado = nueva_observacion if nueva_observacion else tarea.observaciones_empleado
+        tarea.save()
+    return redirect("gestionar_zona", zona_id=tarea.zona.id)
