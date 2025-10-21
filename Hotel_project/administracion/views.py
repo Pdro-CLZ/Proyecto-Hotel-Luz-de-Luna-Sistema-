@@ -1,15 +1,24 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
+import secrets
+
+from django.utils import timezone
 from django.utils.timezone import now, make_aware
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.http import JsonResponse, HttpResponseForbidden
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib import messages
-from django.views.generic.edit import FormView
 from django.contrib.auth.hashers import check_password
+import re 
+
+from django.views.generic.edit import FormView
 
 from .models import Usuario
 from personal.models import Empleado
 from .forms import ModificarMiUsuarioForm, RegistroUsuarioForm, LoginForm, EditarUsuarioForm
+
+import datetime
 
 User = get_user_model()
 
@@ -205,9 +214,6 @@ def apps_home(request):
         {"name": "Administración", "url": "dashboard_admin"},
         {"name": "Personal", "url": "marcar_asistencia"},
         {"name": "Contabilidad", "url": "apps_home"},
-        {"name": "Inventario", "url": "apps_home"},
-        {"name": "Limpieza", "url": "index_limpieza"},
-        {"name": "Marketing", "url": "apps_home"},
         {"name": "Inventario", "url": "lista_inventario"},
         {"name": "Limpieza", "url": "apps_home"},
         {"name": "Marketing", "url": "dashboard_marketing"},
@@ -265,3 +271,69 @@ def linkear_usuario_empleado(request):
         "usuarios": usuarios,
         "empleados": empleados
     })
+    
+
+
+# Diccionario temporal con tokens: {token: {"user_id": ..., "exp": ...}}
+reset_tokens = {}
+
+@login_required
+@user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
+def generar_reset_link(request, user_id):
+    """Genera un token único de un solo uso y devuelve el link como JSON."""
+    try:
+        usuario = Usuario.objects.get(id=user_id)
+        token = secrets.token_urlsafe(16)
+        # Expira en 10 minutos
+        reset_tokens[token] = {"user_id": usuario.id, "exp": timezone.now() + datetime.timedelta(minutes=10)}
+        reset_link = request.build_absolute_uri(reverse('reset_password_view', args=[token]))
+        return JsonResponse({"link": reset_link})
+    except Usuario.DoesNotExist:
+        return JsonResponse({"error": "Usuario no encontrado"}, status=404)
+
+
+def reset_password_view(request, token):
+    """Permite cambiar la contraseña si el token es válido y no expiró."""
+    data = reset_tokens.get(token)
+    if not data:
+        return render(request, "administracion/reset_password_invalid.html")
+
+    # Validar expiración
+    if timezone.now() > data["exp"]:
+        del reset_tokens[token]
+        return render(request, "administracion/reset_password_invalid.html")
+
+    usuario = Usuario.objects.get(id=data["user_id"])
+
+    if request.method == "POST":
+        pass1 = request.POST.get("password1")
+        pass2 = request.POST.get("password2")
+
+        if not pass1 or not pass2:
+            error = "Ambos campos son obligatorios."
+        elif pass1 != pass2:
+            error = "Las contraseñas no coinciden."
+        elif len(pass1) < 8:
+            error = "La contraseña debe tener al menos 8 caracteres."
+        elif not re.search(r"[A-Za-z]", pass1) or not re.search(r"[0-9]", pass1):
+            error = "La contraseña debe contener letras y números."
+        else:
+            usuario.set_password(pass1)
+            usuario.save()
+            del reset_tokens[token]  # token de un solo uso
+            return render(request, "administracion/reset_password_success.html")
+
+        return render(request, "administracion/reset_password.html", {
+            "usuario": usuario,
+            "token": token,
+            "error": error
+        })
+
+    # Inicia sesión automática solo durante el cambio
+    usuario.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, usuario)
+    return render(request, "administracion/reset_password.html", {"usuario": usuario, "token": token})
+
+
+
+
