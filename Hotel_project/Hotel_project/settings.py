@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'contabilidad',
     'inventario',
     'administracion.apps.AdministracionConfig',  # <--- así
+    'sitio_web',
 ]
 
 MIDDLEWARE = [

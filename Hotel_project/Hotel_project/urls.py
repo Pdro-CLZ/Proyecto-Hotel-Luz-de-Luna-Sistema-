@@ -31,6 +31,8 @@ urlpatterns = [
     # path('reporteria/', include('reporteria.urls')),
     # path('reservas/', include('reservas.urls')),
     # path('contabilidad/', include('contabilidad.urls')),
+    # path('inventario/', include('inventario.urls')),
+    path('sitio/', include('sitio_web.urls')),  # para el grandioso sitio web
     path('inventario/', include('inventario.urls')),
 ]
 
