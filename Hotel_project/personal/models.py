@@ -42,7 +42,7 @@ class Direccion(models.Model):
 
 
 class Empleado(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.PROTECT, null=True, blank=True)  
+    usuario = models.OneToOneField(Usuario, on_delete=models.PROTECT, null=False, blank=True)  
     direccion = models.ForeignKey(Direccion, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)

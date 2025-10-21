@@ -17,9 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.shortcuts import redirect
-from django.conf import settings
-from django.conf.urls.static import static
-
 
 urlpatterns = [
     path('', lambda request: redirect('login')),  # redirige "/" al login
@@ -33,8 +30,6 @@ urlpatterns = [
     path('contabilidad/', include('contabilidad.urls')),
     # path('inventario/', include('inventario.urls')),
     path('sitio/', include('sitio_web.urls')),  # para el grandioso sitio web
+    # path('contabilidad/', include('contabilidad.urls')),
     path('inventario/', include('inventario.urls')),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,134 @@
+body {
+  background-color: #b9bf9c;
+  font-family: Optima, Lucida, 'MgOpen Cosmética', 'Lucida Sans Unicode', sans-serif;
+  color: #222;
+}
+
+#content {
+  background-color: #faf8d3;
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.titulo-primario {
+  font-family: 'museo_sans500', sans-serif;
+  color: #b6be85;
+  font-weight: 400;
+  font-size: 1.66em;
+}
+
+h2, h3 {
+  font-family: 'museo_sans500', sans-serif;
+  color: #f4f0bf;
+  letter-spacing: 1px;
+}
+
+a {
+  color: #51a7da;
+}
+
+a:hover {
+  color: #ee6a00;
+}
+
+.btn-personalizado {
+  background-color: #b6be85;
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: bold;
+}
+
+.btn-personalizado:hover {
+  background-color: #858b65;
+  color: #fff;
+}
+
+.table th {
+  background-color: #858b65;
+  color: #fff;
+}
+
+.navbar {
+  background-color: #b6be85;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.nav-logo {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  background-color: #858b65;
+}
+
+.nav-toggle {
+  display: none;
+  font-size: 1.8em;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Responsive: menú hamburguesa */
+@media (max-width: 768px) {
+  .nav-links {
+    width: 100%;
+    flex-direction: column;
+    display: none;
+    margin-top: 10px;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links li a {
+    display: block;
+    width: 100%;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .navbar.open .nav-links {
+    display: flex;
+  }
+}
+
+
+
