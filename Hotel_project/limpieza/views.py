@@ -1,149 +1,109 @@
 from django.shortcuts import render, redirect, get_object_or_404
-# from django.contrib.auth.decorators import login_required
-from .models import Limpieza, Habitacion,Zona, TareaLimpieza,TareaZona
 from django.contrib import messages
-from .forms import LimpiezaForm
+from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
-from .forms import ZonaForm, TareaForm
-from django.http import JsonResponse
+from django.utils import timezone
 
-# @login_required
-def visualizar_estados(request):
-    try:
-        limpiezas = Limpieza.objects.all()
-        zonas = Zona.objects.all()
-
-        if not limpiezas and not zonas:
-            return render(request, "limpieza/visualizar_estados.html", {
-                "mensaje": "No hay estados de limpieza ni zonas registradas."
-            })
-
-        return render(request, "limpieza/visualizar_estados.html", {
-            "limpiezas": limpiezas,
-            "zonas": zonas
-        })
-    except Exception:
-        return render(request, "limpieza/visualizar_estados.html", {
-            "error": "No se ha podido cargar la página, consulte con el administrador o revise su conexión."
-        })
-
-    
-def registrar_estado(request, habitacion_id):
-    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
-
-    if request.method == "POST":
-        form = LimpiezaForm(request.POST)
-        if form.is_valid():
-            limpieza = form.save(commit=False)
-            limpieza.habitacion = habitacion
-            limpieza.empleado = request.user.empleado 
-            limpieza.save()
-            form.save_m2m()  
-            messages.success(request, "Información registrada satisfactoriamente")
-            return redirect("limpieza:visualizar_estados")
-        else:
-            messages.error(request, "Por favor seleccione una tarea por lo menos")
-    else:
-        form = LimpiezaForm()
-
-    return render(request, "limpieza/registrar_estado.html", {
-        "habitacion": habitacion,
-        "form": form,
-    })
+from .models import ZonaLimpieza, TareaLimpieza
+from .forms import ZonaLimpiezaForm, TareaLimpiezaForm
 
 
-def visualizar_estado(request, habitacion_id):
-    try:
-        habitacion = get_object_or_404(Habitacion, id=habitacion_id)
-        limpieza = Limpieza.objects.filter(habitacion=habitacion).last()
-
-        if not limpieza:
-            messages.warning(request, "No hay registros de limpieza para esta habitación/zona.")
-            return render(request, "limpieza/visualizar_estado.html", {"habitacion": habitacion})
-
-        return render(request, "limpieza/visualizar_estado.html", {
-            "habitacion": habitacion,
-            "limpieza": limpieza,
-            "tareas": limpieza.tareas.all() if hasattr(limpieza, "tareas") else [],
-        })
-
-    except Exception:
-        return render(request, "limpieza/visualizar_estado.html", {
-            "error": "No se ha podido cargar la página, consulte con el administrador o revise su conexión."
-        })
-
+@login_required
 def registrar_zona(request):
-    TareaFormSet = modelformset_factory(TareaLimpieza, form=TareaForm, extra=1, can_delete=True)
+    TareaFormSet = modelformset_factory(TareaLimpieza, form=TareaLimpiezaForm, extra=1, can_delete=True)
 
-    if request.method == "POST":
-        zona_form = ZonaForm(request.POST, request.FILES)
-        tarea_formset = TareaFormSet(request.POST, request.FILES, queryset=TareaLimpieza.objects.none())
+    if request.method == 'POST':
+        zona_form = ZonaLimpiezaForm(request.POST, request.FILES)
+        formset = TareaFormSet(request.POST, request.FILES, queryset=TareaLimpieza.objects.none())
 
-        if zona_form.is_valid() and tarea_formset.is_valid():
-            zona = zona_form.save()
+        if zona_form.is_valid() and formset.is_valid():
+            tareas_validas = [form for form in formset if form.cleaned_data.get('nombre') and form.cleaned_data.get('detalles')]
+            if not tareas_validas:
+                messages.error(request, "Debe registrar al menos una tarea con nombre y detalles.")
+            else:
+                zona = zona_form.save(commit=False)
+                zona.usuario_registro = request.user
+                zona.fecha_registro = timezone.now()
+                zona.save()
 
-            for form in tarea_formset:
-                if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
+                for form in tareas_validas:
                     tarea = form.save(commit=False)
                     tarea.zona = zona
+                    tarea.usuario_modifica = request.user
                     tarea.save()
 
-            messages.success(request, "Registro satisfactorio")
-            return redirect("limpieza:visualizar_estados")
+                messages.success(request, "Registro satisfactorio")
+                return redirect('lista_zonas')
+
         else:
-            messages.error(request, "Revise los errores en el formulario")
+            messages.error(request, "Por favor revise los campos marcados.")
 
     else:
-        zona_form = ZonaForm()
-        tarea_formset = TareaFormSet(queryset=TareaLimpieza.objects.none())
+        zona_form = ZonaLimpiezaForm()
+        formset = TareaFormSet(queryset=TareaLimpieza.objects.none())
 
-    return render(request, "limpieza/registrar_zona.html", {
-        "zona_form": zona_form,
-        "tarea_formset": tarea_formset,
+    return render(request, 'limpieza/agregar_zona.html', {
+        'zona_form': zona_form,
+        'formset': formset
     })
 
-def actualizar_zona(request, zona_id):
-    zona = get_object_or_404(Zona, id=zona_id)
-    TareaFormSet = modelformset_factory(TareaZona, form=TareaForm, extra=0, can_delete=True)
+@login_required
+def index_limpieza(request):
+    return render(request, 'limpieza/index_limpieza.html')
 
-    if request.method == "POST":
-        zona_form = ZonaForm(request.POST, request.FILES, instance=zona)
-        tarea_formset = TareaFormSet(request.POST, request.FILES, queryset=zona.tareas.all())
 
-        if zona_form.is_valid() and tarea_formset.is_valid():
+@login_required
+def lista_zonas(request):
+    zonas = ZonaLimpieza.objects.all().order_by('-fecha_registro')
+    return render(request, 'limpieza/lista_zonas.html', {'zonas': zonas})
+
+
+@login_required
+def editar_zona(request, zona_id):
+    zona = get_object_or_404(ZonaLimpieza, id=zona_id)
+    TareaFormSet = modelformset_factory(
+        TareaLimpieza, 
+        form=TareaLimpiezaForm, 
+        extra=0, 
+        can_delete=True, 
+        max_num=10
+    )
+
+    if request.method == 'POST':
+        zona_form = ZonaLimpiezaForm(request.POST, request.FILES, instance=zona)
+        formset = TareaFormSet(request.POST, request.FILES, queryset=zona.tareas.all())
+
+        if zona_form.is_valid() and formset.is_valid():
+            if 'eliminar_foto' in request.POST and zona.foto:
+                zona.foto.delete()
+                zona.foto = None
+
             zona_form.save()
 
-            for form in tarea_formset:
-                if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
-                    tarea = form.save(commit=False)
+            for i, form in enumerate(formset):
+                tarea = form.save(commit=False)
+
+                if tarea.pk is None:
                     tarea.zona = zona
-                    tarea.save()
 
-            messages.success(request, "Actualización satisfactoria")
-            return redirect("limpieza:visualizar_estados")
-        else:
-            messages.error(request, "Revise los errores en el formulario")
+                if f'eliminar_tarea_{i}' in request.POST and tarea.foto:
+                    tarea.foto.delete()
+                    tarea.foto = None
+
+                tarea.usuario_modifica = request.user
+                tarea.save()
+
+                if form.cleaned_data.get('DELETE'):
+                    tarea.delete()
+
+            return redirect('lista_zonas')
 
     else:
-        zona_form = ZonaForm(instance=zona)
-        tarea_formset = TareaFormSet(queryset=zona.tareas.all())
+        zona_form = ZonaLimpiezaForm(instance=zona)
+        formset = TareaFormSet(queryset=zona.tareas.all())
 
-    return render(request, "limpieza/actualizar_zona.html", {
-        "zona": zona,
-        "zona_form": zona_form,
-        "tarea_formset": tarea_formset,
+    return render(request, 'limpieza/editar_zona.html', {
+        'zona_form': zona_form,
+        'formset': formset,
+        'zona': zona
     })
-
-def buscar_zona(request):
-    query = request.GET.get("q", "")
-    resultados = []
-
-    if query.isdigit():
-        zonas = Zona.objects.filter(id=query)
-    else:
-        zonas = Zona.objects.filter(nombre__icontains=query)
-
-    for zona in zonas:
-        resultados.append({"id": zona.id, "nombre": zona.nombre})
-
-    return JsonResponse({"resultados": resultados})
