@@ -1,3 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Contabilidad{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -9,23 +13,6 @@
 </head>
 
 <body>
-
-  <!-- NAVBAR -->
-  <nav class="admin-nav">
-    <div class="admin-nav-container">
-      <a href="#" class="admin-nav-logo">Hotel Luz de Luna</a>
-      <ul class="admin-nav-links">
-        <li><a href="#">Inventario</a></li>
-        <li><a href="#">Limpieza</a></li>
-        <li><a href="#">Administrativo</a></li>
-        <li><a href="#">Marketing</a></li>
-        <li><a href="#">Reservas</a></li>
-        <li><a href="{% url 'contabilidad_panel' %}" class="activo">Contabilidad</a></li>
-        <li><a href="#">Reportería</a></li>
-      </ul>
-    </div>
-  </nav>
-
   <!-- ENCABEZADO -->
   <header>
     <h1>Módulo de Contabilidad</h1>
@@ -168,3 +155,4 @@
 
 </body>
 </html>
+{% endblock %}
