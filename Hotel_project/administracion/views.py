@@ -18,7 +18,7 @@ from .models import Usuario
 from personal.models import Empleado
 from .forms import ModificarMiUsuarioForm, RegistroUsuarioForm, LoginForm, EditarUsuarioForm
 
-import datetime
+from datetime import datetime
 
 User = get_user_model()
 
@@ -27,6 +27,7 @@ class LoginView(FormView):
     form_class = LoginForm
 
     def get(self, request, *args, **kwargs):
+        # Limpiar mensajes previos
         list(messages.get_messages(request))
         return super().get(request, *args, **kwargs)
 
@@ -35,7 +36,7 @@ class LoginView(FormView):
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
 
-        # Revisar si está bloqueado
+        # Verificar bloqueo previo
         block_until_ts = request.session.get("block_until")
         if block_until_ts:
             block_until = make_aware(datetime.fromtimestamp(block_until_ts))
@@ -43,50 +44,51 @@ class LoginView(FormView):
                 request.session["is_blocked"] = True
                 messages.error(
                     request,
-                    "Has superado el límite de intentos. Intenta de nuevo en 15 segundos."
+                    "Has superado el límite de intentos. Intenta de nuevo más tarde."
                 )
                 return self.form_invalid(form)
             else:
+                # Bloqueo expirado
                 request.session.pop("block_until", None)
                 request.session["failed_attempts"] = 0
                 request.session["is_blocked"] = False
 
+        # Intento de login
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             user = None
 
-        if user:
-            if not user.is_active:
-                messages.error(request, "Usuario inactivo, por favor contacte con el admin.")
-                return self.form_invalid(form)
+        if not user or not check_password(password, user.password):
+            # Usuario inexistente o contraseña incorrecta
+            attempts = request.session.get("failed_attempts", 0) + 1
+            request.session["failed_attempts"] = attempts
 
-            if check_password(password, user.password):
-                login(request, user)
-                request.session["failed_attempts"] = 0
-                request.session.pop("block_until", None)
-                request.session["is_blocked"] = False
-                return redirect("apps_home")
+            if attempts >= 5:
+                unblock_time = now() + timedelta(seconds=15)  # Ajusta el tiempo de bloqueo
+                request.session["block_until"] = unblock_time.timestamp()
+                request.session["is_blocked"] = True
+                messages.error(
+                    request,
+                    "Cuenta bloqueada por intentos fallidos. Intenta de nuevo en 15 segundos."
+                )
             else:
-                attempts = request.session.get("failed_attempts", 0) + 1
-                request.session["failed_attempts"] = attempts
+                request.session["is_blocked"] = False
+                messages.error(request, "Usuario o contraseña incorrectos.")
 
-                if attempts >= 5:
-                    unblock_time = now() + timedelta(seconds=15)
-                    request.session["block_until"] = unblock_time.timestamp()
-                    request.session["is_blocked"] = True
-                    messages.error(
-                        request,
-                        "Cuenta bloqueada por intentos fallidos. Intenta de nuevo en 15 segundos."
-                    )
-                else:
-                    messages.error(request, "Usuario o contraseña incorrectos.")
-                    request.session["is_blocked"] = False
-
-                return self.form_invalid(form)
-        else:
-            messages.error(request, "Usuario o contraseña incorrectos.")
             return self.form_invalid(form)
+
+        # Usuario encontrado y contraseña correcta
+        if not user.is_active:
+            messages.error(request, "Usuario inactivo, contacte con el admin.")
+            return self.form_invalid(form)
+
+        # Login exitoso
+        login(request, user)
+        request.session["failed_attempts"] = 0
+        request.session.pop("block_until", None)
+        request.session["is_blocked"] = False
+        return redirect("apps_home")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

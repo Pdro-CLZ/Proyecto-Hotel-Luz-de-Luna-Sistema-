@@ -11,5 +11,4 @@ urlpatterns = [
     path('cerrar/', views.cerrar_sesion, name='cerrar_sesion'),
     path('perfil/', views.perfil, name='perfil_cliente'),  # opcional, si quieres mostrar perfil
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
-    
 ]
