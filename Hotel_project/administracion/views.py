@@ -1,27 +1,26 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 import secrets
+import re
 
 from django.utils import timezone
 from django.utils.timezone import now, make_aware
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.hashers import check_password
-import re 
-
 from django.views.generic.edit import FormView
 
-from .models import Usuario
+from .models import Usuario, PasswordResetToken
 from personal.models import Empleado
 from .forms import ModificarMiUsuarioForm, RegistroUsuarioForm, LoginForm, EditarUsuarioForm
 
-from datetime import datetime
-
 User = get_user_model()
 
+
+# ------------------ LOGIN ------------------
 class LoginView(FormView):
     template_name = "administracion/login.html"
     form_class = LoginForm
@@ -65,7 +64,7 @@ class LoginView(FormView):
             request.session["failed_attempts"] = attempts
 
             if attempts >= 5:
-                unblock_time = now() + timedelta(seconds=15)  # Ajusta el tiempo de bloqueo
+                unblock_time = now() + timedelta(seconds=15)
                 request.session["block_until"] = unblock_time.timestamp()
                 request.session["is_blocked"] = True
                 messages.error(
@@ -101,6 +100,7 @@ def logout_view(request):
     return redirect("login")
 
 
+# ------------------ DASHBOARD ------------------
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def dashboard_admin(request):
@@ -122,12 +122,12 @@ def dashboard_admin(request):
     })
 
 
+# ------------------ PERFIL ------------------
 @login_required
 def perfil_empleado(request):
     if request.method == "POST":
         form = EditarUsuarioForm(request.POST, instance=request.user)
         if form.is_valid():
-            # Validación solo de campos existentes
             cedula = form.cleaned_data.get("cedula")
             first_name = form.cleaned_data.get("first_name")
             last_name = form.cleaned_data.get("last_name")
@@ -153,16 +153,37 @@ def perfil_empleado(request):
 
 
 @login_required
+def modificar_mi_usuario(request):
+    usuario = request.user
+    tiene_empleado = hasattr(usuario, 'empleado')
+
+    if request.method == "POST":
+        form = ModificarMiUsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Información actualizada correctamente")
+            return redirect("apps_home")
+    else:
+        form = ModificarMiUsuarioForm(instance=usuario)
+
+    return render(request, "administracion/modificar_mi_usuario.html", {
+        "form": form,
+        "usuario": usuario,
+        "tiene_empleado": tiene_empleado
+    })
+
+
+# ------------------ REGISTRO Y EDICIÓN DE USUARIOS ------------------
+@login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def registrar_usuario(request):
     mostrar_modal = False
-
     if request.method == "POST":
         form = RegistroUsuarioForm(request.POST)
         if form.is_valid():
             form.save()
-            mostrar_modal = True 
-            form = RegistroUsuarioForm() 
+            mostrar_modal = True
+            form = RegistroUsuarioForm()
     else:
         form = RegistroUsuarioForm()
 
@@ -171,11 +192,11 @@ def registrar_usuario(request):
         "mostrar_modal": mostrar_modal
     })
 
+
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def modificar_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
-
     if request.method == "POST":
         form = EditarUsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
@@ -211,58 +232,20 @@ def activar_inactivar_usuario(request, usuario_id):
     return redirect("dashboard_admin")
 
 
-def apps_home(request):
-    apps = [
-        {"name": "Administración", "url": "dashboard_admin"},
-        {"name": "Personal", "url": "marcar_asistencia"},
-        {"name": "Contabilidad", "url": "contabilidad_panel"},
-        {"name": "Inventario", "url": "lista_inventario"},
-        {"name": "Limpieza", "url": "index_limpieza"},
-        {"name": "Marketing", "url": "dashboard_marketing"},
-        {"name": "Reportería", "url": "apps_home"},
-        {"name": "Reservas", "url": "apps_home"},
-    ]
-    return render(request, "administracion/apps_home.html", {"apps": apps})
-
-
-@login_required
-def modificar_mi_usuario(request):
-    usuario = request.user
-    tiene_empleado = hasattr(usuario, 'empleado')
-
-    if request.method == "POST":
-        form = ModificarMiUsuarioForm(request.POST, instance=usuario)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Información actualizada correctamente")
-            return redirect("apps_home")
-    else:
-        form = ModificarMiUsuarioForm(instance=usuario)
-
-    return render(request, "administracion/modificar_mi_usuario.html", {
-        "form": form,
-        "usuario": usuario,
-        "tiene_empleado": tiene_empleado
-    })
-
-
+# ------------------ LINK USUARIO-EMPLEADO ------------------
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def linkear_usuario_empleado(request):
     usuarios = Usuario.objects.all()
-    empleados = Empleado.objects.all()  # CORREGIDO: traer Empleados reales
-
+    empleados = Empleado.objects.all()
     if request.method == "POST":
         usuario_id = request.POST.get("usuario")
         empleado_id = request.POST.get("empleado")
-
         try:
             usuario = Usuario.objects.get(id=usuario_id)
             empleado = Empleado.objects.get(id=empleado_id)
-
             empleado.usuario = usuario
             empleado.save()
-
             messages.success(request, "Linkeo exitoso")
             return redirect("linkear_usuario_empleado")
         except Exception as e:
@@ -273,22 +256,17 @@ def linkear_usuario_empleado(request):
         "usuarios": usuarios,
         "empleados": empleados
     })
-    
 
 
-# Diccionario temporal con tokens: {token: {"user_id": ..., "exp": ...}}
-reset_tokens = {}
-
+# ------------------ RESET DE CONTRASEÑA ------------------
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def generar_reset_link(request, user_id):
-    """Genera un token único de un solo uso y devuelve el link como JSON."""
+    """Genera un token único y persistente en BD, devuelve el link como JSON."""
     try:
         usuario = Usuario.objects.get(id=user_id)
-        token = secrets.token_urlsafe(16)
-        # Expira en 10 minutos
-        reset_tokens[token] = {"user_id": usuario.id, "exp": timezone.now() + datetime.timedelta(minutes=10)}
-        reset_link = request.build_absolute_uri(reverse('reset_password_view', args=[token]))
+        token_obj = PasswordResetToken.crear_token(usuario)
+        reset_link = request.build_absolute_uri(reverse('reset_password_view', args=[token_obj.token]))
         return JsonResponse({"link": reset_link})
     except Usuario.DoesNotExist:
         return JsonResponse({"error": "Usuario no encontrado"}, status=404)
@@ -296,16 +274,16 @@ def generar_reset_link(request, user_id):
 
 def reset_password_view(request, token):
     """Permite cambiar la contraseña si el token es válido y no expiró."""
-    data = reset_tokens.get(token)
-    if not data:
+    try:
+        token_obj = PasswordResetToken.objects.get(token=token, usado=False)
+    except PasswordResetToken.DoesNotExist:
         return render(request, "administracion/reset_password_invalid.html")
 
-    # Validar expiración
-    if timezone.now() > data["exp"]:
-        del reset_tokens[token]
+    if timezone.now() > token_obj.expira:
+        token_obj.delete()
         return render(request, "administracion/reset_password_invalid.html")
 
-    usuario = Usuario.objects.get(id=data["user_id"])
+    usuario = token_obj.usuario
 
     if request.method == "POST":
         pass1 = request.POST.get("password1")
@@ -322,7 +300,8 @@ def reset_password_view(request, token):
         else:
             usuario.set_password(pass1)
             usuario.save()
-            del reset_tokens[token]  # token de un solo uso
+            token_obj.usado = True
+            token_obj.save()
             return render(request, "administracion/reset_password_success.html")
 
         return render(request, "administracion/reset_password.html", {
@@ -331,11 +310,21 @@ def reset_password_view(request, token):
             "error": error
         })
 
-    # Inicia sesión automática solo durante el cambio
     usuario.backend = 'django.contrib.auth.backends.ModelBackend'
     login(request, usuario)
     return render(request, "administracion/reset_password.html", {"usuario": usuario, "token": token})
 
 
-
-
+# ------------------ APPS HOME ------------------
+def apps_home(request):
+    apps = [
+        {"name": "Administración", "url": "dashboard_admin"},
+        {"name": "Personal", "url": "marcar_asistencia"},
+        {"name": "Contabilidad", "url": "contabilidad_panel"},
+        {"name": "Inventario", "url": "lista_inventario"},
+        {"name": "Limpieza", "url": "index_limpieza"},
+        {"name": "Marketing", "url": "dashboard_marketing"},
+        {"name": "Reportería", "url": "apps_home"},
+        {"name": "Reservas", "url": "apps_home"},
+    ]
+    return render(request, "administracion/apps_home.html", {"apps": apps})

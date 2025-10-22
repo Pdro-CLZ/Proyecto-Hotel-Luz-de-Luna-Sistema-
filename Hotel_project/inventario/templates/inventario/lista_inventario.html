@@ -2,6 +2,7 @@
 {% block title %}Inventario{% endblock %}
 {% block content %}
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,33 +14,30 @@
 
 <div class="menu-container">
 
-    
-
     <!-- Filtros -->
-    <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px; width:100%;">
+    <form method="get" style="margin-top:20px; display:flex; flex-direction:column; gap:10px; width:100%;">
         <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; width:100%;">
             <label>Tipo:</label>
             <select name="tipo" class="select-box" style="width:200px;">
                 <option value="">Todos</option>
-                <option value="Activo" {% if tipo_filter|default:'' == "Activo" %}selected{% endif %}>Activo</option>
-                <option value="Insumo" {% if tipo_filter|default:'' == "Insumo" %}selected{% endif %}>Insumo</option>
+                <option value="Activo" {% if tipo_filter == "Activo" %}selected{% endif %}>Activo</option>
+                <option value="Insumo" {% if tipo_filter == "Insumo" %}selected{% endif %}>Insumo</option>
             </select>
 
             <label>Estado:</label>
             <select name="estado" class="select-box" style="width:200px;">
                 <option value="">Todos</option>
-                <option value="Activo" {% if estado_filter|default:'' == "Activo" %}selected{% endif %}>Activo</option>
-                <option value="Inactivo" {% if estado_filter|default:'' == "Inactivo" %}selected{% endif %}>Inactivo</option>
+                <option value="Activo" {% if estado_filter == "Activo" %}selected{% endif %}>Activo</option>
+                <option value="Inactivo" {% if estado_filter == "Inactivo" %}selected{% endif %}>Inactivo</option>
             </select>
         </div>
 
         <div style="display:flex; justify-content:center; margin-top:10px;">
             <button type="submit" class="boton-verde">Filtrar</button>
         </div>
-    </div>
+    </form>
 
-
-    <!-- Botón Registrar Item alineado a la izquierda -->
+    <!-- Botón Registrar Item -->
     <div style="display:flex; justify-content:flex-start; margin-top:20px;">
         <a class="boton-verde" href="{% url 'crear_inventario' %}">Registrar Item</a>
     </div>
@@ -66,16 +64,17 @@
                     <td>{{ i.cantidad }}</td>
                     <td>{{ i.activo|yesno:"Sí,No" }}</td>
                     <td>
-                        {% if user.rol and user.rol.nombre in "Administrador Manager" %}
+                        {% comment %}
+                        Para evitar errores de Django: verificamos rol usando 'in' con string separado
+                        {% endcomment %}
+                        {% if user.rol and user.rol.nombre == "Administrador" or user.rol.nombre == "Manager" %}
                             <a href="{% url 'editar_inventario' i.id %}">Editar</a> |
-                        
-                        <a href="{% url 'activar_inactivar_inventario' i.id %}">
-                            {% if i.activo %}Inactivar{% else %}Activar{% endif %}
-                        </a>
+                            <a href="{% url 'activar_inactivar_inventario' i.id %}">
+                                {% if i.activo %}Inactivar{% else %}Activar{% endif %}
+                            </a> |
                         {% endif %}
                         <a href="{% url 'editar_cantidad_inventario' i.id %}">Editar Cantidad</a>
                     </td>
-
                 </tr>
                 {% empty %}
                 <tr>
@@ -86,8 +85,8 @@
         </table>
     </div>
 
-
 </div>
 </body>
 </html>
+
 {% endblock %}

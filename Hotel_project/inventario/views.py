@@ -19,11 +19,16 @@ def lista_inventario(request):
     elif estado_filter == 'Inactivo':
         items = items.filter(activo=False)
 
+    # Variable para template: es admin o manager
+    es_admin_o_manager = request.user.rol and request.user.rol.nombre in ["Administrador", "Manager"]
+
     return render(request, 'inventario/lista_inventario.html', {
         'inventario': items,
         'tipo_filter': tipo_filter,
         'estado_filter': estado_filter,
+        'es_admin_o_manager': es_admin_o_manager,
     })
+
 
 
 # --- Crear ---
