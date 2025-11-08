@@ -1,10 +1,36 @@
 from django.db import models
 
-class Estado(models.Model):
-    nombre = models.CharField(max_length=100)
+
+class Amenidad(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.nombre
+
+
+class Habitacion(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    amenidades = models.ManyToManyField(Amenidad, related_name='habitaciones')
+
+    def __str__(self):
+        return self.nombre
+
+
+class PrecioHabitacion(models.Model):
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, related_name='precios')
+    fecha = models.DateField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('habitacion', 'fecha')
+        indexes = [
+            models.Index(fields=['habitacion', 'fecha']),
+        ]
+        verbose_name_plural = 'Precios de Habitaciones'
+
+    def __str__(self):
+        return f"{self.habitacion.nombre} - {self.fecha}: ₡{self.precio}"
 
 
 class Cliente(models.Model):
@@ -12,47 +38,40 @@ class Cliente(models.Model):
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=15)
     correo = models.EmailField(max_length=100)
-    identificacion = models.CharField(max_length=20)
-    fecha_nacimiento = models.DateField()
+    identificacion = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
 
-class TipoHabitacion(models.Model):
-    nombre = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.nombre
-
-
-class Habitacion(models.Model):
-    estado = models.ForeignKey(Estado, on_delete=models.CASCADE)
-    tipo = models.ForeignKey(TipoHabitacion, on_delete=models.CASCADE)
-    numero = models.CharField(max_length=10)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    desayuno_incluido = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Habitación {self.numero}"
-
-
-class MetodoPago(models.Model):
-    nombre = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.nombre
-
-
 class Reserva(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
-    metodo_pago = models.ForeignKey(MetodoPago, on_delete=models.CASCADE)
-    estado = models.ForeignKey(Estado, on_delete=models.CASCADE)
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, related_name='reservas')
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reservas')
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    canal_reserva = models.CharField(max_length=50)
     total = models.DecimalField(max_digits=10, decimal_places=2)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['habitacion', 'fecha_inicio', 'fecha_fin']),
+            models.Index(fields=['cliente']),
+        ]
+
     def __str__(self):
-        return f"Reserva {self.id} - {self.cliente}"
+        return f"Reserva {self.id} - {self.cliente} ({self.habitacion.nombre})"
+
+
+class FechaReservada(models.Model):
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, related_name='fechas_reservadas')
+    fecha = models.DateField()
+    reserva = models.ForeignKey(Reserva, on_delete=models.CASCADE, related_name='fechas_reservadas')
+
+    class Meta:
+        unique_together = ('habitacion', 'fecha')
+        indexes = [
+            models.Index(fields=['habitacion', 'fecha']),
+        ]
+        verbose_name_plural = 'Fechas Reservadas'
+
+    def __str__(self):
+        return f"{self.habitacion.nombre} - {self.fecha}"

@@ -72,3 +72,11 @@ class EditarPerfilForm(forms.Form):
             self.fields['provincia'].initial = direccion.provincia.nombre
             self.fields['canton'].initial = direccion.canton.nombre
             self.fields['distrito'].initial = direccion.distrito.nombre
+            
+class ConsultaDisponibilidadForm(forms.Form):
+    fecha_inicio = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    fecha_fin = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )

@@ -11,4 +11,6 @@ urlpatterns = [
     path('cerrar/', views.cerrar_sesion, name='cerrar_sesion'),
     path('perfil/', views.perfil, name='perfil_cliente'),  # opcional, si quieres mostrar perfil
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
+    path('consultar/', views.consultar_disponibilidad, name='consultar_disponibilidad'),
+    path('reservar/<int:habitacion_id>/', views.reservar_habitacion, name='reservar_habitacion'),
 ]
