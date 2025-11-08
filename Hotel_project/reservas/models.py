@@ -45,11 +45,27 @@ class Cliente(models.Model):
 
 
 class Reserva(models.Model):
+    METODOS_PAGO = [
+        ('tarjeta', 'Tarjeta'),
+        ('efectivo', 'Efectivo'),
+        ('transferencia', 'Transferencia'),
+        ('sitio', 'Sitio'),
+    ]
+
+    CANALES_RESERVACION = [
+        ('sitio', 'Sitio'),
+        ('directo', 'Directo'),
+        ('booking', 'Booking.com'),
+        ('airbnb', 'Airbnb'),
+    ]
+
     habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, related_name='reservas')
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reservas')
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
+    metodo_pago = models.CharField(max_length=20, choices=METODOS_PAGO, default='sitio')
+    canal_reservacion = models.CharField(max_length=20, choices=CANALES_RESERVACION, default='sitio')
 
     class Meta:
         indexes = [
@@ -59,6 +75,7 @@ class Reserva(models.Model):
 
     def __str__(self):
         return f"Reserva {self.id} - {self.cliente} ({self.habitacion.nombre})"
+
 
 
 class FechaReservada(models.Model):

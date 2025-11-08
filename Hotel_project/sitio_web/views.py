@@ -229,8 +229,9 @@ def editar_perfil(request):
 
     return render(request, 'sitio_web/editar_perfil.html', {'form': form})
 
-from django.db.models import Sum, Prefetch
-from reservas.models import Habitacion, FechaReservada, PrecioHabitacion, Amenidad
+from django.db.models import Sum
+from django.shortcuts import render
+from reservas.models import Habitacion, FechaReservada, PrecioHabitacion
 from .forms import ConsultaDisponibilidadForm
 
 def consultar_disponibilidad(request):
@@ -243,42 +244,65 @@ def consultar_disponibilidad(request):
             fecha_inicio = form.cleaned_data['fecha_inicio']
             fecha_fin = form.cleaned_data['fecha_fin']
 
-            # Habitaciones ocupadas en el rango
+            # 🔹 Guardar las fechas seleccionadas en la sesión
+            request.session['fecha_inicio'] = str(fecha_inicio)
+            request.session['fecha_fin'] = str(fecha_fin)
+
+            # 🔹 Buscar habitaciones ocupadas dentro del rango
             habitaciones_ocupadas = FechaReservada.objects.filter(
                 fecha__range=(fecha_inicio, fecha_fin)
             ).values_list('habitacion_id', flat=True).distinct()
 
-            # Habitaciones disponibles, optimizando para traer amenidades
+            # 🔹 Obtener las habitaciones disponibles
             habitaciones_disponibles = Habitacion.objects.exclude(
                 id__in=habitaciones_ocupadas
             ).prefetch_related('amenidades')
 
-            # Calcular precios totales
+            # 🔹 Calcular el precio total por habitación
             for hab in habitaciones_disponibles:
                 total = PrecioHabitacion.objects.filter(
                     habitacion=hab,
                     fecha__range=(fecha_inicio, fecha_fin)
                 ).aggregate(total=Sum('precio'))['total'] or 0
                 precios_totales[hab.id] = total
+
     else:
         form = ConsultaDisponibilidadForm()
 
+    # 🔹 Contexto para la plantilla
     context = {
         'form': form,
         'habitaciones_disponibles': habitaciones_disponibles,
         'precios_totales': precios_totales,
     }
+
     return render(request, 'sitio_web/consultar_disponibilidad.html', context)
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib import messages
-from reservas.models import Habitacion, Reserva, Cliente
+from django.db import models
+from reservas.models import Habitacion, Reserva, Cliente, FechaReservada, PrecioHabitacion
 import re
+from datetime import timedelta, datetime
 
 def reservar_habitacion(request, habitacion_id):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+    # 🔹 Recuperar las fechas seleccionadas previamente (guardadas en sesión o query params)
+    fecha_inicio = request.session.get('fecha_inicio')
+    fecha_fin = request.session.get('fecha_fin')
+
+    if not fecha_inicio or not fecha_fin:
+        messages.error(request, "Debes seleccionar un rango de fechas antes de reservar.")
+        return redirect('consultar_disponibilidad')
+
+    # Convertir las fechas desde string si vienen en formato texto
+    if isinstance(fecha_inicio, str):
+        fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
+    if isinstance(fecha_fin, str):
+        fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
 
     if request.method == 'POST':
         nombre = request.POST.get('nombre', '').strip()
@@ -288,7 +312,7 @@ def reservar_habitacion(request, habitacion_id):
 
         errores = []
 
-        # Validaciones
+        # 🔹 Validaciones
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', nombre):
             errores.append("El nombre debe tener al menos 3 letras y solo contener caracteres alfabéticos.")
 
@@ -307,7 +331,7 @@ def reservar_habitacion(request, habitacion_id):
             for e in errores:
                 messages.error(request, e)
         else:
-            # Crear o reutilizar cliente
+            # 🔹 Crear o reutilizar cliente
             cliente, _ = Cliente.objects.get_or_create(
                 identificacion=cedula,
                 defaults={
@@ -318,19 +342,39 @@ def reservar_habitacion(request, habitacion_id):
                 }
             )
 
-            # Crear reserva provisional (sin fechas, ajusta según tus campos reales)
-            Reserva.objects.create(
+            # 🔹 Calcular total real de la reserva según precios por fecha
+            precios = PrecioHabitacion.objects.filter(
+                habitacion=habitacion,
+                fecha__range=(fecha_inicio, fecha_fin)
+            ).aggregate(total=models.Sum('precio'))
+            total = precios['total'] or 0
+
+            # 🔹 Crear la reserva con método y canal automáticos
+            reserva = Reserva.objects.create(
                 habitacion=habitacion,
                 cliente=cliente,
-                fecha_inicio='2025-01-01',  # ⚠️ temporal: cambia según tus datos del flujo
-                fecha_fin='2025-01-02',
-                total=0
+                fecha_inicio=fecha_inicio,
+                fecha_fin=fecha_fin,
+                total=total,
+                metodo_pago='sitio',
+                canal_reservacion='sitio'
             )
 
-            messages.success(request, "Reserva confirmada exitosamente.")
+            # 🔹 Crear registros día por día en FechaReservada
+            fecha_actual = fecha_inicio
+            while fecha_actual <= fecha_fin:
+                FechaReservada.objects.create(
+                    habitacion=habitacion,
+                    fecha=fecha_actual,
+                    reserva=reserva
+                )
+                fecha_actual += timedelta(days=1)
+
+            messages.success(request, "✅ Reserva confirmada exitosamente.")
             return redirect('consultar_disponibilidad')
 
     return render(request, 'sitio_web/form_reserva.html', {'habitacion': habitacion})
+
 
 
 
