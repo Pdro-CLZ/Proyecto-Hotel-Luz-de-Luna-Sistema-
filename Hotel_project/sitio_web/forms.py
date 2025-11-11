@@ -80,3 +80,18 @@ class ConsultaDisponibilidadForm(forms.Form):
     fecha_fin = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
+
+    TIPOS = [
+        ('', 'Todos'),
+        ('sencilla', 'Sencilla'),
+        ('doble', 'Doble'),
+        ('suite', 'Suite'),
+        ('premium', 'Premium'),
+    ]
+
+    tipo = forms.ChoiceField(
+        choices=TIPOS,
+        required=False,
+        label="Tipo de habitación",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )

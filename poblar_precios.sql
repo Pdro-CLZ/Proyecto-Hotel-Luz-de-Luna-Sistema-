@@ -56,8 +56,8 @@ VALUES ('Carlos', 'Jiménez', '88888888', 'carlos@example.com', '111111111');
 -- ============================================
 
 -- 🔸 Crear una reserva para cada habitación excepto la 1 y la 8
-INSERT INTO reservas_reserva (cliente_id, habitacion_id, fecha_inicio, fecha_fin, total)
-SELECT 1, id, '2025-11-09', '2025-11-10', 100
+INSERT INTO reservas_reserva (cliente_id, habitacion_id, fecha_inicio, fecha_fin, total,canal_reservacion, metodo_pago)
+SELECT 1, id, '2025-11-09', '2025-11-10', 100, 'sitio', 'efectivo'
 FROM reservas_habitacion
 WHERE id NOT IN (1,8);
 
