@@ -133,6 +133,13 @@ TRANSLATIONS.update({
 
      #Perfil de cliente
      'Nombre completo': {'es': 'Nombre completo', 'en': 'Full Name'},
-     'Editar perfil': {'es': 'Editar perfil', 'en': 'Edit profile'}
-
+     'Editar perfil': {'es': 'Editar perfil', 'en': 'Edit profile'},
+     'Confirmar Reserva': {'es': 'Confirmar Reserva',
+                            'en': 'Confirm Booking'},
+    'Cancelar': {'es': 'Cancelar', 'en': 'Cancel'},
+    'Cédula': {'es': 'Cédula', 'en': 'ID Card' },
+    'Nombre:': {'es': 'Nombre', 'en': 'Name'},
+    'Amenidades:': {'es': 'Amenidades', 'en': 'Amenities'},
+    'Detalles de la habitación': {'es': 'Detalles de la habitación', 'en': 'Room Details'},
+                            
 })
