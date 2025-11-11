@@ -21,7 +21,7 @@ from django.contrib.auth import get_user_model
 
 
 from django.db.models import Sum
-from reservas.models import Habitacion, FechaReservada, PrecioHabitacion
+from reservas.models import Habitacion, FechaReservada, PrecioHabitacion, Reserva
 from .forms import ConsultaDisponibilidadForm
 
 @transaction.atomic
@@ -243,27 +243,18 @@ def consultar_disponibilidad(request):
         if form.is_valid():
             fecha_inicio = form.cleaned_data['fecha_inicio']
             fecha_fin = form.cleaned_data['fecha_fin']
-            tipo = form.cleaned_data.get('tipo')
 
-            # 🔹 Guardar las fechas seleccionadas en la sesión
             request.session['fecha_inicio'] = str(fecha_inicio)
             request.session['fecha_fin'] = str(fecha_fin)
 
-            # 🔹 Buscar habitaciones ocupadas dentro del rango
             habitaciones_ocupadas = FechaReservada.objects.filter(
                 fecha__range=(fecha_inicio, fecha_fin)
             ).values_list('habitacion_id', flat=True).distinct()
 
-            # 🔹 Obtener las habitaciones disponibles
             habitaciones_disponibles = Habitacion.objects.exclude(
                 id__in=habitaciones_ocupadas
-            )
-            if tipo:
-             habitaciones_disponibles = habitaciones_disponibles.filter(tipo=tipo)
+            ).prefetch_related('amenidades')
 
-             habitaciones_disponibles = habitaciones_disponibles.prefetch_related('amenidades')
-
-            # 🔹 Calcular el precio total por habitación
             for hab in habitaciones_disponibles:
                 total = PrecioHabitacion.objects.filter(
                     habitacion=hab,
@@ -274,7 +265,6 @@ def consultar_disponibilidad(request):
     else:
         form = ConsultaDisponibilidadForm()
 
-    # 🔹 Contexto para la plantilla
     context = {
         'form': form,
         'habitaciones_disponibles': habitaciones_disponibles,
@@ -283,20 +273,20 @@ def consultar_disponibilidad(request):
 
     return render(request, 'sitio_web/consultar_disponibilidad.html', context)
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib import messages
+
+from django.core.mail import send_mail
+from datetime import datetime, timedelta
 from django.db import models
-from reservas.models import Habitacion, Reserva, Cliente, FechaReservada, PrecioHabitacion
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 import re
-from datetime import timedelta, datetime
-# Use the standard session key 'django_language' directly instead of importing LANGUAGE_SESSION_KEY
+from reservas.models import Habitacion, Reserva, Cliente
 
 def reservar_habitacion(request, habitacion_id):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
 
-    # 🔹 Recuperar las fechas seleccionadas previamente (guardadas en sesión o query params)
     fecha_inicio = request.session.get('fecha_inicio')
     fecha_fin = request.session.get('fecha_fin')
 
@@ -304,7 +294,6 @@ def reservar_habitacion(request, habitacion_id):
         messages.error(request, "Debes seleccionar un rango de fechas antes de reservar.")
         return redirect('consultar_disponibilidad')
 
-    # Convertir las fechas desde string si vienen en formato texto
     if isinstance(fecha_inicio, str):
         fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
     if isinstance(fecha_fin, str):
@@ -355,7 +344,7 @@ def reservar_habitacion(request, habitacion_id):
             ).aggregate(total=models.Sum('precio'))
             total = precios['total'] or 0
 
-            # 🔹 Crear la reserva con método y canal automáticos
+            # 🔹 Crear la reserva
             reserva = Reserva.objects.create(
                 habitacion=habitacion,
                 cliente=cliente,
@@ -366,7 +355,7 @@ def reservar_habitacion(request, habitacion_id):
                 canal_reservacion='sitio'
             )
 
-            # 🔹 Crear registros día por día en FechaReservada
+            # 🔹 Crear registros día por día
             fecha_actual = fecha_inicio
             while fecha_actual <= fecha_fin:
                 FechaReservada.objects.create(
@@ -376,10 +365,42 @@ def reservar_habitacion(request, habitacion_id):
                 )
                 fecha_actual += timedelta(days=1)
 
-            messages.success(request, "✅ Reserva confirmada exitosamente.")
-            return redirect('consultar_disponibilidad')
+            # 🔹 Enviar correo de confirmación
+            asunto = "Confirmación de tu reserva"
+            mensaje = (
+                f"Hola {nombre},\n\n"
+                f"Tu reserva en nuestro hotel ha sido confirmada exitosamente.\n\n"
+                f"Detalles de la reserva:\n"
+                f"- Habitación: {habitacion.nombre}\n"
+                f"- Fechas: del {fecha_inicio} al {fecha_fin}\n"
+                f"- Total: ₡{total:,}\n\n"
+                f"Gracias por reservar con nosotros.\n"
+                f"Te esperamos pronto.\n\n"
+                f"Atentamente,\n"
+                f"El equipo del hotel"
+            )
+
+            try:
+                send_mail(
+                    asunto,
+                    mensaje,
+                    None,  # usa DEFAULT_FROM_EMAIL
+                    [correo],
+                    fail_silently=False,
+                )
+                messages.success(request, f"✅ Reserva confirmada y correo enviado a {correo}.")
+            except Exception as e:
+                messages.warning(request, f"Reserva creada, pero ocurrió un error al enviar el correo: {e}")
+            return redirect('reserva_confirmada', reserva_id=reserva.id)
+
+            # return redirect('consultar_disponibilidad')
 
     return render(request, 'sitio_web/form_reserva.html', {'habitacion': habitacion})
+
+def reserva_confirmada(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    return render(request, 'sitio_web/reserva_confirmada.html', {'reserva': reserva})
+
 
 
 def detalle_habitacion(request, habitacion_id):

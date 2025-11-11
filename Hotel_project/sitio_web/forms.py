@@ -73,25 +73,43 @@ class EditarPerfilForm(forms.Form):
             self.fields['canton'].initial = direccion.canton.nombre
             self.fields['distrito'].initial = direccion.distrito.nombre
             
+from django import forms
+from datetime import date
+
 class ConsultaDisponibilidadForm(forms.Form):
     fecha_inicio = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control',
+        })
     )
     fecha_fin = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control',
+        })
     )
 
-    TIPOS = [
-        ('', 'Todos'),
-        ('sencilla', 'Sencilla'),
-        ('doble', 'Doble'),
-        ('suite', 'Suite'),
-        ('premium', 'Premium'),
-    ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        today_str = date.today().isoformat()
+        self.fields['fecha_inicio'].widget.attrs['min'] = today_str
+        self.fields['fecha_fin'].widget.attrs['min'] = today_str
 
-    tipo = forms.ChoiceField(
-        choices=TIPOS,
-        required=False,
-        label="Tipo de habitación",
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_inicio = cleaned_data.get('fecha_inicio')
+        fecha_fin = cleaned_data.get('fecha_fin')
+        hoy = date.today()
+
+        if fecha_inicio and fecha_inicio < hoy:
+            self.add_error('fecha_inicio', 'La fecha de inicio no puede ser anterior a hoy.')
+
+        if fecha_fin and fecha_fin < hoy:
+            self.add_error('fecha_fin', 'La fecha de fin no puede ser anterior a hoy.')
+
+        if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
+            self.add_error('fecha_fin', 'La fecha de fin debe ser posterior a la de inicio.')
+
+        return cleaned_data
+
