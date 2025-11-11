@@ -325,6 +325,6 @@ def apps_home(request):
         {"name": "Limpieza", "url": "index_limpieza"},
         {"name": "Marketing", "url": "dashboard_marketing"},
         {"name": "Reportería", "url": "apps_home"},
-        {"name": "Reservas", "url": "apps_home"},
+        {"name": "Reservas", "url": "index_reservas"},
     ]
     return render(request, "administracion/apps_home.html", {"apps": apps})
