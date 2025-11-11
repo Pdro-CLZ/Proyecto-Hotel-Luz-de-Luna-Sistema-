@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservas - Semana{% endblock %}
+
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+    <title>Reservas - Semana</title>
+    <style>
+        .calendar-table { width:100%; border-collapse: collapse; }
+        .calendar-table th, .calendar-table td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+        .calendar-table th { background:#f8f9fa; text-align:center; }
+        .reserved-block {
+            background: linear-gradient(90deg, rgba(226,196,62,0.15), rgba(226,196,62,0.05));
+            border-left: 4px solid #e2c43e;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .no-reservas { color: #777; font-style: italic; }
+        .header-actions { display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px; }
+    </style>
+</head>
+<body class="menu-bg">
+<main class="menu-container">
+    <div class="header-actions">
+        <h2>Reservas - Semana: {{ inicio_semana }} — {{ fin_semana }}</h2>
+        <div>
+            <a class="boton-verde" href="{% url 'agregar_reserva' %}">Agregar Reserva</a>
+        </div>
+    </div>
+
+    {% if grid %}
+    <div style="overflow-x:auto;">
+    <table class="calendar-table">
+        <thead>
+            <tr>
+                <th>Habitación</th>
+                {% for dia in dias %}
+                    <th>{{ dia|date:"D d M" }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+  {% for fila in grid %}
+    <tr>
+      <td><strong>{{ fila.habitacion.nombre }}</strong></td>
+      {% for fr in fila.celdas %}
+        <td>
+          {% if fr %}
+            <div class="reserved-block">
+                <div><strong>Reservado</strong></div>
+                <div>Reserva #{{ fr.reserva.id }}</div>
+                {% if fr.reserva.cliente %}
+                <div>{{ fr.reserva.cliente.nombre }} {{ fr.reserva.cliente.apellido }}</div>
+                {% endif %}
+            </div>
+          {% endif %}
+        </td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</tbody>
+    </table>
+    </div>
+    {% else %}
+        <div class="no-reservas">No hay habitaciones registradas.</div>
+    {% endif %}
+</main>
+</body>
+</html>
+{% endblock %}

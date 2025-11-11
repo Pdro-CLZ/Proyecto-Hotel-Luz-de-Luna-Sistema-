@@ -220,26 +220,27 @@
     </style>
 </head>
 <body>
+{% load translate %}
 
 <div class="container">
     <div class="card mx-auto shadow">
-        <h2>Perfil de Cliente</h2>
+        <h2>{% tr "Perfil de Cliente" %}</h2>
 
         <ul class="list-group list-group-flush mb-4">
             <li class="list-group-item">
-                <strong>Nombre completo:</strong>
+                <strong>{% tr "Nombre completo" %}:</strong>
                 <span class="info-content">{{ usuario.first_name }} {{ usuario.last_name }}</span>
             </li>
             <li class="list-group-item">
-                <strong>Correo:</strong>
+                <strong>{% tr "Correo" %}:</strong>
                 <span class="info-content">{{ usuario.email }}</span>
             </li>
             <li class="list-group-item">
-                <strong>Teléfono:</strong>
+                <strong>{% tr "Teléfono" %}:</strong>
                 <span class="info-content">{{ usuario.cliente.telefono }}</span>
             </li>
             <li class="list-group-item">
-                <strong>Dirección:</strong>
+                <strong>{% tr "Dirección" %}:</strong>
                 <span class="info-content">
                     {{ usuario.cliente.direccion.direccion_exacta }}, 
                     {{ usuario.cliente.direccion.distrito.nombre }},
@@ -251,9 +252,9 @@
         </ul>
 
         <div class="d-flex justify-content-between">
-            <a href="{% url 'index' %}" class="btn btn-secondary">Volver al inicio</a>
-            <a href="{% url 'editar_perfil' %}" class="btn btn-primary">Editar perfil</a>
-            <a href="{% url 'cerrar_sesion' %}" class="btn btn-danger">Cerrar sesión</a>
+            <a href="{% url 'index' %}" class="btn btn-secondary">{% tr "Volver al inicio" %}</a>
+            <a href="{% url 'editar_perfil' %}" class="btn btn-primary">{% tr "Editar perfil" %}</a>
+            <a href="{% url 'cerrar_sesion' %}" class="btn btn-danger">{% tr "Cerrar sesión" %}</a>
         </div>
     </div>
 </div>

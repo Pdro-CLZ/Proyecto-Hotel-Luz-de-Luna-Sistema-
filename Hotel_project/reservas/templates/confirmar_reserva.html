@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Confirmar Reserva{% endblock %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+  <title>Confirmar Reserva</title>
+  <style>
+    main.menu-container {
+      background: #fff;
+      padding: 30px;
+      margin: 30px auto;
+      max-width: 600px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    main.menu-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    p {
+      font-size: 16px;
+      color: #444;
+      margin: 10px 0;
+    }
+    p strong {
+      color: #222;
+    }
+    .boton-verde {
+      display: block;
+      width: 100%;
+      background-color: #62b36b;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .boton-verde:hover {
+      background-color: #4d9858;
+    }
+  </style>
+</head>
+<body class="menu-bg">
+<main class="menu-container">
+  <h2>Confirmar Reserva</h2>
+  <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
+  <p><strong>Habitación:</strong> {{ habitacion.nombre }}</p>
+  <p><strong>Fechas:</strong> {{ fecha_inicio }} → {{ fecha_fin }}</p>
+  <p><strong>Método de pago:</strong> {{ metodo_pago|title }}</p>
+  <p><strong>Canal:</strong> {{ canal_reservacion|title }}</p>
+  <p><strong>Total:</strong> ₡{{ total }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="boton-verde">Confirmar Reserva</button>
+  </form>
+</main>
+</body>
+</html>
+{% endblock %}

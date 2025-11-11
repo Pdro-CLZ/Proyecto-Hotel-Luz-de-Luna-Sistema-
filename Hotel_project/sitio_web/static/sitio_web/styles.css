@@ -1,0 +1,66 @@
+/* Estilos compartidos para todo el sitio - Paleta inspirada en naturaleza tropical */
+:root {
+    --color-principal: #2C5F4F;
+    --color-secundario: #8B7355;
+    --color-acento: #D4A574;
+    --color-claro: #F5F1E8;
+    --color-oscuro: #1A3A2E;
+    --color-texto: #2D2D2D;
+    --color-hover: #3D7A63;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:var(--color-texto);background-color:#FFFFFF;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1}
+header.bg-primary{background:linear-gradient(135deg,var(--color-principal) 0%,var(--color-oscuro) 100%) !important;box-shadow:0 4px 20px rgba(0,0,0,0.1);position:sticky;top:0;z-index:1000;backdrop-filter:blur(10px)}
+header h1{font-weight:600;letter-spacing:1px;font-size:1.8rem}
+.nav-link{transition:all .3s ease;position:relative;font-weight:500;padding:8px 15px !important}
+.nav-link::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:var(--color-acento);transition:all .3s ease;transform:translateX(-50%)}
+.nav-link:hover::after{width:80%}
+.nav-link:hover{color:var(--color-acento) !important;transform:translateY(-2px)}
+#inicio{background:linear-gradient(to bottom,var(--color-claro) 0%,#FFFFFF 100%) !important;padding:80px 20px !important;position:relative;overflow:hidden}
+#inicio::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--color-principal),var(--color-acento),var(--color-principal))}
+#inicio h2{font-size:3rem;font-weight:700;color:var(--color-oscuro);margin-bottom:20px;text-shadow:2px 2px 4px rgba(0,0,0,0.05)}
+#inicio p{font-size:1.3rem;color:var(--color-secundario);max-width:800px;margin:0 auto 30px}
+#inicio img{border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.15);transition:transform .5s ease;margin-top:30px}
+#inicio img:hover{transform:scale(1.02)}
+section{padding:60px 0}
+section h2{font-size:2.5rem;font-weight:700;color:var(--color-oscuro);margin-bottom:20px;position:relative;display:inline-block}
+section h2::after{content:'';position:absolute;bottom:-10px;left:0;width:60px;height:4px;background:var(--color-acento);border-radius:2px}
+section h3{font-size:1.5rem;color:var(--color-principal);font-weight:600;margin-top:15px}
+section p{color:#555;font-size:1.1rem;margin-bottom:15px}
+#habitaciones .habitacion-card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 10px 30px rgba(44,95,79,0.2);transition:all .4s ease;height:100%;display:flex;flex-direction:column}
+#habitaciones .habitacion-card:hover{transform:translateY(-10px);box-shadow:0 15px 40px rgba(44,95,79,0.3)}
+#habitaciones .habitacion-card img{width:100%;height:200px;object-fit:cover;transition:transform .4s ease}
+#habitaciones .habitacion-card:hover img{transform:scale(1.08)}
+#habitaciones .habitacion-info{padding:20px;flex:1;display:flex;flex-direction:column}
+#habitaciones .habitacion-info h3{color:var(--color-principal);font-size:1.3rem;font-weight:600;margin:0 0 10px 0}
+#habitaciones .capacidad{color:var(--color-secundario);font-weight:600;font-size:1rem;margin-bottom:15px}
+#habitaciones .amenidades-list{list-style:none;padding:0;margin:0}
+#habitaciones .amenidades-list li{padding:5px 0;color:#555;font-size:0.95rem;border-bottom:1px solid var(--color-claro)}
+#habitaciones .amenidades-list li:last-child{border-bottom:none}
+#servicios.bg-light{background:linear-gradient(135deg,var(--color-claro) 0%,#FAFAF8 100%) !important}
+#servicios ul{list-style:none;padding:0;max-width:600px;margin:30px auto}
+#servicios li{padding:15px 20px;margin:10px 0;background:white;border-left:4px solid var(--color-principal);border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.08);transition:all .3s ease;font-size:1.1rem}
+#servicios li:hover{transform:translateX(10px);box-shadow:0 6px 20px rgba(0,0,0,0.12);border-left-color:var(--color-acento)}
+.btn-primary{background:linear-gradient(135deg,var(--color-principal) 0%,var(--color-hover) 100%) !important;border:none !important;padding:14px 35px;font-size:1.1rem;font-weight:600;border-radius:50px;box-shadow:0 8px 20px rgba(44,95,79,0.3);transition:all .3s ease;text-transform:uppercase;letter-spacing:1px}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(44,95,79,0.4);background:linear-gradient(135deg,var(--color-hover) 0%,var(--color-principal) 100%) !important}
+.btn-secondary{background:white !important;color:var(--color-principal) !important;border:2px solid var(--color-principal) !important;padding:12px 30px;font-size:1rem;font-weight:600;border-radius:50px;transition:all .3s ease;text-transform:uppercase;letter-spacing:1px}
+.btn-secondary:hover{background:var(--color-principal) !important;color:white !important;transform:translateY(-3px);box-shadow:0 8px 20px rgba(44,95,79,0.3)}
+#actividades.bg-light{background:linear-gradient(to bottom,white 0%,var(--color-claro) 100%) !important}
+#actividades .col-md-4{margin-bottom:30px}
+#actividades img{border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.15);transition:all .4s ease;width:100%;height:250px;object-fit:cover}
+#actividades img:hover{transform:scale(1.05) rotate(1deg);box-shadow:0 15px 35px rgba(0,0,0,0.25)}
+#actividades h3{margin-top:20px;font-size:1.4rem}
+#contacto ul{list-style:none;padding:0;max-width:600px;margin:30px auto}
+#contacto li{padding:15px 25px;margin:12px 0;background:var(--color-claro);border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,0.08);transition:all .3s ease;font-size:1.05rem}
+#contacto li:hover{background:white;transform:translateX(5px);box-shadow:0 6px 20px rgba(0,0,0,0.12)}
+#contacto strong{color:var(--color-principal);font-weight:600}
+#contacto a{color:var(--color-hover);text-decoration:none;font-weight:600;transition:color .3s ease}
+#contacto a:hover{color:var(--color-acento);text-decoration:underline}
+footer.bg-dark{background:linear-gradient(135deg,var(--color-oscuro) 0%,var(--color-principal) 100%) !important;padding:30px 0;margin-top:auto;box-shadow:0 -4px 20px rgba(0,0,0,0.1)}
+footer p{margin:0;font-size:1rem;letter-spacing:0.5px}
+html{scroll-behavior:smooth}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+section>*{animation:fadeIn .8s ease-out}
+@media (max-width:768px){#inicio h2{font-size:2rem}#inicio p{font-size:1.1rem}section h2{font-size:2rem}header h1{font-size:1.4rem}header .container{flex-direction:column}.nav{flex-direction:column;align-items:center}.nav-item{margin:5px 0}}

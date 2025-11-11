@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ habitacion.name }}</title>
+    <link rel="stylesheet" href="{% static 'sitio_web/styles.css' %}">
+</head>
+<body>
+    {% load translate %}
+    <div class="container mt-5">
+        <h1>{{ habitacion.name }}</h1>
+        <p><strong>{% tr "Número:" %}</strong> {{ habitacion.room_number }}</p>
+        <p><strong>{% tr "Descripción:" %}</strong> {{ habitacion.description }}</p>
+        <p><strong>{% tr "Amenidades:" %}</strong></p>
+        <ul>
+            {% for amenity in habitacion.amenities.all %}
+                <li>{{ amenity.name }}</li>
+            {% empty %}
+                <li>{% tr "Sin amenidades registradas" %}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'sitio_web:select_dates' %}" class="btn btn-primary">{% tr "Reservar" %}</a>
+    </div>
+</body>
+</html>

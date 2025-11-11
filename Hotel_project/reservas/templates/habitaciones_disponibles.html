@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Habitaciones disponibles{% endblock %}
+
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+    <style>
+        .habitacion-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .habitacion-card h3 { margin: 0 0 8px 0; }
+        .amenidades { font-size: 0.9rem; color: #555; }
+        .precio { font-weight: bold; color: #333; margin-top: 8px; }
+        .no-disponibles { text-align: center; color: #777; font-style: italic; }
+        .form-cedula {
+            margin-top: 10px;
+        }
+        .form-cedula input[type="text"] {
+            padding: 6px;
+            width: 180px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-right: 8px;
+        }
+        .form-cedula label {
+            font-size: 0.9rem;
+            color: #444;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="menu-bg">
+<main class="menu-container">
+    <h2>Habitaciones disponibles</h2>
+    <p>Del {{ fecha_inicio }} al {{ fecha_fin }}</p>
+
+    {% if disponibles %}
+        {% for item in disponibles %}
+            <div class="habitacion-card">
+                <h3>{{ item.habitacion.nombre }}</h3>
+                <div class="amenidades">
+                    <strong>Amenidades:</strong>
+                    {% for a in item.amenidades %}
+                        {{ a.nombre }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        <span>Sin amenidades registradas.</span>
+                    {% endfor %}
+                </div>
+                <div class="precio">
+                    Precio total: ₡{{ item.precio_total }} ({{ item.noches }} noches)
+                </div>
+                <form method="post" action="{% url 'buscar_cliente' %}" class="form-cedula">
+                    {% csrf_token %}
+                    <input type="hidden" name="habitacion_id" value="{{ item.habitacion.id }}">
+                    <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+                    <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+                    <label for="identificacion_{{ item.habitacion.id }}">Cédula:</label>
+                    <input type="text" id="identificacion_{{ item.habitacion.id }}" name="identificacion" placeholder="Ej: 1-2345-6789" required>
+                    <button type="submit" class="boton-verde">Reservar esta habitación</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-disponibles">
+            No hay habitaciones disponibles para esas fechas.
+        </div>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'agregar_reserva' %}" class="boton-verde">← Cambiar fechas</a>
+</main>
+</body>
+</html>
+{% endblock %}

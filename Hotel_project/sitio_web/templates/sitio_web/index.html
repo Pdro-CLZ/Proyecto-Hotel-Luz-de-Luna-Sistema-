@@ -173,21 +173,69 @@
         }
 
         /* Tarjetas de habitaciones */
-        #habitaciones .col-md-6 {
-            margin-bottom: 30px;
-        }
-
-        #habitaciones img {
+        #habitaciones .habitacion-card {
+            background: white;
             border-radius: 15px;
+            overflow: hidden;
             box-shadow: 0 10px 30px rgba(44, 95, 79, 0.2);
             transition: all 0.4s ease;
-            width: 100%;
-            height: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        #habitaciones img:hover {
+        #habitaciones .habitacion-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(44, 95, 79, 0.3);
+        }
+
+        #habitaciones .habitacion-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        #habitaciones .habitacion-card:hover img {
+            transform: scale(1.08);
+        }
+
+        #habitaciones .habitacion-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #habitaciones .habitacion-info h3 {
+            color: var(--color-principal);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+
+        #habitaciones .capacidad {
+            color: var(--color-secundario);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        #habitaciones .amenidades-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #habitaciones .amenidades-list li {
+            padding: 5px 0;
+            color: #555;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--color-claro);
+        }
+
+        #habitaciones .amenidades-list li:last-child {
+            border-bottom: none;
         }
 
         /* Lista de servicios moderna */
@@ -332,7 +380,7 @@
         footer.bg-dark {
             background: linear-gradient(135deg, var(--color-oscuro) 0%, var(--color-principal) 100%) !important;
             padding: 30px 0;
-            margin-top: 60px;
+            margin-top: auto;
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
         }
 
@@ -399,114 +447,172 @@
 </head>
 
 <body>
+    {% load translate %}
+
 
     <!-- Encabezado / Navegación -->
     <header class="bg-primary text-white p-3">
         <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="h3 m-0">Hotel Luz de Luna</h1>
+                    <h1 class="h3 m-0">Hotel Luz de Luna</h1>
             <nav>
                 <ul class="nav">
-                    <li class="nav-item"><a class="nav-link text-white" href="#habitaciones">Habitaciones</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#servicios">Servicios</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#reservaciones">Reservaciones</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">Actividades</a>
+                    <li class="nav-item"><a class="nav-link text-white" href="#habitaciones">{% tr 'Habitaciones' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#servicios">{% tr 'Servicios' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#reservaciones">{% tr 'Reservaciones' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr 'Actividades' %}</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr 'Contacto' %}</a></li>
+
+                    
 
                     {% if request.user.is_authenticated %}
                     <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">Perfil</a>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">Cerrar
-                            sesión</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr 'Cerrar sesión' %}</a></li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">Iniciar
-                            sesión</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr 'Iniciar sesión' %}</a></li>
                     <li class="nav-item"><a class="nav-link text-white"
-                            href="{% url 'registro_cliente' %}">Registrarse</a></li>
+                            href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
                     {% endif %}
+
+                    <li class="nav-item ms-2">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
+                    </li>
                 </ul>
             </nav>
         </div>
     </header>
-<main>
-    <!-- Sección Hero -->
-    <section id="inicio" class="text-center p-5 bg-light">
-        <h2>Bienvenido al Hotel Luz de Luna</h2>
-        <p>Disfruta de una experiencia única de descanso y confort en un entorno natural y tranquilo.</p>
-        <img src="https://via.placeholder.com/1200x400" alt="Hotel Luz de Luna" class="img-fluid rounded">
-    </section>
+    <main>
+        <!-- Sección Hero -->
+        <section id="inicio" class="text-center p-5 bg-light">
+            {% load static %}
+            <h2>{% tr 'Bienvenido al Hotel Luz de Luna' %}</h2>
+            <p>{% tr 'Disfruta de una experiencia única de descanso y confort en un entorno natural y tranquilo.' %}</p>
+            <img src="{% static 'sitio_web/images/header_hotel.svg' %}" alt="Hotel Luz de Luna" class="img-fluid rounded">
+        </section>
 
-    <!-- Sección Habitaciones -->
-    <section id="habitaciones" class="container py-5">
-        <h2>Nuestras Habitaciones</h2>
-        <p>Confort, elegancia y vista panorámica en cada una de nuestras habitaciones.</p>
-        <div class="row">
-            <div class="col-md-6"><img src="https://via.placeholder.com/400x250" alt="Habitación de lujo"
-                    class="img-fluid rounded mb-3"></div>
-            <div class="col-md-6"><img src="https://via.placeholder.com/400x250" alt="Habitación estándar"
-                    class="img-fluid rounded mb-3"></div>
-        </div>
-    </section>
-
-    <!-- Sección Servicios -->
-    <section id="servicios" class="bg-light py-5">
-        <div class="container">
-            <h2>Servicios del Hotel</h2>
-            <ul>
-                <li>Restaurante gourmet</li>
-                <li>Piscina al aire libre</li>
-                <li>Spa y masajes relajantes</li>
-                <li>Wi-Fi gratuito</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- Sección Reservaciones -->
-    <section id="reservaciones" class="container py-5">
-        <h2>Reservaciones</h2>
-        <p>Haz tu reserva fácilmente en línea o contáctanos para más información.</p>
-        <a class="btn btn-primary" href="#contacto">Reservar ahora</a>
-    </section>
-
-    <!-- Sección Actividades -->
-    <section id="actividades" class="bg-light py-5">
-        <div class="container">
-            <h2>Actividades Cercanas</h2>
-            <p>Disfruta de las mejores experiencias cerca del hotel.</p>
+        <!-- Sección Habitaciones -->
+        <section id="habitaciones" class="container py-5">
+            <h2>{% tr 'Nuestras Habitaciones' %}</h2>
+            <p>{% tr 'Confort, elegancia y vista panorámica en cada una de nuestras habitaciones.' %}</p>
             <div class="row">
-                <div class="col-md-4">
-                    <img src="https://via.placeholder.com/300x200" alt="Tour de Cataratas"
-                        class="img-fluid rounded mb-2">
-                    <h3>Tour a las Cataratas</h3>
-                    <p>Explora hermosas cascadas y senderos naturales cerca del hotel.</p>
+                {% for habitacion in habitaciones %}
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="habitacion-card">
+                        {% if habitacion.imagen_url %}
+                            <img src="{{ habitacion.imagen_url }}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                        {% else %}
+                            {% if habitacion.id == 1 %}
+                                <img src="{% static 'sitio_web/images/habitacion_1.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                            {% elif habitacion.id == 2 %}
+                                <img src="{% static 'sitio_web/images/habitacion_2.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                            {% elif habitacion.id == 3 %}
+                                <img src="{% static 'sitio_web/images/habitacion_3.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                            {% elif habitacion.id == 4 %}
+                                <img src="{% static 'sitio_web/images/habitacion_4.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                            {% else %}
+                                <img src="{% static 'sitio_web/images/habitacion_1.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                            {% endif %}
+                        {% endif %}
+                        <div class="habitacion-info">
+                            <h3>{{ habitacion.nombre }}</h3>
+                            <p class="capacidad">👥 Máx. {{ habitacion.capacidad }} personas</p>
+                            <ul class="amenidades-list">
+                                {% for amenidad in habitacion.amenidades.all %}
+                                <li>
+                                    {% if amenidad.nombre == 'Cama grande' %}🛏️
+                                    {% elif amenidad.nombre == 'Cama pequeña' %}🛏️
+                                    {% elif amenidad.nombre == 'Wi-Fi' %}📶
+                                    {% elif amenidad.nombre == 'Hamaca' %}🪑
+                                    {% elif amenidad.nombre == 'Refrigeradora' %}❄️
+                                    {% elif amenidad.nombre == 'Parqueo' %}🚗
+                                    {% elif amenidad.nombre == 'Cocina' %}🍳
+                                    {% elif amenidad.nombre == 'Piscina' %}🏊
+                                    {% else %}✓
+                                    {% endif %}
+                                    {{ amenidad.nombre }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <img src="https://via.placeholder.com/300x200" alt="Cabalgata ecológica"
-                        class="img-fluid rounded mb-2">
-                    <h3>Cabalgata Ecológica</h3>
-                    <p>Vive una experiencia natural a caballo por los alrededores del valle.</p>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center">{% tr 'No hay habitaciones disponibles en este momento.' %}</p>
                 </div>
-                <div class="col-md-4">
-                    <img src="https://via.placeholder.com/300x200" alt="Tour de café" class="img-fluid rounded mb-2">
-                    <h3>Tour de Café</h3>
-                    <p>Aprende sobre el proceso del café costarricense con degustación incluida.</p>
-                </div>
+                {% endfor %}
             </div>
-            <p><a class="btn btn-secondary mt-3" href="{% url 'actividades' %}">Ver más actividades</a></p>
-        </div>
-    </section>
 
-    <!-- Sección Contacto -->
-    <section id="contacto" class="container py-5">
-        <h2>Contáctanos</h2>
-        <ul>
-            <li><strong>Teléfono:</strong> +506 1234-5678</li>
-            <li><strong>Correo electrónico:</strong> info@hotelluzdeluna.com</li>
-            <li><strong>WhatsApp:</strong> <a href="https://wa.me/50612345678" target="_blank">+506 1234-5678</a></li>
-            <li><strong>Dirección:</strong> Avenida Central, San José, Costa Rica</li>
-        </ul>
-    </section>
+            <div class="text-center mt-4">
+                <a href="{% url 'habitaciones' %}" class="btn btn-secondary">{% tr 'Ver todas las habitaciones' %}</a>
+            </div>
+        </section>
+
+        <!-- Sección Servicios -->
+        <section id="servicios" class="bg-light py-5">
+            <div class="container">
+                <h2>{% tr 'Servicios del Hotel' %}</h2>
+                <ul>
+                    <li>{% tr 'Restaurante gourmet' %}</li>
+                    <li>{% tr 'Piscina al aire libre' %}</li>
+                    <li>{% tr 'Spa y masajes relajantes' %}</li>
+                    <li>{% tr 'Wi-Fi gratuito' %}</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Sección Reservaciones -->
+        <section id="reservaciones" class="container py-5 text-center">
+            <h2>{% tr 'Reservaciones' %}</h2>
+            <p>{% tr 'Haz tu reserva fácilmente en línea o contáctanos para más información.' %}</p>
+            <a class="btn btn-primary btn-lg mt-3" href="{% url 'consultar_disponibilidad' %}">{% tr 'Reservar ahora' %}</a>
+        </section>
+
+        <!-- Sección Actividades -->
+        <section id="actividades" class="bg-light py-5">
+            <div class="container">
+                <h2>{% tr 'Actividades' %}</h2>
+                <p>{% tr 'Disfruta de las mejores experiencias cerca del hotel.' %}</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="{% static 'sitio_web/images/actividad_1.svg' %}" alt="Tour de Cataratas"
+                            class="img-fluid rounded mb-2">
+                        <h3>{% tr 'Tour a las Cataratas' %}</h3>
+                        <p>{% tr 'Explora hermosas cascadas y senderos naturales cerca del hotel.' %}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'sitio_web/images/actividad_2.svg' %}" alt="Cabalgata ecológica"
+                            class="img-fluid rounded mb-2">
+                        <h3>{% tr 'Cabalgata Ecológica' %}</h3>
+                        <p>{% tr 'Vive una experiencia natural a caballo por los alrededores del valle.' %}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'sitio_web/images/actividad_3.svg' %}" alt="Tour de café"
+                            class="img-fluid rounded mb-2">
+                        <h3>{% tr 'Tour de Café' %}</h3>
+                        <p>{% tr 'Aprende sobre el proceso del café costarricense con degustación incluida.' %}</p>
+                    </div>
+                </div>
+                <p><a class="btn btn-secondary mt-3" href="{% url 'actividades' %}">{% tr 'Ver más actividades' %}</a></p>
+            </div>
+        </section>
+
+        <!-- Sección Contacto -->
+        <section id="contacto" class="container py-5">
+            <h2>{% tr 'Contáctanos' %}</h2>
+            <ul>
+                <li><strong>{% tr 'Teléfono' %}:</strong> +506 1234-5678</li>
+                <li><strong>{% tr 'Correo electrónico' %}:</strong> info@hotelluzdeluna.com</li>
+                <li><strong>{% tr 'WhatsApp' %}:</strong> <a href="https://wa.me/50612345678" target="_blank">+506 1234-5678</a>
+                </li>
+                <li><strong>{% tr 'Dirección' %}:</strong> Avenida Central, San José, Costa Rica</li>
+            </ul>
+        </section>
     </main>
 
     <!-- Pie de página -->

@@ -12,6 +12,7 @@ class Amenidad(models.Model):
 class Habitacion(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     amenidades = models.ManyToManyField(Amenidad, related_name='habitaciones')
+    
 
     def __str__(self):
         return self.nombre

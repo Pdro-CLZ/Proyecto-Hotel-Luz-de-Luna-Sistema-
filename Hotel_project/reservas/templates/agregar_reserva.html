@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Agregar Reserva{% endblock %}
+
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+    <style>
+        .form-container { max-width: 500px; margin: auto; padding: 20px; background: #fff; border-radius: 8px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+        .error { color: red; font-style: italic; }
+    </style>
+</head>
+<body class="menu-bg">
+<main class="menu-container">
+    <h2>Agregar Reserva</h2>
+    <div class="form-container">
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="fecha_inicio">Fecha de inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_fin">Fecha de fin:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" required>
+            </div>
+            <button class="boton-verde" type="submit">Ver habitaciones disponibles</button>
+        </form>
+        <br>
+        <a href="{% url 'index_reservas' %}" class="boton-verde">← Volver</a>
+    </div>
+</main>
+</body>
+</html>
+{% endblock %}
