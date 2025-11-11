@@ -1,4 +1,5 @@
 {% load custom_filters %}
+{% load translate %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -18,16 +19,72 @@
             --color-hover: #3D7A63;
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--color-claro) 0%, #FFFFFF 100%);
             color: #2D2D2D;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Encabezado moderno */
+        header.bg-primary {
+            background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-oscuro) 100%) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            padding: 8px 15px !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--color-acento);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        .nav-link:hover {
+            color: var(--color-acento) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Main content */
+        main {
+            flex: 1;
             padding: 40px 20px;
         }
 
         .container-form {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
             background: white;
             padding: 40px;
@@ -63,9 +120,11 @@
         label {
             color: var(--color-secundario);
             font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        input[type="date"] {
+        input[type="date"],
+        select {
             border: 2px solid #E0E0E0;
             border-radius: 10px;
             padding: 10px 15px;
@@ -74,7 +133,8 @@
             transition: all 0.3s ease;
         }
 
-        input:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: var(--color-principal);
             box-shadow: 0 0 0 3px rgba(44, 95, 79, 0.1);
@@ -91,6 +151,7 @@
             text-transform: uppercase;
             transition: all 0.3s ease;
             box-shadow: 0 8px 20px rgba(44, 95, 79, 0.3);
+            width: 100%;
         }
 
         button[type="submit"]:hover {
@@ -126,20 +187,48 @@
             background-color: #F9F9F9;
         }
 
-        .btn-reservar {
-            background: var(--color-acento);
-            color: white;
-            padding: 8px 25px;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: all 0.3s ease;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-hover) 100%) !important;
+            border: none !important;
+            padding: 10px 25px;
+            font-size: 0.95rem;
             font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(44, 95, 79, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .btn-reservar:hover {
-            background: var(--color-principal);
-            color: white;
+        .btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(44, 95, 79, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white !important;
+            color: var(--color-principal) !important;
+            border: 2px solid var(--color-principal) !important;
+            padding: 10px 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-principal) !important;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(44, 95, 79, 0.3);
         }
 
         .no-disponibles {
@@ -151,74 +240,172 @@
             font-weight: 500;
             margin-top: 20px;
         }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--color-oscuro) 0%, var(--color-principal) 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            header .container {
+                flex-direction: column;
+            }
+
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-item {
+                margin: 5px 0;
+            }
+
+            main {
+                padding: 30px 15px;
+            }
+
+            .container-form {
+                padding: 25px;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px 5px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+                display: block;
+                margin: 5px 0;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="container-form">
-        <h2>Consultar Disponibilidad</h2>
+    <!-- Encabezado / Navegación -->
+    <header class="bg-primary text-white p-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h3 m-0">Hotel Luz de Luna</h1>
+            <nav>
+                <ul class="nav">
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">{% tr 'Inicio' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'habitaciones' %}">{% tr 'Habitaciones' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr 'Actividades' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr 'Contacto' %}</a></li>
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label for="id_fecha_inicio" class="form-label">Fecha de Inicio</label>
-                    {{ form.fecha_inicio }}
-                </div>
-                <div class="col-md-5">
-                    <label for="id_fecha_fin" class="form-label">Fecha de Fin</label>
-                    {{ form.fecha_fin }}
-                </div>
-                <div class="col-md-3">
-                    <label for="id_tipo" class="form-label">Tipo de Habitación</label>
-                    {{ form.tipo }}
-                </div>
-
-                <div class="col-md-2 text-center">
-                    <button type="submit">Consultar</button>
-                </div>
-            </div>
-        </form>
-
-        {% if habitaciones_disponibles %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Habitación</th>
-                    <th>Amenidades</th>
-                    <th>Precio Total</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for habitacion in habitaciones_disponibles %}
-                <tr>
-                    <td>{{ habitacion.nombre }}</td>
-                    <td>
-                        {% for amenidad in habitacion.amenidades.all %}
-                        {{ amenidad.nombre }}{% if not forloop.last %}, {% endif %}
-                        {% empty %}
-                        <em>Sin amenidades</em>
-                        {% endfor %}
-                    </td>
-                    <td>₡{{ precios_totales|get_item:habitacion.id }}</td>
-                    <td>
-                        <a href="{% url 'detalle_habitacion' habitacion.id %}" class="btn btn-secondary me-2">Ver
-                            Detalles</a>
-                        <a href="{% url 'reservar_habitacion' habitacion.id %}" class="btn btn-primary">Reservar</a>
-                    </td>
-
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% elif form.is_bound %}
-        <div class="no-disponibles">
-            No hay habitaciones disponibles en el rango seleccionado.
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr 'Cerrar sesión' %}</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr 'Iniciar sesión' %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
-        {% endif %}
-    </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="container-form">
+            <h2>Consultar Disponibilidad</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="id_fecha_inicio" class="form-label">{% tr 'Fecha de Inicio' %}</label>
+                        {{ form.fecha_inicio }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_fecha_fin" class="form-label">{% tr 'Fecha de Fin' %}</label>
+                        {{ form.fecha_fin }}
+                    </div>
+                    <div class="col-md-4">
+                        <label for="id_tipo" class="form-label">{% tr 'Tipo de Habitación' %}</label>
+                        {{ form.tipo }}
+                    </div>
+
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit">{% tr 'Consultar Disponibilidad' %}</button>
+                    </div>
+                </div>
+            </form>
+
+            {% if habitaciones_disponibles %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% tr 'Habitación' %}</th>
+                        <th>{% tr 'Amenidades' %}</th>
+                        <th>{% tr 'Precio Total' %}</th>
+                        <th>{% tr 'Acción' %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for habitacion in habitaciones_disponibles %}
+                    <tr>
+                        <td><strong>{{ habitacion.nombre }}</strong></td>
+                        <td>
+                            {% for amenidad in habitacion.amenidades.all %}
+                            {{ amenidad.nombre }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                            <em>{% tr 'Sin amenidades' %}</em>
+                            {% endfor %}
+                        </td>
+                        <td><strong>₡{{ precios_totales|get_item:habitacion.id }}</strong></td>
+                        <td>
+                            <a href="{% url 'detalle_habitacion' habitacion.id %}" class="btn-secondary">{% tr 'Ver Detalles' %}</a>
+                            <a href="{% url 'reservar_habitacion' habitacion.id %}" class="btn-primary">{% tr 'Reservar' %}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% elif form.is_bound %}
+            <div class="no-disponibles">
+                ⚠️ {% tr 'No hay habitaciones disponibles en el rango seleccionado.' %}
+            </div>
+            {% endif %}
+        </div>
+    </main>
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; Hotel Luz de Luna. Todos los derechos reservados.</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

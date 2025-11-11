@@ -291,6 +291,7 @@ from django.db import models
 from reservas.models import Habitacion, Reserva, Cliente, FechaReservada, PrecioHabitacion
 import re
 from datetime import timedelta, datetime
+# Use the standard session key 'django_language' directly instead of importing LANGUAGE_SESSION_KEY
 
 def reservar_habitacion(request, habitacion_id):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
@@ -384,10 +385,69 @@ def reservar_habitacion(request, habitacion_id):
 def detalle_habitacion(request, habitacion_id):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
     precios = PrecioHabitacion.objects.filter(habitacion=habitacion).order_by('fecha')
-    return render(request, 'sitio_web/detalle_habitacion.html', {
+    from django.template.loader import select_template
+
+    template_names = [f'sitio_web/detalle_habitacion_{habitacion.id}.html', 'sitio_web/detalle_habitacion.html']
+    template = select_template(template_names)
+
+    return render(request, template.template.name, {
         'habitacion': habitacion,
         'precios': precios
     })
 
 
+def set_language(request, lang):
+    """Set `site_lang` in session (only for sitio_web module) and redirect back."""
+    from django.urls import reverse
+    from django.conf import settings
+
+    available = [c for c, _ in getattr(settings, 'LANGUAGES', [])]
+    if lang not in available:
+        lang = getattr(settings, 'LANGUAGE_CODE', 'es')
+
+    request.session['site_lang'] = lang
+
+    next_url = request.GET.get('next') or request.META.get('HTTP_REFERER')
+    if not next_url:
+        try:
+            next_url = reverse('index')
+        except Exception:
+            next_url = '/'
+
+    return redirect(next_url)
+
+
+def habitaciones(request):
+    habitaciones_list = Habitacion.objects.all().prefetch_related('amenidades')
+    
+    for hab in habitaciones_list:
+        amenidades_nombres = [a.nombre.lower() for a in hab.amenidades.all()]
+        
+        if 'cama grande' in amenidades_nombres:
+            hab.capacidad = 4
+            hab.tipo_cama = 'Cama grande'
+        else:
+            hab.capacidad = 3
+            hab.tipo_cama = 'Cama pequeña'
+        
+        hab.tiene_piscina = 'piscina' in amenidades_nombres
+    
+    return render(request, 'sitio_web/habitaciones.html', {'habitaciones': habitaciones_list})
+
+def index(request):
+    habitaciones_list = Habitacion.objects.all().prefetch_related('amenidades')[:4]
+    
+    for hab in habitaciones_list:
+        amenidades_nombres = [a.nombre.lower() for a in hab.amenidades.all()]
+        
+        if 'cama grande' in amenidades_nombres:
+            hab.capacidad = 4
+            hab.tipo_cama = 'Cama grande'
+        else:
+            hab.capacidad = 3
+            hab.tipo_cama = 'Cama pequeña'
+        
+        hab.tiene_piscina = 'piscina' in amenidades_nombres
+    
+    return render(request, 'sitio_web/index.html', {'habitaciones': habitaciones_list})
 

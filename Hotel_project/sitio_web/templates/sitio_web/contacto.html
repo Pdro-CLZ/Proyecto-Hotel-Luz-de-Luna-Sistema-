@@ -1,3 +1,4 @@
+{% load translate %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -313,20 +314,20 @@
     <!-- Encabezado / Navegación -->
     <header class="bg-primary text-white p-3">
         <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="h3 m-0">Hotel Luz de Luna</h1>
+            <h1 class="h3 m-0">{% tr "Hotel Luz de Luna" %}</h1>
             <nav>
                 <ul class="nav">
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">Actividades</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">{% tr "Inicio" %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr "Actividades" %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr "Contacto" %}</a></li>
 
                     {% if request.user.is_authenticated %}
-                        <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">Perfil</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">Cerrar sesión</a></li>
+                        <li class="nav-item"><span class="nav-link text-white">{% tr "Hola," %} {{ request.user.username }}</span></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr "Perfil" %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr "Cerrar sesión" %}</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">Iniciar sesión</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">Registrarse</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr "Iniciar sesión" %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr "Registrarse" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -335,22 +336,22 @@
 
     <!-- Sección principal -->
     <main>
-        <h2>Contáctanos</h2>
-        <p>Estamos aquí para ayudarte. Puedes comunicarte con nosotros mediante cualquiera de los siguientes medios:</p>
+        <h2>{% tr "Contáctanos" %}</h2>
+        <p>{% tr "Estamos aquí para ayudarte. Puedes comunicarte con nosotros mediante cualquiera de los siguientes medios:" %}</p>
 
         <section>
-            <h3>Información de contacto</h3>
+            <h3>{% tr "Información de contacto" %}</h3>
             <ul>
-                <li><strong>Teléfono:</strong> +506 1234-5678</li>
-                <li><strong>Correo electrónico:</strong> info@hotelluzdeluna.com</li>
-                <li><strong>WhatsApp:</strong> <a href="https://wa.me/50612345678" target="_blank">+506 1234-5678</a></li>
-                <li><strong>Dirección:</strong> Avenida Central, San José, Costa Rica</li>
+                <li><strong>{% tr "Teléfono:" %}</strong> +506 1234-5678</li>
+                <li><strong>{% tr "Correo electrónico:" %}</strong> info@hotelluzdeluna.com</li>
+                <li><strong>{% tr "WhatsApp:" %}</strong> <a href="https://wa.me/50612345678" target="_blank">+506 1234-5678</a></li>
+                <li><strong>{% tr "Dirección:" %}</strong> Avenida Central, San José, Costa Rica</li>
             </ul>
         </section>
 
         <section>
-            <h3>Ubicación</h3>
-            <p>Encuéntranos fácilmente en el mapa:</p>
+            <h3>{% tr "Ubicación" %}</h3>
+            <p>{% tr "Encuéntranos fácilmente en el mapa:" %}</p>
             <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.195687573483!2d-84.091!3d9.928!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa0e35ddcfc4c1f%3A0xabcdef123456789!2sHotel%20Luz%20de%20Luna!5e0!3m2!1ses!2scr!4v0000000000000" 
                 width="100%" 
@@ -362,18 +363,18 @@
         </section>
 
         <section>
-            <h3>Formulario de contacto (pendiente de funcionalidad)</h3>
+            <h3>{% tr "Formulario de contacto (pendiente de funcionalidad)" %}</h3>
             <form action="#" method="post">
-                <label for="nombre">Nombre:</label>
+                <label for="nombre">{% tr "Nombre:" %}</label>
                 <input type="text" id="nombre" name="nombre" required>
 
-                <label for="correo">Correo electrónico:</label>
+                <label for="correo">{% tr "Correo electrónico:" %}</label>
                 <input type="email" id="correo" name="correo" required>
 
-                <label for="mensaje">Mensaje:</label>
+                <label for="mensaje">{% tr "Mensaje:" %}</label>
                 <textarea id="mensaje" name="mensaje" rows="4" required></textarea>
 
-                <button type="submit">Enviar</button>
+                <button type="submit">{% tr "Enviar" %}</button>
             </form>
         </section>
     </main>

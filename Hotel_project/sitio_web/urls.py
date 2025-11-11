@@ -14,5 +14,6 @@ urlpatterns = [
     path('consultar/', views.consultar_disponibilidad, name='consultar_disponibilidad'),
     path('reservar/<int:habitacion_id>/', views.reservar_habitacion, name='reservar_habitacion'),
     path('habitacion/<int:habitacion_id>/', views.detalle_habitacion, name='detalle_habitacion'),
-
+    path('habitaciones/', views.habitaciones, name='habitaciones'),
+    path('set_language/<str:lang>/', views.set_language, name='set_language'),
 ]

@@ -187,22 +187,22 @@
     </style>
 </head>
 <body>
-
+{% load translate %}    
     <div class="container">
         <div class="card">
             <div class="success-icon"></div>
             
-            <h2>¡Registro exitoso!</h2>
+            <h2>{% tr '¡Registro exitoso!' %}</h2>
             
-            <p>Te hemos enviado un correo a <strong>{{ email }}</strong>.</p>
+            <p>{% tr 'Te hemos enviado un correo a' %} <strong>{{ email }}</strong>.</p>
             
-            <p>Por favor, revisa tu bandeja de entrada y confirma tu correo para continuar.</p>
+            <p>{% tr 'Por favor, revisa tu bandeja de entrada y confirma tu correo para continuar.' %}</p>
             
             <div class="info-box">
-                <p>💡 <strong>Consejo:</strong> Si no encuentras el correo, revisa tu carpeta de spam o correo no deseado.</p>
+                <p>💡 <strong>{% tr 'Consejo:' %}</strong> {% tr 'Si no encuentras el correo, revisa tu carpeta de spam o correo no deseado.' %}</p>
             </div>
             
-            <a href="{% url 'index' %}" class="btn btn-primary">Volver al inicio</a>
+            <a href="{% url 'index' %}" class="btn btn-primary">{% tr 'Volver al inicio' %}</a>
         </div>
     </div>
 

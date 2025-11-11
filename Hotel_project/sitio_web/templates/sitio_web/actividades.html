@@ -90,7 +90,7 @@
             font-size: 2.8rem;
             font-weight: 700;
             color: var(--color-oscuro);
-            text-align: center;
+    
             margin-bottom: 20px;
             position: relative;
             display: inline-block;
@@ -109,15 +109,10 @@
             border-radius: 2px;
         }
 
-        main > p {
-            text-align: center;
-            font-size: 1.3rem;
-            color: var(--color-secundario);
-            margin-bottom: 50px;
-        }
+                    
 
         /* Grid de actividades */
-        section {
+                section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
@@ -125,7 +120,6 @@
         }
 
         article {
-            background: white;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -145,7 +139,7 @@
         }
 
         article:hover img {
-            transform: scale(1.08);
+            transform: scale(1.05);
         }
 
         article h3 {
@@ -231,24 +225,34 @@
     </style>
 </head>
 <body>
+    {% load static %}
+    {% load translate %}
     <!-- Encabezado / Navegación -->
     <header class="bg-primary text-white p-3">
         <div class="container d-flex justify-content-between align-items-center">
             <h1 class="h3 m-0">Hotel Luz de Luna</h1>
             <nav>
                 <ul class="nav">
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">Actividades</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">{% tr 'Inicio' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr 'Actividades' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr 'Contacto' %}</a></li>
+
+                    <li class="nav-item ms-2">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
+                    </li>
 
                     {% if request.user.is_authenticated %}
                         <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">Perfil</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">Cerrar sesión</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr 'Cerrar sesión' %}</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">Iniciar sesión</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">Registrarse</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr 'Iniciar sesión' %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
                     {% endif %}
+                    
                 </ul>
             </nav>
         </div>
@@ -256,36 +260,39 @@
 
     <!-- Contenido principal -->
     <main>
-        <h2>Actividades Cercanas al Hotel</h2>
-        <p>Descubre todo lo que puedes hacer durante tu estadía.</p>
+    <h2>{% tr 'Actividades' %}</h2>
+    <p>{% tr 'Disfruta de las mejores experiencias cerca del hotel.' %}</p>
 
         <!-- Tarjetas de actividades -->
         <section>
             <article>
-                <img src="https://via.placeholder.com/400x250" alt="Tour de Cataratas">
-                <h3>Tour a las Cataratas</h3>
-                <p>Explora la naturaleza con un guía local. Ideal para toda la familia.</p>
-                <p><strong>Ubicación:</strong> 15 minutos del hotel</p>
-                <p><strong>Precio aproximado:</strong> $25 por persona</p>
-                <p><strong>Contacto:</strong> +506 8888-7777</p>
+                <img src="{% static 'sitio_web/images/actividad_1.svg' %}" alt="Tour a las Cataratas"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Tour a las Cataratas' %}</h3>
+                <p>{% tr 'Explora hermosas cascadas y senderos naturales cerca del hotel.' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr '15 minutos del hotel' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr '$25 por persona' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
             </article>
 
             <article>
-                <img src="https://via.placeholder.com/400x250" alt="Tour de Café">
-                <h3>Tour del Café Costarricense</h3>
-                <p>Aprende sobre el proceso del café y disfruta de una degustación.</p>
-                <p><strong>Ubicación:</strong> 10 minutos del hotel</p>
-                <p><strong>Precio aproximado:</strong> $20 por persona</p>
-                <p><strong>Contacto:</strong> +506 9999-8888</p>
+                <img src="{% static 'sitio_web/images/actividad_2.svg' %}" alt="Tour de Café"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Tour de Café' %}</h3>
+                <p>{% tr 'Aprende sobre el proceso del café costarricense con degustación incluida.' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr '10 minutos del hotel' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr '$20 por persona' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 9999-8888</p>
             </article>
 
             <article>
-                <img src="https://via.placeholder.com/400x250" alt="Cabalgata ecológica">
-                <h3>Cabalgata Ecológica</h3>
-                <p>Disfruta de un recorrido guiado a caballo por senderos naturales.</p>
-                <p><strong>Ubicación:</strong> 8 minutos del hotel</p>
-                <p><strong>Precio aproximado:</strong> $30 por persona</p>
-                <p><strong>Contacto:</strong> +506 7777-6666</p>
+                <img src="{% static 'sitio_web/images/actividad_3.svg' %}" alt="Cabalgata Ecológica"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Cabalgata Ecológica' %}</h3>
+                <p>{% tr 'Vive una experiencia natural a caballo por los alrededores del valle.' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr '8 minutos del hotel' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr '$30 por persona' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 7777-6666</p>
             </article>
         </section>
     </main>

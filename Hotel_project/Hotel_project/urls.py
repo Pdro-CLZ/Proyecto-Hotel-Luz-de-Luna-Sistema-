@@ -19,6 +19,7 @@ from django.urls import include, path
 from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
     path('', lambda request: redirect('login')),  # redirige "/" al login
