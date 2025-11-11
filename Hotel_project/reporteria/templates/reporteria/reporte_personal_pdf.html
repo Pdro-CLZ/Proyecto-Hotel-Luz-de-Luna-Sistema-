@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reporte de Rendimiento del Personal</title>
+<style>
+  body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+  h2 { text-align: center; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #444; padding: 6px; text-align: center; }
+  th { background-color: #eee; }
+</style>
+</head>
+<body>
+  <h2>Reporte de Rendimiento del Personal</h2>
+  <p><strong>Mes:</strong> {{ mes }} / <strong>Año:</strong> {{ anio }}</p>
+  <p><strong>Área de trabajo:</strong> {{ area }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Empleado</th>
+        <th>Área</th>
+        <th>Asistencias</th>
+        <th>Promedio Horas</th>
+        <th>Puntualidad</th>
+        <th>Tareas Completadas</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in data %}
+      <tr>
+        <td>{{ d.empleado.nombre }} {{ d.empleado.apellido }}</td>
+        <td>{{ d.area }}</td>
+        <td>{{ d.total_asistencias }}</td>
+        <td>{{ d.promedio_horas }}</td>
+        <td>{{ d.puntualidad_pct }}%</td>
+        <td>{{ d.tareas_completadas }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">Sin registros disponibles</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
