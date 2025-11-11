@@ -243,6 +243,7 @@ def consultar_disponibilidad(request):
         if form.is_valid():
             fecha_inicio = form.cleaned_data['fecha_inicio']
             fecha_fin = form.cleaned_data['fecha_fin']
+            tipo = form.cleaned_data.get('tipo')
 
             # 🔹 Guardar las fechas seleccionadas en la sesión
             request.session['fecha_inicio'] = str(fecha_inicio)
@@ -256,7 +257,11 @@ def consultar_disponibilidad(request):
             # 🔹 Obtener las habitaciones disponibles
             habitaciones_disponibles = Habitacion.objects.exclude(
                 id__in=habitaciones_ocupadas
-            ).prefetch_related('amenidades')
+            )
+            if tipo:
+             habitaciones_disponibles = habitaciones_disponibles.filter(tipo=tipo)
+
+             habitaciones_disponibles = habitaciones_disponibles.prefetch_related('amenidades')
 
             # 🔹 Calcular el precio total por habitación
             for hab in habitaciones_disponibles:
@@ -375,6 +380,14 @@ def reservar_habitacion(request, habitacion_id):
 
     return render(request, 'sitio_web/form_reserva.html', {'habitacion': habitacion})
 
+
+def detalle_habitacion(request, habitacion_id):
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+    precios = PrecioHabitacion.objects.filter(habitacion=habitacion).order_by('fecha')
+    return render(request, 'sitio_web/detalle_habitacion.html', {
+        'habitacion': habitacion,
+        'precios': precios
+    })
 
 
 

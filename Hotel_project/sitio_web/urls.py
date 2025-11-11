@@ -13,4 +13,6 @@ urlpatterns = [
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
     path('consultar/', views.consultar_disponibilidad, name='consultar_disponibilidad'),
     path('reservar/<int:habitacion_id>/', views.reservar_habitacion, name='reservar_habitacion'),
+    path('habitacion/<int:habitacion_id>/', views.detalle_habitacion, name='detalle_habitacion'),
+
 ]
