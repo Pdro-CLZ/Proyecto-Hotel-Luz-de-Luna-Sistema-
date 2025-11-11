@@ -27,7 +27,7 @@ urlpatterns = [
     path('marketing/', include('marketing.urls')),
     path('personal/', include('personal.urls')),
     path('limpieza/', include('limpieza.urls')),
-    # path('reporteria/', include('reporteria.urls')),
+    path('reporteria/', include('reporteria.urls')),
     # path('reservas/', include('reservas.urls')),
     path('contabilidad/', include('contabilidad.urls')),
     # path('inventario/', include('inventario.urls')),
