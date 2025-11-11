@@ -23,16 +23,14 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', lambda request: redirect('login')),  # redirige "/" al login
     path('admin/', admin.site.urls),
-    path('administracion/', include('administracion.urls')),  # apps_home estará aquí
+    path('administracion/', include('administracion.urls')), 
     path('marketing/', include('marketing.urls')),
     path('personal/', include('personal.urls')),
     path('limpieza/', include('limpieza.urls')),
     # path('reporteria/', include('reporteria.urls')),
-    # path('reservas/', include('reservas.urls')),
+    path('reservas/', include('reservas.urls')),
     path('contabilidad/', include('contabilidad.urls')),
-    # path('inventario/', include('inventario.urls')),
-    path('sitio/', include('sitio_web.urls')),  # para el grandioso sitio web
-    # path('contabilidad/', include('contabilidad.urls')),
+    path('sitio/', include('sitio_web.urls')),  
     path('inventario/', include('inventario.urls')),
 ]
 
