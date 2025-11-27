@@ -46,8 +46,8 @@
                         {% endif %}
                         <div class="habitacion-info">
                             <h3>{{ habitacion.nombre|default:'Suite Luna (Hab. 1)' }}</h3>
-                            <p class="capacidad"> tr "👥 Máx. " {{ habitacion.capacidad|default:2 }} {% tr "personas" %}</p>
-                            <p>{{ habitacion.descripcion|default:'{% tr "Suite amplia con balcón y vista al mar, decoración elegante y cama king-size. Ideal para parejas." %}' }}</p>
+                            <p class="capacidad">  👥 Máx. {{ habitacion.capacidad|default:2 }} {% tr "personas" %}</p>
+                            <p>{{ habitacion.descripcion|default:" Suite amplia con balcón y vista al mar, decoración elegante y cama king-size. Ideal para parejas." }}</p>
 
                             <h5 class="mt-3">{% tr "Amenidades" %}</h5>
                             <ul class="amenidades-list">
