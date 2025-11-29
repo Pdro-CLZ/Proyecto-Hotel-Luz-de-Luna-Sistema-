@@ -1,246 +1,185 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <title>Reportería - Luz de Luna</title>
-    <link rel="stylesheet" href="../../css/styles.css">
+    <title>Submenú - Reportería</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
     <style>
-        .navbar {
-            background-color: #b6be85;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .navbar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .nav-logo {
-            font-family: 'Nunito Sans', sans-serif;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-links li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-links li a:hover {
-            background-color: #858b65;
-        }
-
-        .nav-toggle {
-            display: none;
-            font-size: 1.8em;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        /* Responsive: menú hamburguesa */
-        @media (max-width: 768px) {
-            .nav-links {
-                width: 100%;
-                flex-direction: column;
-                display: none;
-                margin-top: 10px;
-            }
-
-            .nav-links li {
-                width: 100%;
-            }
-
-            .nav-links li a {
-                display: block;
-                width: 100%;
-            }
-
-            .nav-toggle {
-                display: block;
-            }
-
-            .navbar.open .nav-links {
-                display: flex;
-            }
-        }
-
         body {
+            min-height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #b9bf9c;
-        }
-
-        .menu-header {
-            background-color: #faf8d3;
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 3px solid #b6be85;
-        }
-
-        .menu-logo {
+            background: linear-gradient(180deg, #d3ddb1 0%, #f7f6d9 40%, #f0f4e0 100%);
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        .menu-logo h1 {
+        .reporteria-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .reporteria-card {
+            background: #fbfae8;
+            border-radius: 24px;
+            box-shadow: 0 18px 30px rgba(0,0,0,0.12);
+            padding: 32px 40px 36px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .reporteria-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .reporteria-header-title {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .reporteria-header-title h2 {
             margin: 0;
-            font-size: 2rem;
-            color: #4c6d3c;
+            font-size: 26px;
+            font-weight: 700;
+            color: #4c6424;
         }
 
-        .moon {
-            font-size: 2rem;
+        .reporteria-header-title span {
+            font-size: 14px;
+            color: #6e7b3b;
         }
 
-        .menu-container {
-            padding: 30px;
-            max-width: 1100px;
-            margin: auto;
+        .reporteria-tag {
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: #e3edc0;
+            color: #4b5c23;
+            border: 1px solid rgba(121, 140, 60, 0.4);
         }
 
-        .subtitle {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 24px;
-        }
-
-        .report-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
+        .reporteria-grid {
             margin-top: 10px;
         }
 
-        .report-item {
-            background: #b6be85;
-            color: #3c3c3c;
-            border-radius: 12px;
-            padding: 24px 16px;
-            font-size: 1em;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
+        .report-card {
+            background: #f2f7dc;
+            border-radius: 18px;
+            padding: 18px 18px 16px;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
+            gap: 14px;
         }
 
-        .report-item:hover {
-            transform: scale(1.05);
-            background: #a8b676;
+        .report-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 26px rgba(0, 0, 0, 0.12);
+            background: #edf4cf;
+            text-decoration: none;
         }
 
-        .report-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+        .report-info-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #42501f;
+            margin: 0;
         }
 
-        .report-desc {
-            font-size: 0.9em;
-            margin-top: 6px;
-            color: #444;
+        .report-info-desc {
+            font-size: 13px;
+            color: #6b7542;
+            margin: 2px 0 0;
         }
 
-        @media (max-width: 900px) {
-            .report-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .report-grid {
-                grid-template-columns: 1fr;
-            }
+        .report-link {
+            text-decoration: none;
         }
     </style>
 </head>
-
 <body>
-    <nav class="navbar">
-        <div class="navbar-container"> <a href="#" class="nav-logo">Mi Empresa</a>
-            <ul class="nav-links">
-                <li><a href="../Inventario/index.html">Inventario</a></li>
-                <li><a href="../Limpieza/index.html">Limpieza</a></li>
-                <li> <a href="../Administrativo/index.html">Administrativo</a> </li>
-                <li><a href="../Marketing/index.html">Marketing</a></li>
-                <li><a href="../Reservas/index.html">Reservas</a></li>
-                <li><a href="../Contabilidad/index.html">Contabilidad</a></li>
-                <li><a href="../Reportería/index.html">Reportería</a></li>
-            </ul>
-            <div class="nav-toggle">&#9776;</div>
-        </div>
-    </nav>
-    <header class="menu-header">
-        <div class="logo menu-logo"> <span class="moon">🌙</span>
-            <h1>Reportería</h1>
-        </div>
-    </header>
-    <div class="menu-container">
-        <p class="subtitle">Visualiza los diferentes reportes del sistema</p>
-        <div class="report-grid">
-            <div class="report-item" onclick="alert('Accediendo a Reporte de Reservas')">
-                <div class="report-icon">📅</div>
-                <div>Reservas</div>
-                <div class="report-desc">Historial y estado de reservas del hotel.</div>
-            </div>
-            <div class="report-item" onclick="alert('Accediendo a Reporte de Limpieza')">
-                <div class="report-icon">🧹</div>
-                <div>Limpieza</div>
-                <div class="report-desc">Registro de limpieza por habitación.</div>
-            </div>
-            <div class="report-item" onclick="alert('Accediendo a Reporte Contable')">
-                <div class="report-icon">💰</div>
-                <div>Contabilidad</div>
-                <div class="report-desc">Ingresos, egresos y balances financieros.</div>
-            </div>
-            <div class="report-item" onclick="alert('Accediendo a Reporte de Inventario')">
-                <div class="report-icon">📦</div>
-                <div>Inventario</div>
-                <div class="report-desc">Stock de productos y suministros.</div>
-            </div>
-            <div class="report-item" onclick="alert('Accediendo a Reporte Administrativo')">
-                <div class="report-icon">📋</div>
-                <div>Administrativo</div>
-                <div class="report-desc">Tareas y procesos del hotel.</div>
-            </div>
-            <div class="report-item" onclick="alert('Accediendo a Reporte de Personal')">
-                <div class="report-icon">🧑‍💼</div>
-                <div>Personal</div>
-                <div class="report-desc">Desempeño y asistencia del equipo.</div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 30px;"> <button class="boton-verde"
-                onclick="window.location.href='../../menu.html'">Volver al Menú</button> </div>
-    </div>
-    <script> const navToggle = document.querySelector(".nav-toggle"); const navbar = document.querySelector(".navbar"); navToggle.addEventListener("click", () => { navbar.classList.toggle("open"); }); </script>
-</body>
 
+<div class="reporteria-wrapper">
+    <div class="reporteria-card">
+
+        <div class="reporteria-header">
+            <div class="reporteria-header-title">
+                <h2>Reportería</h2>
+                <span>Selecciona el tipo de reporte que deseas consultar</span>
+            </div>
+            <span class="reporteria-tag">Módulo de reportes del hotel</span>
+        </div>
+
+        <div class="row g-3 reporteria-grid">
+
+            <div class="col-md-6">
+                <a href="{% url 'reporteria:reporte_financiero' %}" class="report-link">
+                    <div class="report-card">
+                        <div>
+                            <p class="report-info-title">Reporte Financiero</p>
+                            <p class="report-info-desc">Ingresos, egresos y resumen económico del hotel.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6">
+                <a href="{% url 'reporteria:reporte_limpieza' %}" class="report-link">
+                    <div class="report-card">
+                        <div>
+                            <p class="report-info-title">Reporte de Limpieza</p>
+                            <p class="report-info-desc">Estado de limpieza y seguimiento de habitaciones.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6">
+                <a href="{% url 'reporteria:reporte_personal' %}" class="report-link">
+                    <div class="report-card">
+                        <div>
+                            <p class="report-info-title">Reporte de Personal</p>
+                            <p class="report-info-desc">Información del personal y su distribución.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6">
+                <a href="{% url 'reporteria:reporte_inventario' %}" class="report-link">
+                    <div class="report-card">
+                        <div>
+                            <p class="report-info-title">Reporte de Inventario</p>
+                            <p class="report-info-desc">Control de productos, suministros y stock.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 offset-md-3">
+                <a href="{% url 'reporteria:reporte_reservas' %}" class="report-link">
+                    <div class="report-card">
+                        <div>
+                            <p class="report-info-title">Reporte de Reservas</p>
+                            <p class="report-info-desc">Histórico y análisis de reservas por fecha y canal.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
 </html>
