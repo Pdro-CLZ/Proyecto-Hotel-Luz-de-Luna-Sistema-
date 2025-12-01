@@ -11,12 +11,19 @@ from decimal import Decimal
 
 @login_required
 def index_reservas(request):
-    hoy = timezone.localdate()
+    fecha_seleccionada = request.GET.get("fecha")
 
-    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    if fecha_seleccionada:
+        try:
+            fecha_base = date.fromisoformat(fecha_seleccionada)
+        except:
+            fecha_base = timezone.localdate()
+    else:
+        fecha_base = timezone.localdate()
+
+    inicio_semana = fecha_base - timedelta(days=fecha_base.weekday())
     dias = [inicio_semana + timedelta(days=i) for i in range(7)]
     fin_semana = dias[-1]
-
     habitaciones = Habitacion.objects.all().order_by('id')
 
     fechas_reservadas = FechaReservada.objects.filter(

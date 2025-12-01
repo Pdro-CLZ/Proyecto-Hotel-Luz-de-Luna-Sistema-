@@ -34,6 +34,12 @@
         </div>
     </div>
 
+    <form method="get" style="margin-bottom: 15px; display:flex; gap:10px; align-items:center;">
+        <label for="fecha">Consultar semana de:</label>
+        <input type="date" id="fecha" name="fecha" value="{{ inicio_semana }}">
+        <button type="submit" class="boton-verde">Ir</button>
+    </form>
+
     {% if grid %}
     <div style="overflow-x:auto;">
     <table class="calendar-table">
