@@ -10,8 +10,10 @@ from administracion.models import Usuario
 from .models import Habitacion, FechaReservada, Reserva, PrecioHabitacion
 from decimal import Decimal
 from django.contrib.auth.hashers import make_password
+from administracion.decorators import rol_requerido
 
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def index_reservas(request):
     fecha_seleccionada = request.GET.get("fecha")
 
@@ -52,7 +54,7 @@ def index_reservas(request):
     }
     return render(request, 'index_reservas.html', context)
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def agregar_reserva(request):
     if request.method == "POST":
@@ -103,7 +105,7 @@ def agregar_reserva(request):
 
     return render(request, "agregar_reserva.html")
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def buscar_cliente(request):
     if request.method == 'POST':
@@ -131,7 +133,7 @@ def buscar_cliente(request):
 
     return HttpResponse("Método no permitido.", status=405)
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id=None):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
@@ -152,7 +154,7 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
                 cedula=request.POST['identificacion'],
                 email=request.POST['correo'],
                 password=make_password('Pass123!'),
-                rol_id=3,
+                rol_id=4,
             )
             
             cliente = Cliente.objects.create(
@@ -178,7 +180,7 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
         'fecha_fin': fecha_fin,
     })
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 @transaction.atomic
 def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id, metodo_pago, canal_reservacion):

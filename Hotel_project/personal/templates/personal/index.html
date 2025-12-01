@@ -40,13 +40,21 @@
             </div>
         </form>
 
-
-        <h1>Administrar Empleados y Roles</h1>
-        <div class="button-group">
+            {% if request.user.rol.nombre == "Administrador" %}
+            <h1>Administrar Empleados y Roles</h1>
+            <div class="button-group">
             <button class="boton-verde" onclick="window.location.href='empleados'">Empleados</button>
             <button class="boton-verde" onclick="window.location.href='roles'">Roles</button>
             <button class="boton-verde" onclick="window.location.href='empleados/tiempos/'">Tiempos</button>
-        </div>
+            </div>
+            {% elif request.user.rol.nombre == "Empleado_Nivel1" %}
+            <h1>Administrar Empleados y Roles</h1>
+            <div class="button-group">
+            <button class="boton-verde" onclick="window.location.href='empleados/tiempos/'">Tiempos</button>
+            </div>
+            {% elif request.user.rol.nombre == "Empleado_Nivel2" %}
+            {% elif request.user.rol.nombre == "cliente" %}
+            {% endif %}
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

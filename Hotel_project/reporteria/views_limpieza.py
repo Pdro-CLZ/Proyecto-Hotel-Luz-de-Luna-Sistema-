@@ -6,11 +6,12 @@ from io import BytesIO
 from xhtml2pdf import pisa
 from openpyxl import Workbook
 from datetime import datetime, timedelta
-
+from administracion.decorators import rol_requerido
 from limpieza.models import TareaLimpieza, ZonaLimpieza
 from administracion.models import Usuario
 
 # Función auxiliar para exportar Excel
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -31,6 +32,7 @@ def exportar_excel(datos, titulo):
 
 
 # Función auxiliar para exportar PDF
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)
@@ -40,7 +42,7 @@ def exportar_pdf(template_name, context, nombre_archivo):
     response["Content-Disposition"] = f'attachment; filename="{nombre_archivo}.pdf"'
     return response
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def reporte_limpieza(request):
     habitaciones = ZonaLimpieza.objects.filter(is_habitacion=True).order_by("nombre")
     tareas = TareaLimpieza.objects.select_related("zona", "usuario_modifica").order_by("-fecha_modificacion")

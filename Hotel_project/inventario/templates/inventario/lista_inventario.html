@@ -67,11 +67,18 @@
                         {% comment %}
                         Para evitar errores de Django: verificamos rol usando 'in' con string separado
                         {% endcomment %}
-                        {% if user.rol and user.rol.nombre == "Administrador" or user.rol.nombre == "Manager" %}
+                        {% if request.user.rol.nombre == "Administrador" %}
+                        <a href="{% url 'editar_inventario' i.id %}">Editar</a> |
+                            <a href="{% url 'activar_inactivar_inventario' i.id %}">
+                                {% if i.activo %}Inactivar{% else %}Activar{% endif %}
+                            </a> |
+                        {% elif request.user.rol.nombre == "Empleado_Nivel1" %}
                             <a href="{% url 'editar_inventario' i.id %}">Editar</a> |
                             <a href="{% url 'activar_inactivar_inventario' i.id %}">
                                 {% if i.activo %}Inactivar{% else %}Activar{% endif %}
                             </a> |
+                        {% elif request.user.rol.nombre == "Empleado_Nivel2" %}
+                        {% elif request.user.rol.nombre == "cliente" %}
                         {% endif %}
                         <a href="{% url 'editar_cantidad_inventario' i.id %}">Editar Cantidad</a>
                     </td>

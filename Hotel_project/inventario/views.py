@@ -3,8 +3,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import Inventario
 from .forms import InventarioForm
+from administracion.decorators import rol_requerido
 
 # --- Dashboard / listado ---
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def lista_inventario(request):
     tipo_filter = request.GET.get('tipo', '')
@@ -32,6 +34,7 @@ def lista_inventario(request):
 
 
 # --- Crear ---
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def crear_inventario(request):
     if request.method == 'POST':
@@ -51,8 +54,8 @@ def es_admin_o_manager(user):
 
 
 # --- Editar completo (solo Admin/Manager) ---
+@rol_requerido("Administrador", "Empleado_Nivel1")
 @login_required
-@user_passes_test(es_admin_o_manager)
 def editar_inventario(request, pk):
     item = get_object_or_404(Inventario, pk=pk)
     if request.method == "POST":
@@ -86,7 +89,7 @@ def editar_cantidad_inventario(request, pk):
 
 # --- Activar / Inactivar ---
 @login_required
-@user_passes_test(es_admin_o_manager)
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def activar_inactivar_inventario(request, pk):
     item = get_object_or_404(Inventario, pk=pk)
     item.activo = not item.activo
