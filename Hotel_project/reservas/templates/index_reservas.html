@@ -62,7 +62,9 @@
                 <div><strong>Reservado</strong></div>
                 <div>Reserva #{{ fr.reserva.id }}</div>
                 {% if fr.reserva.cliente %}
-                <div>{{ fr.reserva.cliente.nombre }} {{ fr.reserva.cliente.apellido }}</div>
+                <div>
+                    {{ fr.reserva.cliente.usuario.first_name }} {{ fr.reserva.cliente.usuario.last_name }}
+                </div>
                 {% endif %}
             </div>
           {% endif %}

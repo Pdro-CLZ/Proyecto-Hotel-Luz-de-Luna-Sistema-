@@ -5,9 +5,11 @@ from django.contrib.auth.decorators import login_required
 from datetime import timedelta, date, datetime
 from django.db import transaction
 from django.contrib import messages
-from .models import Habitacion, FechaReservada, Cliente, Reserva, PrecioHabitacion
+from sitio_web.models import Cliente  
+from administracion.models import Usuario 
+from .models import Habitacion, FechaReservada, Reserva, PrecioHabitacion
 from decimal import Decimal
-
+from django.contrib.auth.hashers import make_password
 
 @login_required
 def index_reservas(request):
@@ -28,7 +30,7 @@ def index_reservas(request):
 
     fechas_reservadas = FechaReservada.objects.filter(
         fecha__range=(inicio_semana, fin_semana)
-    ).select_related('habitacion', 'reserva__cliente')
+    ).select_related('habitacion', 'reserva__cliente__usuario')
 
     reservado_map = {}
     for fr in fechas_reservadas:
@@ -110,7 +112,10 @@ def buscar_cliente(request):
         fecha_fin = request.POST.get('fecha_fin')
         habitacion_id = request.POST.get('habitacion_id')
 
-        cliente = Cliente.objects.filter(identificacion=identificacion).first()
+        cliente = Cliente.objects.select_related('usuario').filter(
+            usuario__cedula=identificacion
+        ).first()
+
         if cliente:
             return redirect('nueva_reserva_cliente',
                             habitacion_id=habitacion_id,
@@ -130,7 +135,7 @@ def buscar_cliente(request):
 @login_required
 def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id=None):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
-    cliente = Cliente.objects.filter(id=cliente_id).first()
+    cliente = Cliente.objects.filter(id=cliente_id).select_related("usuario").first()
 
     if isinstance(fecha_inicio, str):
         fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
@@ -139,12 +144,20 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
 
     if request.method == 'POST':
         if not cliente:
+
+            usuario = Usuario.objects.create(
+                username=request.POST['identificacion'],
+                first_name=request.POST['first_name'],
+                last_name=request.POST['last_name'],
+                cedula=request.POST['identificacion'],
+                email=request.POST['correo'],
+                password=make_password('Pass123!'),
+                rol_id=3,
+            )
+            
             cliente = Cliente.objects.create(
-                nombre=request.POST['nombre'],
-                apellido=request.POST['apellido'],
+                usuario=usuario,
                 telefono=request.POST['telefono'],
-                correo=request.POST['correo'],
-                identificacion=request.POST['identificacion']
             )
 
         metodo_pago = request.POST.get('metodo_pago')
@@ -169,9 +182,8 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
 @login_required
 @transaction.atomic
 def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id, metodo_pago, canal_reservacion):
-    """Resumen final de la reserva y confirmación"""
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
-    cliente = get_object_or_404(Cliente, pk=cliente_id)
+    cliente = get_object_or_404(Cliente.objects.select_related("usuario"), pk=cliente_id)
 
     if isinstance(fecha_inicio, str):
         fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()

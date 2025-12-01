@@ -52,7 +52,8 @@
 <body class="menu-bg">
 <main class="menu-container">
   <h2>Confirmar Reserva</h2>
-  <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
+
+  <p><strong>Cliente:</strong> {{ cliente.usuario.first_name }} {{ cliente.usuario.last_name }}</p>
   <p><strong>Habitación:</strong> {{ habitacion.nombre }}</p>
   <p><strong>Fechas:</strong> {{ fecha_inicio }} → {{ fecha_fin }}</p>
   <p><strong>Método de pago:</strong> {{ metodo_pago|title }}</p>

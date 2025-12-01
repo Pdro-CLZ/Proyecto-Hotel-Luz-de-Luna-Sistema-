@@ -69,20 +69,31 @@
   <h2>Datos del Cliente</h2>
   <form method="post">
     {% csrf_token %}
+
     {% if not cliente %}
       <p>Ingrese los datos del nuevo cliente:</p>
+
       <label>Cédula:</label>
       <input type="text" name="identificacion" required>
+
       <label>Nombre:</label>
-      <input type="text" name="nombre" required>
+      <input type="text" name="first_name" required>
+
       <label>Apellido:</label>
-      <input type="text" name="apellido" required>
+      <input type="text" name="last_name" required>
+
       <label>Teléfono:</label>
       <input type="text" name="telefono" required>
+
       <label>Correo:</label>
       <input type="email" name="correo" required>
+
     {% else %}
-      <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }} ({{ cliente.identificacion }})</p>
+      <p>
+        <strong>Cliente:</strong> 
+        {{ cliente.usuario.first_name }} {{ cliente.usuario.last_name }}
+        ({{ cliente.usuario.cedula }})
+      </p>
     {% endif %}
 
     <label>Método de pago:</label>
