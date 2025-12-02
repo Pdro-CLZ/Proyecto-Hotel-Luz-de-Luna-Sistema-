@@ -31,3 +31,19 @@ def tr(context, key):
         return TRANSLATIONS.get(key, {}).get(lang, TRANSLATIONS.get(key, {}).get('es', key))
     except Exception:
         return key
+
+@register.filter
+def tr_var(text, context):
+    """
+    Translate dynamic text (e.g. text from DB or default fallback).
+    Usage:
+        {{ habitacion.descripcion|tr_var:request }}
+        {{ habitacion.nombre|tr_var:request }}
+    """
+
+    try:
+        # Get site_lang from session
+        lang = context.session.get('site_lang', 'es')
+        return TRANSLATIONS.get(text, {}).get(lang, text)
+    except Exception:
+        return text

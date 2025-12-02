@@ -12,11 +12,11 @@
         <p><strong>{% tr "Número:" %}</strong> {{ habitacion.room_number }}</p>
         <p><strong>{% tr "Descripción:" %}</strong> {{ habitacion.description }}</p>
         <p><strong>{% tr "Amenidades:" %}</strong></p>
-        <ul>
-            {% for amenity in habitacion.amenities.all %}
-                <li>{{ amenity.name }}</li>
+        <ul class="amenidades-list">
+            {% for amenidad in habitacion.amenidades.all %}
+                <li>{{ amenidad.nombre|tr_var:request }}</li>
             {% empty %}
-                <li>{% tr "Sin amenidades registradas" %}</li>
+                <li><em>{% tr "Sin amenidades registradas" %}</em></li>
             {% endfor %}
         </ul>
         <a href="{% url 'sitio_web:select_dates' %}" class="btn btn-primary">{% tr "Reservar" %}</a>
