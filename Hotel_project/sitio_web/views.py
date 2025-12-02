@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.templatetags.static import static
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.contrib import messages
 from django.db import transaction
 from administracion.models import Rol, Usuario
@@ -23,6 +24,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from reservas.models import Habitacion, FechaReservada, PrecioHabitacion, Reserva
 from .forms import ConsultaDisponibilidadForm
+
+import os
 
 @transaction.atomic
 def registro_cliente(request):
@@ -233,6 +236,7 @@ from django.db.models import Sum
 from django.shortcuts import render
 from reservas.models import Habitacion, FechaReservada, PrecioHabitacion
 from .forms import ConsultaDisponibilidadForm
+from .models import Amenidad
 
 def consultar_disponibilidad(request):
     habitaciones_disponibles = []
@@ -255,6 +259,13 @@ def consultar_disponibilidad(request):
                 id__in=habitaciones_ocupadas
             ).prefetch_related('amenidades')
 
+            busqueda = request.POST.get("busqueda", "").strip()
+
+            if busqueda:
+                habitaciones_disponibles = habitaciones_disponibles.filter(
+                    nombre__icontains=busqueda
+                )
+
             for hab in habitaciones_disponibles:
                 total = PrecioHabitacion.objects.filter(
                     habitacion=hab,
@@ -265,10 +276,12 @@ def consultar_disponibilidad(request):
     else:
         form = ConsultaDisponibilidadForm()
 
+    amenidades = Amenidad.objects.all()
     context = {
         'form': form,
         'habitaciones_disponibles': habitaciones_disponibles,
         'precios_totales': precios_totales,
+        'amenidades': amenidades,
     }
 
     return render(request, 'sitio_web/consultar_disponibilidad.html', context)
@@ -283,6 +296,17 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import re
 from reservas.models import Habitacion, Reserva, Cliente
+
+# sitio_web/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from datetime import datetime, timedelta
+import re
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
+from reservas.models import Habitacion, PrecioHabitacion
 
 def reservar_habitacion(request, habitacion_id):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
@@ -307,7 +331,6 @@ def reservar_habitacion(request, habitacion_id):
 
         errores = []
 
-        # 🔹 Validaciones
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', nombre):
             errores.append("El nombre debe tener al menos 3 letras y solo contener caracteres alfabéticos.")
 
@@ -326,76 +349,181 @@ def reservar_habitacion(request, habitacion_id):
             for e in errores:
                 messages.error(request, e)
         else:
-            # 🔹 Crear o reutilizar cliente
-            cliente, _ = Cliente.objects.get_or_create(
-                identificacion=cedula,
-                defaults={
-                    'nombre': nombre,
-                    'apellido': '',
-                    'telefono': telefono,
-                    'correo': correo
-                }
-            )
+            # Guardamos datos en sesión para crear reserva después del pago
+            request.session['cliente_datos'] = {
+                "nombre": nombre,
+                "correo": correo,
+                "telefono": telefono,
+                "cedula": cedula,
+            }
+            request.session['habitacion_id'] = habitacion.id
 
-            # 🔹 Calcular total real de la reserva según precios por fecha
-            precios = PrecioHabitacion.objects.filter(
-                habitacion=habitacion,
-                fecha__range=(fecha_inicio, fecha_fin)
-            ).aggregate(total=models.Sum('precio'))
-            total = precios['total'] or 0
-
-            # 🔹 Crear la reserva
-            reserva = Reserva.objects.create(
-                habitacion=habitacion,
-                cliente=cliente,
-                fecha_inicio=fecha_inicio,
-                fecha_fin=fecha_fin,
-                total=total,
-                metodo_pago='sitio',
-                canal_reservacion='sitio'
-            )
-
-            # 🔹 Crear registros día por día
-            fecha_actual = fecha_inicio
-            while fecha_actual <= fecha_fin:
-                FechaReservada.objects.create(
-                    habitacion=habitacion,
-                    fecha=fecha_actual,
-                    reserva=reserva
-                )
-                fecha_actual += timedelta(days=1)
-
-            # 🔹 Enviar correo de confirmación
-            asunto = "Confirmación de tu reserva"
-            mensaje = (
-                f"Hola {nombre},\n\n"
-                f"Tu reserva en nuestro hotel ha sido confirmada exitosamente.\n\n"
-                f"Detalles de la reserva:\n"
-                f"- Habitación: {habitacion.nombre}\n"
-                f"- Fechas: del {fecha_inicio} al {fecha_fin}\n"
-                f"- Total: ₡{total:,}\n\n"
-                f"Gracias por reservar con nosotros.\n"
-                f"Te esperamos pronto.\n\n"
-                f"Atentamente,\n"
-                f"El equipo del hotel"
-            )
-
-            try:
-                send_mail(
-                    asunto,
-                    mensaje,
-                    None,  # usa DEFAULT_FROM_EMAIL
-                    [correo],
-                    fail_silently=False,
-                )
-                messages.success(request, f"✅ Reserva confirmada y correo enviado a {correo}.")
-            except Exception as e:
-                messages.warning(request, f"Reserva creada, pero ocurrió un error al enviar el correo: {e}")
-            return redirect('reserva_confirmada', reserva_id=reserva.id)
-
-            # return redirect('consultar_disponibilidad')
+            return redirect('crear_pago_paypal')
 
     return render(request, 'sitio_web/form_reserva.html', {'habitacion': habitacion})
+
+import paypalrestsdk
+from django.shortcuts import redirect
+from django.conf import settings
+from reservas.models import Habitacion, PrecioHabitacion
+from datetime import datetime
+
+def crear_pago_paypal(request):
+    cliente = request.session.get("cliente_datos")
+    habitacion_id = request.session.get("habitacion_id")
+    fecha_inicio = request.session.get("fecha_inicio")
+    fecha_fin = request.session.get("fecha_fin")
+
+    if not cliente or not habitacion_id:
+        messages.error(request, "Debe completar el formulario de reserva.")
+        return redirect('consultar_disponibilidad')
+
+    habitacion = Habitacion.objects.get(id=habitacion_id)
+
+    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
+
+    # Calcular total
+    total_qs = PrecioHabitacion.objects.filter(
+        habitacion=habitacion,
+        fecha__range=(fecha_inicio, fecha_fin)
+    ).aggregate(total=models.Sum('precio'))
+
+    total = total_qs['total'] or 0
+
+    # Crear pago PayPal
+    payment = paypalrestsdk.Payment({
+        "intent": "sale",
+        "payer": { "payment_method": "paypal" },
+        "redirect_urls": {
+            "return_url": request.build_absolute_uri("/sitio/paypal/success/"), 
+            "cancel_url": request.build_absolute_uri("/sitio/paypal/cancel/")
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": f"Reserva Habitación {habitacion.nombre}",
+                    "sku": "ReservaHotel",
+                    "price": f"{total:.2f}",
+                    "currency": "USD",
+                    "quantity": 1
+                }]
+            },
+            "amount": { "total": f"{total:.2f}", "currency": "USD" },
+            "description": "Pago de reserva en el hotel."
+        }]
+    })
+
+    if payment.create():
+        # Buscar y redirigir a PayPal
+        for link in payment.links:
+            if link.rel == "approval_url":
+                return redirect(link.href)
+    else:
+        messages.error(request, "Error creando pago con PayPal.")
+        return redirect('consultar_disponibilidad')
+
+from django.shortcuts import render
+from reservas.models import Reserva, Cliente, FechaReservada
+from datetime import timedelta
+from django.core.mail import send_mail
+
+def paypal_success(request):
+    payment_id = request.GET.get('paymentId')
+    payer_id = request.GET.get('PayerID')
+
+    payment = paypalrestsdk.Payment.find(payment_id)
+
+    if not payment.execute({"payer_id": payer_id}):
+        return render(request, "sitio_web/error_pago.html")
+
+    # Recuperar datos guardados
+    cliente_datos = request.session.get('cliente_datos')
+    habitacion_id = request.session.get('habitacion_id')
+    fecha_inicio = datetime.strptime(request.session['fecha_inicio'], "%Y-%m-%d").date()
+    fecha_fin = datetime.strptime(request.session['fecha_fin'], "%Y-%m-%d").date()
+
+    habitacion = Habitacion.objects.get(id=habitacion_id)
+
+    # Crear o recuperar cliente
+    cliente, _ = Cliente.objects.get_or_create(
+        identificacion=cliente_datos["cedula"],
+        defaults={
+            "nombre": cliente_datos["nombre"],
+            "apellido": "",
+            "telefono": cliente_datos["telefono"],
+            "correo": cliente_datos["correo"]
+        }
+    )
+
+    # Calcular total
+    precios = PrecioHabitacion.objects.filter(
+        habitacion=habitacion,
+        fecha__range=(fecha_inicio, fecha_fin)
+    ).aggregate(total=models.Sum('precio'))
+
+    total = precios["total"] or 0
+
+    # Crear reserva real
+    reserva = Reserva.objects.create(
+        habitacion=habitacion,
+        cliente=cliente,
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin,
+        total=total,
+        metodo_pago="tarjeta",
+        canal_reservacion="sitio"
+    )
+
+    # Registrar cada día
+    dia = fecha_inicio
+    while dia <= fecha_fin:
+        FechaReservada.objects.create(
+            habitacion=habitacion,
+            fecha=dia,
+            reserva=reserva
+        )
+        dia += timedelta(days=1)
+
+    # Enviar correo
+    send_mail(
+        "Confirmación de Reserva",
+        f"Tu reserva del {fecha_inicio} al {fecha_fin} ha sido confirmada.",
+        None,
+        [cliente.correo],
+        fail_silently=True
+    )
+
+    return render(request, "sitio_web/reserva_confirmada.html", {"reserva": reserva})
+
+# sitio_web/views.py
+
+from django.shortcuts import render, redirect
+from django.contrib import messages # Asegúrate de importar esto
+
+def paypal_cancel(request):
+    """
+    Muestra la página de cancelación después de que el usuario cancela el pago
+    en la pasarela de PayPal.
+    """
+    
+    # 1. Mostrar un mensaje al usuario
+    messages.warning(request, "El proceso de pago fue cancelado. No se realizó ningún cargo.")
+    
+    # 2. (Opcional pero recomendado) Limpiar datos sensibles de la sesión 
+    #    para evitar que se intenten usar en procesos futuros no deseados.
+    if 'cliente_datos' in request.session:
+        del request.session['cliente_datos']
+    if 'habitacion_id' in request.session:
+        del request.session['habitacion_id']
+    if 'fecha_inicio' in request.session:
+        del request.session['fecha_inicio']
+    if 'fecha_fin' in request.session:
+        del request.session['fecha_fin']
+        
+    # 3. Renderizar el template de cancelación
+    return render(request, "sitio_web/cancelado.html")
+
 
 def reserva_confirmada(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id)

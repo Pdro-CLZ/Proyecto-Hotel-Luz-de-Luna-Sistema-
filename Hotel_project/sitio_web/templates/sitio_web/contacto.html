@@ -329,6 +329,12 @@
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr "Iniciar sesión" %}</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr "Registrarse" %}</a></li>
                     {% endif %}
+                    <li class="nav-item ms-2">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -353,7 +359,7 @@
             <h3>{% tr "Ubicación" %}</h3>
             <p>{% tr "Encuéntranos fácilmente en el mapa:" %}</p>
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.195687573483!2d-84.091!3d9.928!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa0e35ddcfc4c1f%3A0xabcdef123456789!2sHotel%20Luz%20de%20Luna!5e0!3m2!1ses!2scr!4v0000000000000" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.4425424592932!2d-85.16845312409471!3d9.643175090444739!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f9f6ef50725f341%3A0xb8227a1ad7b51a1d!2sHotel%20Luz%20de%20Luna!5e0!3m2!1sen!2sus!4v1764624658811!5m2!1sen!2sus" 
                 width="100%" 
                 height="400" 
                 style="border:0;" 

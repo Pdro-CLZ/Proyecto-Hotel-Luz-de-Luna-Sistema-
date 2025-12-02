@@ -236,14 +236,6 @@
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">{% tr 'Inicio' %}</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr 'Actividades' %}</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr 'Contacto' %}</a></li>
-
-                    <li class="nav-item ms-2">
-                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
-                    </li>
-
                     {% if request.user.is_authenticated %}
                         <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a></li>
@@ -252,6 +244,12 @@
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr 'Iniciar sesión' %}</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
                     {% endif %}
+                    <li class="nav-item ms-2">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
+                    </li>
                     
                 </ul>
             </nav>
@@ -266,7 +264,7 @@
         <!-- Tarjetas de actividades -->
         <section>
             <article>
-                <img src="{% static 'sitio_web/images/actividad_1.svg' %}" alt="Tour a las Cataratas"
+                <img src="{% static 'sitio_web/images/waterfall.jpg' %}" alt="Tour a las Cataratas"
                 class="img-fluid rounded mb-2">
                 <h3>{% tr 'Tour a las Cataratas' %}</h3>
                 <p>{% tr 'Explora hermosas cascadas y senderos naturales cerca del hotel.' %}</p>
@@ -276,7 +274,7 @@
             </article>
 
             <article>
-                <img src="{% static 'sitio_web/images/actividad_2.svg' %}" alt="Tour de Café"
+                <img src="{% static 'sitio_web/images/COFFE.JPG' %}" alt="Tour de Café"
                 class="img-fluid rounded mb-2">
                 <h3>{% tr 'Tour de Café' %}</h3>
                 <p>{% tr 'Aprende sobre el proceso del café costarricense con degustación incluida.' %}</p>
@@ -286,7 +284,7 @@
             </article>
 
             <article>
-                <img src="{% static 'sitio_web/images/actividad_3.svg' %}" alt="Cabalgata Ecológica"
+                <img src="{% static 'sitio_web/images/horseback.png' %}" alt="Cabalgata Ecológica"
                 class="img-fluid rounded mb-2">
                 <h3>{% tr 'Cabalgata Ecológica' %}</h3>
                 <p>{% tr 'Vive una experiencia natural a caballo por los alrededores del valle.' %}</p>

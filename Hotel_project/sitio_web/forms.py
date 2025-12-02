@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from administracion.models import Usuario, Rol
 from personal.models import Direccion
 from sitio_web.models import Cliente   
-
+ 
 class RegistroClienteForm(forms.Form):
     nombre = forms.CharField(max_length=50, required=True, label="Nombre")
     apellido = forms.CharField(max_length=50, required=True, label="Apellidos")

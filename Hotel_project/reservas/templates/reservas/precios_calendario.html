@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Calendario de Precios{% endblock %}
+{% block content %}
+{% load static %}
+{% load reservas_extras %}
+
+
+<style>
+    
+    .calendario-container {
+        overflow-x: auto;
+        padding: 20px;
+    }
+    table.calendario {
+        width: max-content;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    table.calendario th, table.calendario td {
+        border: 1px solid #ddd;
+        padding: 6px;
+        text-align: center;
+        min-width: 80px;
+    }
+    table.calendario th {
+        background: #f4f4f4;
+        font-weight: bold;
+    }
+    td.precio-cell {
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    td.precio-cell:hover {
+        background: #dff0d8;
+    }
+
+    /* Modal */
+    .modal-bg {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 350px;
+    }
+</style>
+
+<main class="menu-container">
+    <h2>Calendario de Precios – {{ mes_nombre }} {{ año }}</h2>
+
+    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <a href="?year={{ prev_year }}&month={{ prev_month }}">
+            <button type="button" class="boton-verde">← Mes anterior</button>
+        </a>
+
+        <a href="?year={{ next_year }}&month={{ next_month }}">
+            <button type="button" class="boton-verde">Mes siguiente →</button>
+        </a>
+    </div>
+
+
+
+    <div class="calendario-container">
+        <table class="calendario">
+            <tr>
+                <th>Habitación</th>
+                {% for d in dias %}
+                    <th>{{ d }}</th>
+                {% endfor %}
+            </tr>
+
+            {% for habitacion in habitaciones %}
+                <tr>
+                    <td><strong>{{ habitacion.nombre }}</strong></td>
+
+                    {% for fecha in rango_fechas %}
+                        {% with precio=precios_map|get_item:habitacion.id|get_item:fecha %}
+                            <td class="precio-cell"
+                                data-hab="{{ habitacion.id }}"
+                                data-fecha="{{ fecha }}">
+                                ₡{{ precio|default:"0.00" }}
+                            </td>
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+</main>
+
+<!-- Modal para asignar precio -->
+<div class="modal-bg" id="modal-bg">
+    <div class="modal">
+        <h3>Asignar precio</h3>
+        <form method="POST" action="{% url 'asignar_precio_rango' %}">
+            {% csrf_token %}
+            <input type="hidden" name="habitacion_id" id="modal_habitacion">
+
+            <label>Fecha inicio:</label>
+            <input type="date" name="fecha_inicio" id="modal_fecha_inicio" required><br><br>
+
+            <label>Fecha fin:</label>
+            <input type="date" name="fecha_fin" required><br><br>
+
+            <label>Precio:</label>
+            <input type="number" name="precio" step="0.01" required><br><br>
+
+            <button type="submit" class="boton-verde">Guardar</button>
+            <button type="button" class="boton-rojo" onclick="cerrarModal()">Cancelar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll(".precio-cell").forEach(cell => {
+        cell.addEventListener("click", () => {
+            const habitacion = cell.dataset.hab;
+            const fecha = cell.dataset.fecha;
+
+            document.getElementById("modal_habitacion").value = habitacion;
+            document.getElementById("modal_fecha_inicio").value = fecha;
+
+            document.getElementById("modal-bg").style.display = "flex";
+        });
+    });
+
+    function cerrarModal() {
+        document.getElementById("modal-bg").style.display = "none";
+    }
+</script>
+
+{% endblock %}
