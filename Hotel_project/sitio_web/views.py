@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.templatetags.static import static
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.contrib import messages
 from django.db import transaction
 from administracion.models import Rol, Usuario
@@ -23,6 +24,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from reservas.models import Habitacion, FechaReservada, PrecioHabitacion, Reserva
 from .forms import ConsultaDisponibilidadForm
+
+import os
 
 @transaction.atomic
 def registro_cliente(request):
@@ -233,6 +236,7 @@ from django.db.models import Sum
 from django.shortcuts import render
 from reservas.models import Habitacion, FechaReservada, PrecioHabitacion
 from .forms import ConsultaDisponibilidadForm
+from .models import Amenidad
 
 def consultar_disponibilidad(request):
     habitaciones_disponibles = []
@@ -255,6 +259,13 @@ def consultar_disponibilidad(request):
                 id__in=habitaciones_ocupadas
             ).prefetch_related('amenidades')
 
+            busqueda = request.POST.get("busqueda", "").strip()
+
+            if busqueda:
+                habitaciones_disponibles = habitaciones_disponibles.filter(
+                    nombre__icontains=busqueda
+                )
+
             for hab in habitaciones_disponibles:
                 total = PrecioHabitacion.objects.filter(
                     habitacion=hab,
@@ -265,10 +276,12 @@ def consultar_disponibilidad(request):
     else:
         form = ConsultaDisponibilidadForm()
 
+    amenidades = Amenidad.objects.all()
     context = {
         'form': form,
         'habitaciones_disponibles': habitaciones_disponibles,
         'precios_totales': precios_totales,
+        'amenidades': amenidades,
     }
 
     return render(request, 'sitio_web/consultar_disponibilidad.html', context)

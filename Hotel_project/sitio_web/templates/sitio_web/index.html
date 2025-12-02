@@ -507,20 +507,20 @@
                             <img src="{{ habitacion.imagen_url }}" alt="{{ habitacion.nombre }}" class="img-fluid">
                         {% else %}
                             {% if habitacion.id == 1 %}
-                                <img src="{% static 'sitio_web/images/habitacion_1.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                                <img src="{% static 'sitio_web/images/Habitacion 1/IMG_0028.webp' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
                             {% elif habitacion.id == 2 %}
-                                <img src="{% static 'sitio_web/images/habitacion_2.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                                <img src="{% static 'sitio_web/images/Habitacion 4/IMG_3760.jpg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
                             {% elif habitacion.id == 3 %}
-                                <img src="{% static 'sitio_web/images/habitacion_3.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                                <img src="{% static 'sitio_web/images/Habitacion 3/IMG_1484.webp' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
                             {% elif habitacion.id == 4 %}
-                                <img src="{% static 'sitio_web/images/habitacion_4.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                                <img src="{% static 'sitio_web/images/Habitacion 4/IMG_2461.webp' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
                             {% else %}
-                                <img src="{% static 'sitio_web/images/habitacion_1.svg' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
+                                <img src="{% static 'sitio_web/images/Habitacion 1/IMG_1485.webp' %}" alt="{{ habitacion.nombre }}" class="img-fluid">
                             {% endif %}
                         {% endif %}
-                        <div class="habitacion-info">
-                            <h3>{{ habitacion.nombre }}</h3>
-                            <p class="capacidad">👥 Máx. {{ habitacion.capacidad }} personas</p>
+                        <div class="habitacion-info"> 
+                            <h3>{{ habitacion.nombre|tr_var:request }}</h3>
+                            <p class="capacidad">👥 Máx. {{ habitacion.capacidad }} {% tr "personas" %}</p>
                             <ul class="amenidades-list">
                                 {% for amenidad in habitacion.amenidades.all %}
                                 <li>
@@ -534,7 +534,7 @@
                                     {% elif amenidad.nombre == 'Piscina' %}🏊
                                     {% else %}✓
                                     {% endif %}
-                                    {{ amenidad.nombre }}
+                                    {{ amenidad.nombre|tr_var:request }}
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -580,19 +580,19 @@
                 <p>{% tr 'Disfruta de las mejores experiencias cerca del hotel.' %}</p>
                 <div class="row">
                     <div class="col-md-4">
-                        <img src="{% static 'sitio_web/images/actividad_1.svg' %}" alt="Tour de Cataratas"
+                        <img src="{% static 'sitio_web/images/waterfall.jpg' %}" alt="Tour de Cataratas"
                             class="img-fluid rounded mb-2">
                         <h3>{% tr 'Tour a las Cataratas' %}</h3>
                         <p>{% tr 'Explora hermosas cascadas y senderos naturales cerca del hotel.' %}</p>
                     </div>
                     <div class="col-md-4">
-                        <img src="{% static 'sitio_web/images/actividad_2.svg' %}" alt="Cabalgata ecológica"
+                        <img src="{% static 'sitio_web/images/horseback.png' %}" alt="Cabalgata ecológica"
                             class="img-fluid rounded mb-2">
                         <h3>{% tr 'Cabalgata Ecológica' %}</h3>
                         <p>{% tr 'Vive una experiencia natural a caballo por los alrededores del valle.' %}</p>
                     </div>
                     <div class="col-md-4">
-                        <img src="{% static 'sitio_web/images/actividad_3.svg' %}" alt="Tour de café"
+                        <img src="{% static 'sitio_web/images/coffe.jpg' %}" alt="Tour de café"
                             class="img-fluid rounded mb-2">
                         <h3>{% tr 'Tour de Café' %}</h3>
                         <p>{% tr 'Aprende sobre el proceso del café costarricense con degustación incluida.' %}</p>

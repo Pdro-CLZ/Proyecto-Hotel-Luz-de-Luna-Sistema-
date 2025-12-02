@@ -148,7 +148,7 @@ LOCALE_PATHS = [
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'Hotel_Project' / 'css', 
+    BASE_DIR / 'Hotel_project' / 'css', 
 ]
 
 # Default primary key field type

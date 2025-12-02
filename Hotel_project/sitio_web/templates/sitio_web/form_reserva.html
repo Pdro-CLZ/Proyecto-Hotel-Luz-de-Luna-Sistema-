@@ -37,10 +37,10 @@
 
     <h5>{% tr "Detalles de la habitación" %}</h5>
     <ul>
-        <li><strong>{% tr "Nombre:" %}</strong> {{ habitacion.nombre }}</li>
+        <li><strong>{% tr "Nombre:" %}</strong> {{ habitacion.nombre|tr_var:request }}</li>
         <li><strong>{% tr "Amenidades:" %}</strong>
             {% for a in habitacion.amenidades.all %}
-                {{ a.nombre }}{% if not forloop.last %}, {% endif %}
+                {{ a.nombre|tr_var:request }}{% if not forloop.last %}, {% endif %}
             {% empty %}
                 {% tr "Ninguna" %}
             {% endfor %}

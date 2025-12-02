@@ -42,6 +42,38 @@ TRANSLATIONS = {
         'en': 'There are no rooms available at this time.'
     },
 
+    # -------------------------------
+    # PÁRRAFOS DINÁMICOS (DESCRIPCIÓN)
+    # -------------------------------
+    "Suite amplia con balcón y vista al mar, decoración elegante y cama king-size. Ideal para parejas.": {
+        "es": "Suite amplia con balcón y vista al mar, decoración elegante y cama king-size. Ideal para parejas.",
+        "en": "Spacious suite with balcony and sea view, elegant decor and king-size bed. Ideal for couples."
+    },
+    "Espacio acogedor con acceso directo al jardín del hotel, ideal para quienes buscan tranquilidad.": {
+        "es": "Espacio acogedor con acceso directo al jardín del hotel, ideal para quienes buscan tranquilidad.",
+        "en": "Cozy space with direct access to the hotel garden, ideal for those seeking tranquility."
+    },
+    "Habitación amplia con dos camas y sofá cama, perfecta para familias pequeñas.": {
+        "es": "Habitación amplia con dos camas y sofá cama, perfecta para familias pequeñas.",
+        "en": "Spacious room with two beds and a sofa bed, perfect for small families."
+    },
+    "Habitación premium con grandes ventanales y excelente iluminación natural.": {
+        "es": "Habitación premium con grandes ventanales y excelente iluminación natural.",
+        "en": "Premium room with large windows and excellent natural lighting."
+    },
+    "Habitación funcional y acogedora con lo esencial para una estadía placentera.": {
+        "es": "Habitación funcional y acogedora con lo esencial para una estadía placentera.",
+        "en": "Functional and cozy room with the essentials for a pleasant stay."
+    },
+    "Suite pequeña con área de estar y una cama queen, perfecta para ejecutivos.": {
+        "es": "Suite pequeña con área de estar y una cama queen, perfecta para ejecutivos.",
+        "en": "Small suite with sitting area and a queen bed, perfect for executives."
+    },
+    "Opción económica con lo esencial para una estancia corta y funcional.": {
+        "es": "Opción económica con lo esencial para una estancia corta y funcional.",
+        "en": "Economical option with the essentials for a short and functional stay."
+    },
+
     # Actividades
     'Disfruta de las mejores experiencias cerca del hotel.': {
         'es': 'Disfruta de las mejores experiencias cerca del hotel.',
@@ -65,7 +97,84 @@ TRANSLATIONS = {
 
     # Reservar
     'Reservar ahora': {'es': 'Reservar ahora', 'en': 'Book now'},
+
+    # Amenidades
+    "Cama grande": {
+        "es": "Cama grande",
+        "en": "Large bed",
+    },
+    "Cama pequeña": {
+        "es": "Cama pequeña",
+        "en": "Small bed",
+    },
+    "Wi-Fi": {
+        "es": "Wi-Fi",
+        "en": "Wi-Fi",
+    },
+    "Hamaca": {
+        "es": "Hamaca",
+        "en": "Hammock",
+    },
+    "Refrigeradora": {
+        "es": "Refrigeradora",
+        "en": "Fridge",
+    },
+    "Parqueo": {
+        "es": "Parqueo",
+        "en": "Parking",
+    },
+    "Cocina": {
+        "es": "Cocina",
+        "en": "Kitchen",
+    },
+    "Piscina": {
+        "es": "Piscina",
+        "en": "Pool",
+    },
+
+    # habitaciones
+    "Habitación 1": {
+        "es": "Habitación 1",  
+        "en": "Room 1",
+    },
+    "Habitación 2": {
+        "es": "Habitación 2",  
+        "en": "Room 2",
+    },
+    "Habitación 3": {
+        "es": "Habitación 3",  
+        "en": "Room 3",
+    },
+    "Habitación 4": {
+        "es": "Habitación 4",  
+        "en": "Room 4",
+    },
+    "Habitación 5": {
+        "es": "Habitación 5",  
+        "en": "Room 5",
+    },
+    "Habitación 6": {
+        "es": "Habitación 6",  
+        "en": "Room 6",
+    },
+    "Habitación 7": {
+        "es": "Habitación 7",  
+        "en": "Room 7",
+    },
+    "Habitación 8": {
+        "es": "Habitación 8",  
+        "en": "Room 8",
+    },
+    "Buscar": {
+        "es": "Buscar",
+        "en": "Search",
+    },
+    "Buscar por nombre o amenidad": {
+        "es": "Buscar por nombre o amenidad",
+        "en": "Search by name or amenity",
+    }
 }
+
 
 # Additional keys added to cover more templates
 TRANSLATIONS.update({
@@ -157,5 +266,9 @@ TRANSLATIONS.update({
     'Formulario de contacto': {'es': 'Formulario de contacto', 'en': 'Contact form'},
     'Consultar Disponibilidad': {'es': 'Consultar Disponibilidad', 'en': 'Check Availability'},
                             
+        'Número:': {'es': 'Número:', 'en': 'Number:'},
+        'Descripción:': {'es': 'Descripción:', 'en': 'Description:'},
+        'Sin amenidades registradas': {'es': 'Sin amenidades registradas', 'en': 'No amenities registered'},
+        'Precios por fecha': {'es': 'Precios por fecha', 'en': 'Prices by date'},
                     
 })
