@@ -11,7 +11,15 @@ from .models import Habitacion, FechaReservada, Reserva, PrecioHabitacion
 from decimal import Decimal
 from django.contrib.auth.hashers import make_password
 from administracion.decorators import rol_requerido
+from datetime import date, timedelta
+from calendar import monthrange
+from django.utils.timezone import now
+from .forms import PrecioRangoForm
 
+
+# ---------------------------------------------------------------------
+# INDEX RESERVAS
+# ---------------------------------------------------------------------
 @login_required
 @rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def index_reservas(request):
@@ -54,8 +62,12 @@ def index_reservas(request):
     }
     return render(request, 'index_reservas.html', context)
 
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+
+# ---------------------------------------------------------------------
+# AGREGAR RESERVA
+# ---------------------------------------------------------------------
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def agregar_reserva(request):
     if request.method == "POST":
         fecha_inicio = request.POST.get("fecha_inicio")
@@ -105,8 +117,12 @@ def agregar_reserva(request):
 
     return render(request, "agregar_reserva.html")
 
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+
+# ---------------------------------------------------------------------
+# BUSCAR CLIENTE
+# ---------------------------------------------------------------------
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def buscar_cliente(request):
     if request.method == 'POST':
         identificacion = request.POST.get('identificacion')
@@ -133,8 +149,12 @@ def buscar_cliente(request):
 
     return HttpResponse("Método no permitido.", status=405)
 
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+
+# ---------------------------------------------------------------------
+# NUEVA RESERVA CLIENTE
+# ---------------------------------------------------------------------
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id=None):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
     cliente = Cliente.objects.filter(id=cliente_id).select_related("usuario").first()
@@ -146,7 +166,6 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
 
     if request.method == 'POST':
         if not cliente:
-
             usuario = Usuario.objects.create(
                 username=request.POST['identificacion'],
                 first_name=request.POST['first_name'],
@@ -180,8 +199,12 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
         'fecha_fin': fecha_fin,
     })
 
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+
+# ---------------------------------------------------------------------
+# CONFIRMAR RESERVA
+# ---------------------------------------------------------------------
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @transaction.atomic
 def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id, metodo_pago, canal_reservacion):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
@@ -208,6 +231,7 @@ def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_i
             metodo_pago=metodo_pago,
             canal_reservacion=canal_reservacion,
         )
+
         dias_reserva = (fecha_fin - fecha_inicio).days + 1
         for i in range(dias_reserva):
             f = fecha_inicio + timedelta(days=i)
@@ -226,19 +250,17 @@ def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_i
         'canal_reservacion': canal_reservacion,
     })
 
-from datetime import date, timedelta
-from calendar import monthrange
-from django.utils.timezone import now
-from .models import Habitacion, PrecioHabitacion
-from django.shortcuts import render, redirect
-from django.contrib import messages
 
+# ---------------------------------------------------------------------
+# PRECIOS CALENDARIO
+# ---------------------------------------------------------------------
+@login_required
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def precios_calendario(request):
     hoy = now().date()
     año = int(request.GET.get("year", hoy.year))
     mes = int(request.GET.get("month", hoy.month))
 
-    # Calcular mes anterior y siguiente
     if mes == 1:
         prev_month = 12
         prev_year = año - 1
@@ -283,8 +305,6 @@ def precios_calendario(request):
         "precios_map": precios_map,
         "mes_nombre": mes_nombre,
         "año": año,
-
-        # navegación
         "prev_month": prev_month,
         "prev_year": prev_year,
         "next_month": next_month,
@@ -292,6 +312,11 @@ def precios_calendario(request):
     })
 
 
+# ---------------------------------------------------------------------
+# ASIGNAR PRECIO RANGO
+# ---------------------------------------------------------------------
+@login_required
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def asignar_precio_rango(request):
     if request.method == "POST":
         hab_id = request.POST.get("habitacion_id")
@@ -319,18 +344,21 @@ def asignar_precio_rango(request):
         return redirect("precios_calendario")
 
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from datetime import timedelta
-from .models import PrecioHabitacion, Habitacion
-from .forms import PrecioRangoForm
-
-
+# ---------------------------------------------------------------------
+# GESTIONAR PRECIOS
+# ---------------------------------------------------------------------
+@login_required
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def gestionar_precios(request):
     precios = PrecioHabitacion.objects.select_related("habitacion").order_by("-fecha")
     return render(request, "reservas/gestionar_precios.html", {"precios": precios})
 
 
+# ---------------------------------------------------------------------
+# AGREGAR PRECIO RANGO (CON FORM)
+# ---------------------------------------------------------------------
+@login_required
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def agregar_precio_rango(request):
     if request.method == "POST":
         form = PrecioRangoForm(request.POST)
@@ -344,7 +372,6 @@ def agregar_precio_rango(request):
                 messages.error(request, "La fecha final no puede ser menor a la inicial.")
                 return redirect("agregar_precio_rango")
 
-            # Crear o actualizar precios por día
             fecha = fecha_inicio
             dias_creados = 0
             while fecha <= fecha_fin:
@@ -365,6 +392,11 @@ def agregar_precio_rango(request):
     return render(request, "reservas/agregar_precio_rango.html", {"form": form})
 
 
+# ---------------------------------------------------------------------
+# ELIMINAR PRECIO
+# ---------------------------------------------------------------------
+@login_required
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def eliminar_precio(request, id):
     precio = get_object_or_404(PrecioHabitacion, id=id)
     precio.delete()
