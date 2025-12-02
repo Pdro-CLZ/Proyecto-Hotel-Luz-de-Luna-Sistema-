@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Agregar precios{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<main class="menu-container">
+    <h2>Asignar precio por rango de fechas</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="habitacion-card">
+            {{ form.as_p }}
+            <button type="submit" class="boton-verde">Guardar</button>
+        </div>
+    </form>
+
+    <br>
+    <a href="{% url 'gestionar_precios' %}" class="boton-verde">← Volver</a>
+</main>
+{% endblock %}

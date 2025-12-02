@@ -17,5 +17,8 @@ urlpatterns = [
     path('habitaciones/', views.habitaciones, name='habitaciones'),
     path('set_language/<str:lang>/', views.set_language, name='set_language'),
     path('reserva/confirmada/<int:reserva_id>/', views.reserva_confirmada, name='reserva_confirmada'),
+    path("crear_pago_paypal/", views.crear_pago_paypal, name="crear_pago_paypal"),
+    path("paypal/success/", views.paypal_success, name="paypal_success"), # Ahora con '/'
+    path("paypal/cancel/", views.paypal_cancel, name="paypal_cancel"),   # Ahora con '/'
 
 ]

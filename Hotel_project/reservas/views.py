@@ -204,3 +204,148 @@ def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_i
         'metodo_pago': metodo_pago,
         'canal_reservacion': canal_reservacion,
     })
+
+from datetime import date, timedelta
+from calendar import monthrange
+from django.utils.timezone import now
+from .models import Habitacion, PrecioHabitacion
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+def precios_calendario(request):
+    hoy = now().date()
+    año = int(request.GET.get("year", hoy.year))
+    mes = int(request.GET.get("month", hoy.month))
+
+    # Calcular mes anterior y siguiente
+    if mes == 1:
+        prev_month = 12
+        prev_year = año - 1
+    else:
+        prev_month = mes - 1
+        prev_year = año
+
+    if mes == 12:
+        next_month = 1
+        next_year = año + 1
+    else:
+        next_month = mes + 1
+        next_year = año
+
+    dias_mes = monthrange(año, mes)[1]
+    dias = list(range(1, dias_mes + 1))
+
+    rango_fechas = [
+        date(año, mes, d).isoformat()
+        for d in dias
+    ]
+
+    habitaciones = Habitacion.objects.all()
+
+    precios_map = {}
+    for hab in habitaciones:
+        precios_map[hab.id] = {}
+        precios = PrecioHabitacion.objects.filter(
+            habitacion=hab,
+            fecha__year=año,
+            fecha__month=mes
+        )
+        for p in precios:
+            precios_map[hab.id][p.fecha.isoformat()] = p.precio
+
+    mes_nombre = date(año, mes, 1).strftime("%B")
+
+    return render(request, "reservas/precios_calendario.html", {
+        "habitaciones": habitaciones,
+        "dias": dias,
+        "rango_fechas": rango_fechas,
+        "precios_map": precios_map,
+        "mes_nombre": mes_nombre,
+        "año": año,
+
+        # navegación
+        "prev_month": prev_month,
+        "prev_year": prev_year,
+        "next_month": next_month,
+        "next_year": next_year,
+    })
+
+
+def asignar_precio_rango(request):
+    if request.method == "POST":
+        hab_id = request.POST.get("habitacion_id")
+        fecha_inicio = request.POST.get("fecha_inicio")
+        fecha_fin = request.POST.get("fecha_fin")
+        precio = request.POST.get("precio")
+
+        if not (hab_id and fecha_inicio and fecha_fin):
+            messages.error(request, "Datos incompletos.")
+            return redirect("precios_calendario")
+
+        fecha1 = date.fromisoformat(fecha_inicio)
+        fecha2 = date.fromisoformat(fecha_fin)
+
+        actual = fecha1
+        while actual <= fecha2:
+            PrecioHabitacion.objects.update_or_create(
+                habitacion_id=hab_id,
+                fecha=actual,
+                defaults={"precio": precio}
+            )
+            actual += timedelta(days=1)
+
+        messages.success(request, "Precios actualizados.")
+        return redirect("precios_calendario")
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from datetime import timedelta
+from .models import PrecioHabitacion, Habitacion
+from .forms import PrecioRangoForm
+
+
+def gestionar_precios(request):
+    precios = PrecioHabitacion.objects.select_related("habitacion").order_by("-fecha")
+    return render(request, "reservas/gestionar_precios.html", {"precios": precios})
+
+
+def agregar_precio_rango(request):
+    if request.method == "POST":
+        form = PrecioRangoForm(request.POST)
+        if form.is_valid():
+            habitacion = form.cleaned_data["habitacion"]
+            fecha_inicio = form.cleaned_data["fecha_inicio"]
+            fecha_fin = form.cleaned_data["fecha_fin"]
+            precio = form.cleaned_data["precio"]
+
+            if fecha_fin < fecha_inicio:
+                messages.error(request, "La fecha final no puede ser menor a la inicial.")
+                return redirect("agregar_precio_rango")
+
+            # Crear o actualizar precios por día
+            fecha = fecha_inicio
+            dias_creados = 0
+            while fecha <= fecha_fin:
+                obj, creado = PrecioHabitacion.objects.update_or_create(
+                    habitacion=habitacion,
+                    fecha=fecha,
+                    defaults={"precio": precio}
+                )
+                if creado:
+                    dias_creados += 1
+                fecha += timedelta(days=1)
+
+            messages.success(request, f"Precios registrados para {dias_creados} días.")
+            return redirect("gestionar_precios")
+    else:
+        form = PrecioRangoForm()
+
+    return render(request, "reservas/agregar_precio_rango.html", {"form": form})
+
+
+def eliminar_precio(request, id):
+    precio = get_object_or_404(PrecioHabitacion, id=id)
+    precio.delete()
+    messages.success(request, "Precio eliminado correctamente.")
+    return redirect("gestionar_precios")
