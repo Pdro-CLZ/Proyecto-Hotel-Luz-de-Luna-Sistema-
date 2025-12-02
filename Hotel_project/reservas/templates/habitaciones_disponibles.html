@@ -35,13 +35,16 @@
             font-size: 0.9rem;
             color: #444;
             margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            height: 34px;
         }
     </style>
 </head>
 <body class="menu-bg">
 <main class="menu-container">
-    <h2>Habitaciones disponibles</h2>
-    <p>Del {{ fecha_inicio }} al {{ fecha_fin }}</p>
+    <h1 style="color: #1A3A2E;">Habitaciones disponibles</h1>
+    <h4>Del {{ fecha_inicio }} al {{ fecha_fin }}</h4>
 
     {% if disponibles %}
         {% for item in disponibles %}
@@ -64,7 +67,7 @@
                     <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
                     <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
                     <label for="identificacion_{{ item.habitacion.id }}">Cédula:</label>
-                    <input type="text" id="identificacion_{{ item.habitacion.id }}" name="identificacion" placeholder="Ej: 1-2345-6789" required>
+                    <input type="text" id="identificacion_{{ item.habitacion.id }}" name="identificacion" placeholder="Ej: 123456789" required>
                     <button type="submit" class="boton-verde">Reservar esta habitación</button>
                 </form>
             </div>
@@ -76,7 +79,7 @@
     {% endif %}
 
     <br>
-    <a href="{% url 'agregar_reserva' %}" class="boton-verde">← Cambiar fechas</a>
+    <a href="{% url 'agregar_reserva' %}" class="boton-volver">Cambiar fechas</a>
 </main>
 </body>
 </html>

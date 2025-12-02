@@ -15,10 +15,12 @@
 
 <body class="menu-bg">
     <div class="menu-container">
-        <button class="boton-verde" onclick="window.location.href='/limpieza/zonas/estado'">Volver</button>
 
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <h2>Gestión de Zona: {{ zona.nombre }}</h2>
+            <div>
+                <button class="boton-verde" onclick="window.location.href='/limpieza/zonas/estado'">Volver</button>
+            </div>
         </div>
                     {% if mensaje_alerta %}
             <div class="alert alert-danger mt-3">{{ mensaje_alerta }}</div>
@@ -44,15 +46,15 @@
                     <form method="post" action="">
                         {% csrf_token %}
                         <input type="hidden" name="cambiar_estado_zona" value="1">
-                        <div class="d-flex gap-2">
-                            <select name="nuevo_estado" class="form-select" required>
+                        <div class="d-flex">
+                            <select name="nuevo_estado" class="form-select" style="width: 150px; height: 50px; margin-top: 15px;" required>
                                 <option value="" disabled selected>Seleccione...</option>
                                 <option value="Limpio (Disponible)">Limpio (Disponible)</option>
                                 <option value="Parcialmente Limpio (Disponible)">Parcialmente Limpio (Disponible)</option>
                                 <option value="Sucio (Disponible)">Sucio (Disponible)</option>
                                 <option value="Sucio (No Disponible)">Sucio (No Disponible)</option>
                             </select>
-                            <button type="submit" class="btn btn-primary">Confirmar</button>
+                            <button type="submit" class="boton-verde" style="margin-left: 30px;">Confirmar</button>
                         </div>
                     </form>
                 </div>

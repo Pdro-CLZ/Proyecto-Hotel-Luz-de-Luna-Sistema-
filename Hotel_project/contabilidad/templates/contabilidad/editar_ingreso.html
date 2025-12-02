@@ -7,82 +7,75 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editar Ingreso - Contabilidad</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
-  <!-- NAVBAR -->
-  <nav class="admin-nav">
-    <div class="admin-nav-container">
-      <a href="#" class="admin-nav-logo">Mi Empresa</a>
-      <ul class="admin-nav-links">
-        <li><a href="{% url 'contabilidad_panel' %}">Volver al Panel</a></li>
-      </ul>
-    </div>
-  </nav>
+<body class="login-bg">
+  <div class="login-container">
+    <h2>Editar Ingreso</h2>
 
-  <header>
-    <h1>Editar Ingreso</h1>
-  </header>
-
-  <!-- MENSAJES -->
-  {% if messages %}
-    <div class="mensajes">
+    <!-- MENSAJES - Igual que agregar_ingreso -->
+    {% if messages %}
+    <div class="messages">
       {% for message in messages %}
-        <p class="mensaje {% if 'error' in message.tags %}error{% else %}success{% endif %}">
-          {{ message }}
-        </p>
+      <p class="{{ message.tags }}">{{ message }}</p>
       {% endfor %}
     </div>
-  {% endif %}
+    {% endif %}
 
-  <!-- FORMULARIO -->
-  <section class="formulario-container">
-    <form method="POST" class="formulario">
+    <form method="POST" id="editarIngresoForm">
       {% csrf_token %}
-      <div class="form-group">
-        <label>Fecha</label>
-        <input type="date" name="fecha" value="{{ registro.fecha|date:'Y-m-d' }}" required>
+      
+      <div>
+        <!-- Fecha -->
+        <div class="form-field">
+          <label for="fecha">Fecha</label>
+          <input type="date" name="fecha" id="fecha" value="{{ registro.fecha|date:'Y-m-d' }}" required class="form-control">
+        </div>
+
+        <!-- Método de Pago -->
+        <div class="form-field">
+          <label for="metodo_pago">Método de Pago</label>
+          <select name="metodo_pago" id="metodo_pago" required class="form-control">
+            <option value="Efectivo" {% if registro.metodo_pago == "Efectivo" %}selected{% endif %}>Efectivo</option>
+            <option value="Tarjeta" {% if registro.metodo_pago == "Tarjeta" %}selected{% endif %}>Tarjeta</option>
+            <option value="Sinpe" {% if registro.metodo_pago == "Sinpe" %}selected{% endif %}>Sinpe</option>
+            <option value="Transferencia" {% if registro.metodo_pago == "Transferencia" %}selected{% endif %}>Transferencia</option>
+          </select>
+        </div>
+
+        <!-- Categoría -->
+        <div class="form-field">
+          <label for="categoria">Categoría</label>
+          <select name="categoria" id="categoria" required class="form-control">
+            <option value="Habitación" {% if registro.categoria == "Habitación" %}selected{% endif %}>Habitación</option>
+            <option value="Servicio" {% if registro.categoria == "Servicio" %}selected{% endif %}>Servicio</option>
+            <option value="Otro" {% if registro.categoria == "Otro" %}selected{% endif %}>Otro</option>
+          </select>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-field">
+          <label for="descripcion">Descripción</label>
+          <input type="text" name="descripcion" id="descripcion" 
+                 value="{{ registro.descripcion }}" required class="form-control">
+        </div>
+
+        <!-- Monto -->
+        <div class="form-field">
+          <label for="monto">Monto</label>
+          <input type="number" name="monto" id="monto" step="0.01" min="0" 
+                 value="{{ registro.monto }}" required class="form-control">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Método de Pago</label>
-        <select name="metodo_pago" required>
-          <option {% if registro.metodo_pago == "Efectivo" %}selected{% endif %}>Efectivo</option>
-          <option {% if registro.metodo_pago == "Tarjeta" %}selected{% endif %}>Tarjeta</option>
-          <option {% if registro.metodo_pago == "Sinpe" %}selected{% endif %}>Sinpe</option>
-          <option {% if registro.metodo_pago == "Transferencia" %}selected{% endif %}>Transferencia</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Categoría</label>
-        <select name="categoria" required>
-          <option {% if registro.categoria == "Habitación" %}selected{% endif %}>Habitación</option>
-          <option {% if registro.categoria == "Servicio" %}selected{% endif %}>Servicio</option>
-          <option {% if registro.categoria == "Otro" %}selected{% endif %}>Otro</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Descripción</label>
-        <input type="text" name="descripcion" value="{{ registro.descripcion }}" required>
-      </div>
-
-      <div class="form-group">
-        <label>Monto</label>
-        <input type="number" name="monto" step="0.01" min="0" value="{{ registro.monto }}" required>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-guardar">Actualizar Ingreso</button>
-        <a href="{% url 'contabilidad_panel' %}" class="btn-volver">Cancelar</a>
+      <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
+        <button type="submit" class="boton-verde">Actualizar Ingreso</button>
+        <a href="{% url 'contabilidad_panel' %}" class="boton-volver">Cancelar</a>
       </div>
     </form>
-  </section>
-
+  </div>
 </body>
 </html>
 {% endblock %}

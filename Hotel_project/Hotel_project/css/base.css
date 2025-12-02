@@ -1,15 +1,35 @@
+/* ===== Variables CSS ===== */
+:root {
+    --color-principal: #2C5F4F;
+    /* Verde bosque */
+    --color-secundario: #8B7355;
+    /* Marrón cálido */
+    --color-acento: #D4A574;
+    /* Dorado suave */
+    --color-claro: #F5F1E8;
+    /* Beige claro */
+    --color-oscuro: #1A3A2E;
+    /* Verde oscuro */
+    --color-texto: #2D2D2D;
+    /* Gris oscuro */
+    --color-hover: #3D7A63;
+    /* Verde medio */
+}
+
 /* ===== Base Layout ===== */
 body {
     margin: 0;
-    font-family: Optima, Lucida, 'MgOpen Cosmética', 'Lucida Sans Unicode', sans-serif;
-    background-color: #faf8d3;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--color-texto);
+    background-color: #FFFFFF;
     display: flex;
     min-height: 100vh;
+    line-height: 1.6;
 }
 
 /* ===== Sidebar ===== */
 .sidebar {
-    background-color: #b6be85;
+    background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-oscuro) 100%);
     width: 240px;
     min-height: 100vh;
     padding: 25px 20px;
@@ -20,12 +40,31 @@ body {
     position: fixed;
     left: 0;
     top: 0;
+    z-index: 100;
 }
 
 .sidebar h2 {
     color: #fff;
     font-size: 1.8em;
-    margin-bottom: 40px; /* más separación del contenido */
+    margin-bottom: 40px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.sidebar h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--color-acento);
+    border-radius: 2px;
 }
 
 .sidebar a {
@@ -33,30 +72,65 @@ body {
     color: #fff;
     text-decoration: none;
     font-size: 1.1em;
-    padding: 12px 10px;
+    padding: 6px 10px;
     width: 100%;
     border-radius: 6px;
-    transition: background-color 0.3s ease, padding-left 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.sidebar a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transition: width 0.3s ease;
+}
+
+.sidebar a:hover::before {
+    width: 100%;
 }
 
 .sidebar a:hover {
-    background-color: #858b65;
+    background-color: rgba(255, 255, 255, 0.1);
     padding-left: 15px;
+    color: var(--color-acento);
+    transform: translateX(5px);
 }
 
 /* ===== Contenido principal ===== */
 .content {
-    margin-left: 240px; /* espacio para el sidebar */
-    padding: 40px;
+    margin-left: 280px;
+    margin-right: 80px;
     flex-grow: 1;
-    background-color: #faf8d3;
-    color: #222;
+    color: var(--color-texto);
+    min-height: 100vh;
 }
 
 .content h1 {
-    color: #4a5b2a; /* título más visible */
+    color: var(--color-claro);
     font-size: 2.2em;
     margin-bottom: 30px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+}
+
+.content h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--color-acento);
+    border-radius: 2px;
 }
 
 /* ===== Grid de módulos / apps ===== */
@@ -69,30 +143,55 @@ body {
 }
 
 .app-card {
-    flex: 0 0 calc(33.33% - 20px); /* 3 botones por fila */
+    flex: 0 0 calc(33.33% - 20px);
     text-align: center;
     box-sizing: border-box;
 }
 
 .app-card a {
     display: block;
-    padding: 20px;
+    padding: 30px 20px;
     max-width: 100%;
-    background-color: #ffffff; /* diferencia del fondo */
-    color: #4a5b2a; /* contraste con blanco */
+    background: white;
+    color: var(--color-principal);
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 15px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(44, 95, 79, 0.15);
+    transition: all 0.4s ease;
     box-sizing: border-box;
+    border: 1px solid var(--color-claro);
+    font-size: 1.1em;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-card a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--color-principal);
+    transition: width 0.3s ease;
 }
 
 .app-card a:hover {
-    background-color: #a8b26e;
+    background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-hover) 100%);
     color: #fff;
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(44, 95, 79, 0.3);
+}
+
+.app-card a:hover::before {
+    width: 100%;
+    background: var(--color-acento);
+    opacity: 0.2;
 }
 
 /* ===== Responsivo ===== */
@@ -100,12 +199,14 @@ body {
     .sidebar {
         width: 200px;
     }
+
     .content {
         margin-left: 200px;
         padding: 25px;
     }
+
     .app-card {
-        flex: 0 0 calc(50% - 20px); /* 2 botones por fila */
+        flex: 0 0 calc(50% - 20px);
     }
 }
 
@@ -113,19 +214,58 @@ body {
     body {
         flex-direction: column;
     }
+
     .sidebar {
         position: relative;
         width: 100%;
         min-height: auto;
         flex-direction: row;
-        justify-content: space-around;
+        flex-wrap: wrap;
+        justify-content: center;
         padding: 15px 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
+
+    .sidebar h2 {
+        width: 100%;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .sidebar a {
+        flex: 0 0 auto;
+        width: auto;
+        padding: 10px 15px;
+        margin: 5px;
+        border-radius: 50px;
+        font-size: 0.9em;
+    }
+
+    .sidebar a:hover {
+        padding-left: 15px;
+        transform: translateY(-2px);
+    }
+
     .content {
         margin-left: 0;
         padding: 20px;
     }
+
+    .content h1 {
+        font-size: 1.8em;
+        text-align: center;
+    }
+
+    .content h1::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
     .app-card {
-        flex: 0 0 100%; /* 1 botón por fila */
+        flex: 0 0 100%;
+    }
+
+    .apps-grid {
+        justify-content: center;
     }
 }

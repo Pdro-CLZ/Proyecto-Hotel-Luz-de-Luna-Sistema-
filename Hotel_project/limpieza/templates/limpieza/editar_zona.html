@@ -14,7 +14,7 @@
 
 <body class="menu-bg">
 <main>
-    <h1>Editar Zona de Limpieza</h1>
+    <h1 style="color: #1A3A2E;">Editar Zona de Limpieza</h1>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -33,7 +33,7 @@
         {% endfor %}
 
         {% if zona.foto %}
-        <div style="text-align:center; margin-bottom:15px;">
+        <div style="text-align:center; margin-bottom:15px; margin-top: 15px;">
             <img src="{{ zona.foto.url }}" alt="Foto actual" style="max-width:150px; max-height:150px; object-fit:cover; display:block; margin:0 auto 5px;">
             <label>
                 <input type="checkbox" name="eliminar_foto"> Eliminar foto
@@ -46,7 +46,7 @@
             {{ zona_form.foto }}
         </div>
 
-        <h3 style="margin-top:30px;">Tareas de la Zona</h3>
+        <h1 style="margin-top: 30px; color: #1A3A2E;">Tareas de la Zona</h1>
         <div id="tareas-container">
             {{ formset.management_form }}
             {% for form in formset %}
@@ -79,18 +79,19 @@
                     {{ form.foto }}
                 </div>
                 
-                <label>
-                    {{ form.DELETE }} Eliminar tarea
+                <label style="color: #852d23; font-size: 1.3rem; color">
+                    {{ form.DELETE }}¿Eliminar tarea?
                 </label>
             </div>
             {% endfor %}
         </div>
 
-        <button type="button" id="add-tarea" class="btn btn-secondary">Agregar Tarea</button>
+        <button type="button" id="add-tarea" class="boton-neutral" style="width: 50%;">Agregar Tarea</button>
 
-        <div class="button-group" style="margin-top:20px;">
+        <div style="margin-top:20px;">
+            <h1 style="margin-top: 30px; color: #1A3A2E;">¿Lista la Zona?</h1>
             <button type="submit" class="btn btn-success">Guardar cambios</button>
-            <button type="button" onclick="window.location.href='{% url 'lista_zonas' %}'" class="btn btn-dark">Cancelar</button>
+            <button type="button" onclick="window.location.href='{% url 'lista_zonas' %}'" class="boton-volver">Cancelar</button>
         </div>
     </form>
 </main>

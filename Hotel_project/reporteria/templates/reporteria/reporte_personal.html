@@ -1,167 +1,256 @@
-{% load static %}
+{% extends 'base.html' %}
+{% block title %}Reporte de Rendimiento del Personal{% endblock %}
 
+{% block content %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Reporte de Rendimiento del Personal</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <title>Reporte de Rendimiento del Personal</title>
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<body class="menu-bg">
+<div class="menu-container">
 
-<body class="bg-light">
-<div class="container py-4">
-  <h2 class="text-center mb-4">Reporte de Rendimiento del Personal</h2>
-
-  <!-- FILTROS -->
-  <form method="get" class="row g-3 mb-4">
-    <div class="col-md-3">
-      <label class="form-label">Área de trabajo</label>
-      <select name="area" class="form-select">
-        <option value="">Todas</option>
-        {% for a in areas %}
-          <option value="{{ a.id }}" {% if area_id == a.id|stringformat:"s" %}selected{% endif %}>{{ a.nombre }}</option>
-        {% endfor %}
-      </select>
+    <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin-left: 50px;">Reporte de Rendimiento del Personal</h2>
+        <div>
+            <a href="/reporteria" class="boton-verde">Volver a Reportería</a>
+        </div>
     </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Empleado</label>
-      <select name="empleado" class="form-select">
-        <option value="">Todos</option>
-        {% for d in data %}
-          <option value="{{ d.empleado.id }}" {% if empleado_id == d.empleado.id|stringformat:"s" %}selected{% endif %}>
-            {{ d.empleado.nombre }} {{ d.empleado.apellido }}
-          </option>
-        {% endfor %}
-      </select>
+    <!-- FILTROS -->
+    <div class="filtros">
+        <form method="get" class="row g-3" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;">
+            <div>
+                <label class="form-label">Área de trabajo</label>
+                <select name="area" style="padding: 14px 10px; border-radius: 10px; border: 2px solid var(--color-claro); background: white; color: var(--color-texto); font-size: 1em; min-width: 200px;">
+                    <option value="">Todas</option>
+                    {% for a in areas %}
+                        <option value="{{ a.id }}" {% if area_id == a.id|stringformat:"s" %}selected{% endif %}>{{ a.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label">Empleado</label>
+                <select name="empleado" style="padding: 14px 10px; border-radius: 10px; border: 2px solid var(--color-claro); background: white; color: var(--color-texto); font-size: 1em; min-width: 200px;">
+                    <option value="">Todos</option>
+                    {% for d in data %}
+                        <option value="{{ d.empleado.id }}" {% if empleado_id == d.empleado.id|stringformat:"s" %}selected{% endif %}>
+                            {{ d.empleado.nombre }} {{ d.empleado.apellido }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label">Mes</label>
+                <input type="number" min="1" max="12" name="mes" value="{{ mes }}" style="padding: 14px 10px; border-radius: 10px; border: 2px solid var(--color-claro); background: white; color: var(--color-texto); font-size: 1em; min-width: 100px;">
+            </div>
+
+            <div>
+                <label class="form-label">Año</label>
+                <input type="number" name="anio" value="{{ anio }}" style="padding: 14px 10px; border-radius: 10px; border: 2px solid var(--color-claro); background: white; color: var(--color-texto); font-size: 1em; min-width: 120px;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="boton-verde" style="min-width: 120px;">Filtrar</button>
+                <a href="?area={{ area_id }}&empleado={{ empleado_id }}&mes={{ mes }}&anio={{ anio }}&exportar=excel" class="boton-neutral" style="min-width: 120px;">Excel</a>
+                <a href="?area={{ area_id }}&empleado={{ empleado_id }}&mes={{ mes }}&anio={{ anio }}&exportar=pdf" class="boton-verde" style="min-width: 120px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">PDF</a>
+            </div>
+        </form>
     </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Mes</label>
-      <input type="number" min="1" max="12" name="mes" value="{{ mes }}" class="form-control">
+    <!-- TABLA PRINCIPAL -->
+    <h3 style="color: var(--color-principal); margin: 30px 0 20px 0; text-align: center; position: relative; display: inline-block; width: 100%;">
+        Métricas Generales
+        <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
+    </h3>
+    
+    <div class="tabla-scroll">
+        <table class="menu-table">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Área</th>
+                    <th>Asistencias</th>
+                    <th>Promedio Horas</th>
+                    <th>Puntualidad</th>
+                    <th>Tareas Completadas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in data %}
+                <tr {% if empleado_id == d.empleado.id|stringformat:"s" %}style="background-color: rgba(44, 95, 79, 0.1);"{% endif %}>
+                    <td>{{ d.empleado }}</td>
+                    <td>{{ d.area }}</td>
+                    <td>{{ d.total_asistencias }}</td>
+                    <td>{{ d.promedio_horas }}</td>
+                    <td>
+                        {% if d.puntualidad_pct >= 90 %}
+                        <span style="color: var(--color-success); font-weight: 500;">{{ d.puntualidad_pct }}%</span>
+                        {% elif d.puntualidad_pct >= 70 %}
+                        <span style="color: #f39c12; font-weight: 500;">{{ d.puntualidad_pct }}%</span>
+                        {% else %}
+                        <span style="color: var(--color-error); font-weight: 500;">{{ d.puntualidad_pct }}%</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ d.tareas_completadas }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--color-secundario); font-style: italic;">
+                        Sin registros
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Año</label>
-      <input type="number" name="anio" value="{{ anio }}" class="form-control">
+    <!-- DETALLE DE EMPLEADO SELECCIONADO -->
+    {% if detalle_asistencias %}
+    <h3 style="color: var(--color-principal); margin: 40px 0 20px 0; text-align: center; position: relative; display: inline-block; width: 100%;">
+        Detalle de asistencias — {{ detalle_asistencias.0.empleado }}
+        <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
+    </h3>
+    
+    <div class="tabla-scroll">
+        <table class="menu-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora de llegada</th>
+                    <th>Hora de salida</th>
+                    <th>Horas trabajadas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in detalle_asistencias %}
+                <tr>
+                    <td>{{ a.fecha|date:"Y-m-d" }}</td>
+                    <td>{{ a.hora_llegada|default:"—" }}</td>
+                    <td>{{ a.hora_salida|default:"—" }}</td>
+                    <td>{{ a.horas_trabajadas|default:"0" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <div class="col-md-2 d-flex align-items-end">
-      <button class="btn btn-primary w-100">Aplicar Filtros</button>
+    <!-- GRÁFICO DE DESEMPEÑO -->
+    <h3 style="color: var(--color-principal); margin: 40px 0 20px 0; text-align: center; position: relative; display: inline-block; width: 100%;">
+        Evolución del desempeño mensual
+        <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
+    </h3>
+    
+    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(44, 95, 79, 0.15); border: 1px solid var(--color-claro); margin-bottom: 30px;">
+        <canvas id="graficoDesempeno" height="100"></canvas>
     </div>
-  </form>
 
-  <!-- BOTONES EXPORTAR -->
-  <div class="mb-4 text-end">
-    <a href="?exportar=excel{% if area_id %}&area={{ area_id }}{% endif %}{% if empleado_id %}&empleado={{ empleado_id }}{% endif %}{% if mes %}&mes={{ mes }}{% endif %}{% if anio %}&anio={{ anio }}{% endif %}" 
-       class="btn btn-success me-2">Exportar Excel</a>
+    <!-- Datos seguros para Chart.js -->
+    {{ grafico_dias|json_script:"labels-json" }}
+    {{ grafico_valores|json_script:"values-json" }}
 
-    <a href="?exportar=pdf{% if area_id %}&area={{ area_id }}{% endif %}{% if empleado_id %}&empleado={{ empleado_id }}{% endif %}{% if mes %}&mes={{ mes }}{% endif %}{% if anio %}&anio={{ anio }}{% endif %}" 
-       class="btn btn-danger">Exportar PDF</a>
-  </div>
+    <script>
+        const labels = JSON.parse(document.getElementById('labels-json').textContent);
+        const values = JSON.parse(document.getElementById('values-json').textContent);
 
-  <!-- TABLA PRINCIPAL -->
-  <h5>Métricas Generales</h5>
-  <table class="table table-striped table-sm align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Empleado</th>
-        <th>Área</th>
-        <th>Asistencias</th>
-        <th>Promedio Horas</th>
-        <th>Puntualidad</th>
-        <th>Tareas Completadas</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for d in data %}
-      <tr {% if empleado_id == d.empleado.id|stringformat:"s" %}class="table-info"{% endif %}>
-        <td>{{ d.empleado }}</td>
-        <td>{{ d.area }}</td>
-        <td>{{ d.total_asistencias }}</td>
-        <td>{{ d.promedio_horas }}</td>
-        <td>{{ d.puntualidad_pct }}%</td>
-        <td>{{ d.tareas_completadas }}</td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="6" class="text-center text-muted">Sin registros</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        const ctx = document.getElementById('graficoDesempeno');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Horas trabajadas por día',
+                    data: values,
+                    borderColor: 'rgba(44, 95, 79, 1)',
+                    backgroundColor: 'rgba(44, 95, 79, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: 'rgba(212, 165, 116, 1)',
+                    pointBorderColor: 'rgba(44, 95, 79, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        display: true, 
+                        position: 'top',
+                        labels: {
+                            color: 'var(--color-texto)'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Evolución del desempeño durante el mes',
+                        color: 'var(--color-texto)',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { 
+                            display: true, 
+                            text: 'Horas trabajadas',
+                            color: 'var(--color-texto)'
+                        },
+                        ticks: {
+                            color: 'var(--color-texto)'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: { 
+                        title: { 
+                            display: true, 
+                            text: 'Día del mes',
+                            color: 'var(--color-texto)'
+                        },
+                        ticks: {
+                            color: 'var(--color-texto)'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    {% endif %}
 
-  <!-- DETALLE DE EMPLEADO SELECCIONADO -->
-  {% if detalle_asistencias %}
-  <hr>
-  <h5>Detalle de asistencias — {{ detalle_asistencias.0.empleado }}</h5>
-  <table class="table table-bordered table-sm mt-3">
-    <thead class="table-secondary">
-      <tr>
-        <th>Fecha</th>
-        <th>Hora de llegada</th>
-        <th>Hora de salida</th>
-        <th>Horas trabajadas</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for a in detalle_asistencias %}
-      <tr>
-        <td>{{ a.fecha|date:"Y-m-d" }}</td>
-        <td>{{ a.hora_llegada|default:"—" }}</td>
-        <td>{{ a.hora_salida|default:"—" }}</td>
-        <td>{{ a.horas_trabajadas|default:"0" }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <!-- Resumen -->
+    {% if data %}
+    <div class="message message-success" style="margin-top: 40px; text-align: center;">
+        <strong>Resumen:</strong> 
+        <span>{{ data|length }} empleados registrados</span> • 
+        {% with total_asistencias=0 %}
+            {% for d in data %}
+                {% with total_asistencias=total_asistencias|add:d.total_asistencias %}{% endwith %}
+            {% endfor %}
+            <span>{{ total_asistencias }} asistencias totales</span> • 
+        {% endwith %}
+        {% with total_tareas=0 %}
+            {% for d in data %}
+                {% with total_tareas=total_tareas|add:d.tareas_completadas %}{% endwith %}
+            {% endfor %}
+            <span>{{ total_tareas }} tareas completadas</span>
+        {% endwith %}
+    </div>
+    {% endif %}
 
-  <!-- GRÁFICO DE DESEMPEÑO -->
-  <div class="mt-4">
-    <h6>Evolución del desempeño mensual</h6>
-    <canvas id="graficoDesempeno" height="100"></canvas>
-  </div>
-
-  <!-- Datos seguros para Chart.js -->
-  {{ grafico_dias|json_script:"labels-json" }}
-  {{ grafico_valores|json_script:"values-json" }}
-
-  <script>
-    const labels = JSON.parse(document.getElementById('labels-json').textContent);
-    const values = JSON.parse(document.getElementById('values-json').textContent);
-
-    const ctx = document.getElementById('graficoDesempeno');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Horas trabajadas por día',
-          data: values,
-          borderColor: 'rgba(75,192,192,1)',
-          backgroundColor: 'rgba(75,192,192,0.2)',
-          fill: true,
-          tension: 0.3,
-          borderWidth: 2,
-          pointRadius: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true, position: 'top' },
-          title: {
-            display: true,
-            text: 'Evolución del desempeño durante el mes'
-          }
-        },
-        scales: {
-          y: { beginAtZero: true, title: { display: true, text: 'Horas trabajadas' } },
-          x: { title: { display: true, text: 'Día del mes' } }
-        }
-      }
-    });
-  </script>
-  {% endif %}
 </div>
 </body>
 </html>
+{% endblock %}

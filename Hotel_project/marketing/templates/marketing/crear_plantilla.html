@@ -12,27 +12,39 @@
 </head>
 
 <body class="menu-bg">
-    <div class="menu-container">
-        <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
-            <h1>Crear Nueva Plantilla</h1>
-            <a class="boton-azul" href="{% url 'lista_plantillas' %}">Volver a Plantillas</a>
+    <div class="login-container">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Crear Nueva Plantilla</h2>
+
         </div>
 
-        <form method="POST" enctype="multipart/form-data" style="margin-top:20px;">
+        <form method="POST" enctype="multipart/form-data" id="modificarForm">
             {% csrf_token %}
-            <label>Nombre:</label><br>
-            <input type="text" name="nombre" required class="input-text"><br><br>
+            
+            <div>
+                <label for="id_nombre" class="form-label">Nombre:</label>
+                <input type="text" name="nombre" id="id_nombre" required class="input-text">
+            </div>
 
-            <label>Asunto:</label><br>
-            <input type="text" name="asunto" required class="input-text"><br><br>
+            <div>
+                <label for="id_asunto" class="form-label">Asunto:</label>
+                <input type="text" name="asunto" id="id_asunto" required class="input-text">
+            </div>
 
-            <label>Contenido HTML:</label><br>
-            <textarea name="contenido_html" rows="10" class="textarea"></textarea><br><br>
+            <div class="form-field">
+                <label for="id_contenido_html" class="form-label">Contenido HTML:</label>
+                <textarea name="contenido_html" id="id_contenido_html" rows="10" class="textarea"></textarea>
+            </div>
 
-            <label>Imagen (opcional):</label><br>
-            <input type="file" name="imagen"><br><br>
+            <div>
+                <label for="id_imagen" class="form-label">Imagen (opcional):</label>
+                <input type="file" name="imagen" id="id_imagen" class="input-text">
+            </div>
 
-            <button type="submit" class="boton-verde">Guardar Plantilla</button>
+            <div style="margin-top: 20px;">
+                <button type="submit" class="boton-verde">Guardar Plantilla</button>
+                <a class="boton-volver" href="{% url 'lista_plantillas' %}">Volver a Plantillas</a>
+            </div>
         </form>
     </div>
 </body>

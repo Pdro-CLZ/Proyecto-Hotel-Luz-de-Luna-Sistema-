@@ -14,6 +14,14 @@
 
 <div class="menu-container">
 
+    <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+            <h1>Gestión de Inventario</h1>
+                 <!-- Botón Registrar Item -->
+                <div style="display:flex; justify-content:flex-start; margin-top:20px;">
+                    <a class="boton-verde" href="{% url 'crear_inventario' %}">Registrar Item</a>
+                </div>
+        </div>
+
     <!-- Filtros -->
     <form method="get" style="margin-top:20px; display:flex; flex-direction:column; gap:10px; width:100%;">
         <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; width:100%;">
@@ -36,11 +44,6 @@
             <button type="submit" class="boton-verde">Filtrar</button>
         </div>
     </form>
-
-    <!-- Botón Registrar Item -->
-    <div style="display:flex; justify-content:flex-start; margin-top:20px;">
-        <a class="boton-verde" href="{% url 'crear_inventario' %}">Registrar Item</a>
-    </div>
 
     <!-- Tabla de inventario -->
     <div style="overflow-x:auto; margin-top: 10px;">
@@ -68,15 +71,15 @@
                         Para evitar errores de Django: verificamos rol usando 'in' con string separado
                         {% endcomment %}
                         {% if request.user.rol.nombre == "Administrador" %}
-                        <a href="{% url 'editar_inventario' i.id %}">Editar</a> |
+                        <a href="{% url 'editar_inventario' i.id %}">Editar</a>
                             <a href="{% url 'activar_inactivar_inventario' i.id %}">
                                 {% if i.activo %}Inactivar{% else %}Activar{% endif %}
-                            </a> |
+                            </a> 
                         {% elif request.user.rol.nombre == "Empleado_Nivel1" %}
-                            <a href="{% url 'editar_inventario' i.id %}">Editar</a> |
+                            <a href="{% url 'editar_inventario' i.id %}">Editar</a>
                             <a href="{% url 'activar_inactivar_inventario' i.id %}">
                                 {% if i.activo %}Inactivar{% else %}Activar{% endif %}
-                            </a> |
+                            </a>
                         {% elif request.user.rol.nombre == "Empleado_Nivel2" %}
                         {% elif request.user.rol.nombre == "cliente" %}
                         {% endif %}

@@ -12,30 +12,47 @@
 </head>
 
 <body class="menu-bg">
-    <div class="menu-container">
-        <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
-            <h1>Editar Plantilla</h1>
-            <a class="boton-azul" href="{% url 'lista_plantillas' %}">Volver a Plantillas</a>
+    <div class="login-container">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Editar Plantilla: {{ plantilla.nombre }}</h2>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" style="margin-top:20px;">
+        <form method="POST" enctype="multipart/form-data" id="modificarForm">
             {% csrf_token %}
-            <label>Nombre:</label><br>
-            <input type="text" name="nombre" value="{{ plantilla.nombre }}" required class="input-text"><br><br>
+            
+            <div>
+                <label for="id_nombre" class="form-label">Nombre:</label>
+                <input type="text" name="nombre" id="id_nombre" value="{{ plantilla.nombre }}" required class="input-text">
+            </div>
 
-            <label>Asunto:</label><br>
-            <input type="text" name="asunto" value="{{ plantilla.asunto }}" required class="input-text"><br><br>
+            <div>
+                <label for="id_asunto" class="form-label">Asunto:</label>
+                <input type="text" name="asunto" id="id_asunto" value="{{ plantilla.asunto }}" required class="input-text">
+            </div>
 
-            <label>Contenido HTML:</label><br>
-            <textarea name="contenido_html" rows="10" class="textarea">{{ plantilla.contenido_html }}</textarea><br><br>
+            <div class="form-field">
+                <label for="id_contenido_html" class="form-label">Contenido HTML:</label>
+                <textarea name="contenido_html" id="id_contenido_html" rows="10" class="textarea">{{ plantilla.contenido_html }}</textarea>
+            </div>
 
-            <label>Imagen (opcional):</label><br>
-            {% if plantilla.imagen %}
-            <img src="{{ plantilla.imagen.url }}" width="150"><br>
-            {% endif %}
-            <input type="file" name="imagen"><br><br>
+            <div>
+                <label for="id_imagen" class="form-label">Imagen actual:</label>
+                {% if plantilla.imagen %}
+                <div style="margin: 10px 0;">
+                    <img src="{{ plantilla.imagen.url }}" alt="Imagen actual" width="150" style="border: 1px solid #ddd; padding: 5px;">
+                </div>
+                {% endif %}
+            </div>
 
-            <button type="submit" class="boton-verde">Actualizar Plantilla</button>
+            <div>
+                <label for="id_nueva_imagen" class="form-label">Nueva imagen (opcional):</label>
+                <input type="file" name="imagen" id="id_nueva_imagen" class="input-text">
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="boton-verde">Actualizar Plantilla</button>
+                <a class="boton-volver" href="{% url 'lista_plantillas' %}">Volver a Plantillas</a>
+            </div>
         </form>
     </div>
 </body>

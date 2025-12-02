@@ -15,11 +15,12 @@
 
 <body class="menu-bg">
     <div class="menu-container">
-        <button class="boton-verde" onclick="window.location.href='/limpieza'">Volver</button>
-        <button class="boton-verde" onclick="window.location.href='/limpieza/zonas/agregar'">Agregar Zona</button>
 
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <h2>Gestión de Zonas de Limpieza</h2>
+             <div>
+                <button class="boton-verde" onclick="window.location.href='/limpieza/zonas/agregar'">Agregar Zona</button>
+            </div>
         </div>
 
         <div style="overflow-x:auto; margin-top: 20px;">
@@ -55,8 +56,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal" data-bs-target="#modalZona{{ zona.id }}">Ver más</a>
-                        <a class="btn btn-sm btn-dark text-white" href="{% url 'editar_zona' zona.id %}">Editar</a>
+                        <a class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalZona{{ zona.id }}">Ver más</a>
+                        <a class="btn btn-sm btn-dark" href="{% url 'editar_zona' zona.id %}">Editar</a>
                     </td>
                 </tr>
                 {% endfor %}

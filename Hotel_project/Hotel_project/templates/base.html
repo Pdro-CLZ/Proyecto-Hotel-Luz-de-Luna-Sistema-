@@ -3,12 +3,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Hotel Project{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hotel Project - Sistema Administrativo{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'base.css' %}">
 </head>
 <body>
     <div class="sidebar">
-        <h2>Hotel Admin</h2>
+        <h2>Luz de Luna</h2>
 
         <a href="{% url 'apps_home' %}">Inicio</a>
 
@@ -40,9 +41,9 @@
         {% elif request.user.rol.nombre == "cliente" %}
         {% endif %}
 
-        <a href="{% url 'index' %}">Sitio web</a>
+        <a href="{% url 'index' %}">Sitio Web</a>
 
-        <a href="{% url 'logout' %}">Cerrar sesión</a>
+        <a href="{% url 'logout' %}" style="margin-top: 15px;">Cerrar sesión</a>
     </div>
 
     <div class="content">

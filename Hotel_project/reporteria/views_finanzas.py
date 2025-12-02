@@ -12,7 +12,6 @@ from contabilidad.models import Contabilidad
 from administracion.decorators import rol_requerido
 
 #  FUNCIONES AUXILIARES
-@rol_requerido("Administrador","Empleado_Nivel1")
 def meses():
     return [
         (1, "Enero"), (2, "Febrero"), (3, "Marzo"), (4, "Abril"),

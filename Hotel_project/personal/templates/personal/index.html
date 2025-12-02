@@ -19,7 +19,7 @@
 
     <main class="login-container">
 
-        <h1>Marcar Asistencia</h1>
+        <h1 style="color: #1A3A2E;">Marcar Asistencia</h1>
         {% if mensaje %}
         <div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
             {{ mensaje }}
@@ -41,7 +41,7 @@
         </form>
 
             {% if request.user.rol.nombre == "Administrador" %}
-            <h1>Administrar Empleados y Roles</h1>
+            <h1 style="color: #1A3A2E;">Administrar Empleados y Roles</h1>
             <div class="button-group">
             <button class="boton-verde" onclick="window.location.href='empleados'">Empleados</button>
             <button class="boton-verde" onclick="window.location.href='roles'">Roles</button>

@@ -10,51 +10,82 @@
   <title>Cierre Mensual</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
 
-  <h1 style="text-align:center;">Cierre Mensual</h1>
+<body class="login-bg">
+  <div class="login-container">
+    <h2>Cierre Mensual</h2>
 
+    <!-- MENSAJES - Igual que otros formularios -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <p class="{{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
 
- {% if messages %}
-  <div class="mensajes" style="text-align:center; margin:10px 0;">
-    {% for message in messages %}
-      {% if 'error' in message.tags %}
-        <p style="color:red; font-weight:bold;">{{ message }}</p>
-      {% else %}
-        <p style="color:green; font-weight:bold;">{{ message }}</p>
-      {% endif %}
-    {% endfor %}
+    <form method="POST" id="cierreMensualForm">
+      {% csrf_token %}
+      
+      <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
+        <!-- Mes -->
+        <div class="form-field" style="flex: 1; min-width: 200px;">
+          <label for="mes">Mes</label>
+          <select name="mes" id="mes" class="form-control">
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </div>
+
+        <!-- Año -->
+        <div class="form-field" style="flex: 1; min-width: 200px;">
+          <label for="anio">Año</label>
+          <input type="number" name="anio" id="anio" value="{{ anio|default:2025 }}" 
+                 class="form-control" min="2000" max="2100">
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
+        <button type="submit" class="boton-verde">Generar Cierre</button>
+        <a href="{% url 'contabilidad_panel' %}" class="boton-volver">Volver al Panel</a>
+      </div>
+    </form>
+
+    <!-- Resultados del Cierre -->
+    {% if ingresos is not None %}
+    <div style="margin-top: 40px;">
+      <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <!-- Total Ingresos -->
+        <div class="result-box" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
+          <h3>Total Ingresos</h3>
+          <p>₡{{ ingresos|floatformat:2 }}</p>
+        </div>
+
+        <!-- Total Gastos -->
+        <div class="result-box" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+          <h3>Total Gastos</h3>
+          <p>₡{{ gastos|floatformat:2 }}</p>
+        </div>
+
+        <!-- Utilidad -->
+        <div class="result-box" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+          <h3>Utilidad</h3>
+          <p>₡{{ utilidad|floatformat:2 }}</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
-{% endif %}
-
-
-  <form method="POST" style="text-align:center;">
-    {% csrf_token %}
-    <label>Mes:</label>
-    <select name="mes">
-      <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
-      <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
-      <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
-      <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-    </select>
-
-    <label>Año:</label>
-    <input type="number" name="anio" value="{{ anio|default:2025 }}">
-    <button type="submit" class="btn-guardar">Generar Cierre</button>
-  </form>
-
-  {% if ingresos is not None %}
-  <section class="totales">
-    <div class="total-box"><h3>Total Ingresos</h3><p>₡{{ ingresos|floatformat:2 }}</p></div>
-    <div class="total-box"><h3>Total Gastos</h3><p>₡{{ gastos|floatformat:2 }}</p></div>
-    <div class="total-box"><h3>Utilidad</h3><p>₡{{ utilidad|floatformat:2 }}</p></div>
-  </section>
-  {% endif %}
-
-  <div style="text-align:center; margin-top:20px;">
-    <a href="{% url 'contabilidad_panel' %}" class="btn-volver">Volver al Panel</a>
-  </div>
-
 </body>
 </html>
 {% endblock %}

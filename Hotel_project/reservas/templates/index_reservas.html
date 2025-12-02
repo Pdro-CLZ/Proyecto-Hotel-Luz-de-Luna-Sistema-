@@ -27,17 +27,19 @@
 </head>
 <body class="menu-bg">
 <main class="menu-container">
-    <div class="header-actions">
-        <h2>Reservas - Semana: {{ inicio_semana }} — {{ fin_semana }}</h2>
+
+    <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+        <h2>Reservas</h2>
         <div>
             <a class="boton-verde" href="{% url 'agregar_reserva' %}">Agregar Reserva</a>
         </div>
     </div>
 
-    <form method="get" style="margin-bottom: 15px; display:flex; gap:10px; align-items:center;">
+    <h3>Semana: {{ inicio_semana }} — {{ fin_semana }}</h3>
+    <form method="get" style="margin-top: 15px; margin-bottom: 20px;">
         <label for="fecha">Consultar semana de:</label>
         <input type="date" id="fecha" name="fecha" value="{{ inicio_semana }}">
-        <button type="submit" class="boton-verde">Ir</button>
+        <button type="submit" class="boton-verde">Consultar</button>
     </form>
 
     {% if grid %}

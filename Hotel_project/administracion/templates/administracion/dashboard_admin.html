@@ -17,11 +17,12 @@
 
     <div class="menu-container">
 
-        <!-- Header con acciones -->
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
-            <a class="boton-verde" href="{% url 'registro' %}">Registrar usuario</a>
-            <!-- Boton desactivado -->
-            <!-- <a class="boton-amarillo" href="{% url 'linkear_usuario_empleado' %}">Linkear Usuario con Empleado</a> -->
+            <h1>Administración</h1>
+            <div>
+                <a class="boton-verde" href="{% url 'registro' %}">Registrar usuario</a>
+                 <!-- <a class="boton-amarillo" href="{% url 'linkear_usuario_empleado' %}">Linkear Usuario con Empleado</a> -->
+            </div>
         </div>
 
         <!-- Filtro por rol -->
@@ -50,7 +51,7 @@
         {% endif %}
 
         <!-- Tabla de usuarios -->
-        <div style="overflow-x:auto; margin-top: 20px;">
+        <div style="margin-top: 20px;">
             <table class="menu-table">
                 <thead>
                     <tr>
@@ -69,12 +70,12 @@
                         <td>{{ u.rol.nombre }}</td>
                         <td>{{ u.is_active }}</td>
                         <td>
-                            <a href="{% url 'modificar_usuario' u.id %}">Editar</a> |
-                            <a href="{% url 'activar_inactivar_usuario' u.id %}">
+                            <a class="btn btn-sm btn-primary" href="{% url 'modificar_usuario' u.id %}">Editar</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'activar_inactivar_usuario' u.id %}">
                                 {% if u.is_active %}Inactivar{% else %}Activar{% endif %}
-                            </a> |
-                            <a href="#" class="boton-link" data-url="{% url 'generar_reset_link' u.id %}" onclick="mostrarModal(this.dataset.url)">
-                                Generar link de reset
+                            </a> 
+                            <a class="btn btn-sm btn-primary" href="#" class="boton-link" data-url="{% url 'generar_reset_link' u.id %}" onclick="mostrarModal(this.dataset.url)">
+                                Generar Link Reset
                             </a>
 
                         </td>
@@ -97,7 +98,7 @@
         <h3>Link de reseteo de contraseña</h3>
         <p style="word-wrap:break-word;" id="resetLink"></p>
         <button onclick="copiarLink()" class="boton-verde" style="margin-top:10px;">Copiar</button>
-        <button onclick="cerrarModal()" class="boton-gris" style="margin-top:10px;">Cerrar</button>
+        <button onclick="cerrarModal()" class="boton-volver" style="margin-top:10px;">Cerrar</button>
     </div>
 </div>
 
