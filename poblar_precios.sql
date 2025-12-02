@@ -5,7 +5,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE reservas_fechareservada;
 TRUNCATE TABLE reservas_preciohabitacion;
 TRUNCATE TABLE reservas_reserva;
-TRUNCATE TABLE reservas_cliente;
+TRUNCATE TABLE sitio_web_cliente;
 TRUNCATE TABLE reservas_habitacion_amenidades;
 TRUNCATE TABLE reservas_habitacion;
 TRUNCATE TABLE reservas_amenidad;
@@ -46,22 +46,43 @@ FROM reservas_habitacion h
 CROSS JOIN reservas_amenidad a;
 
 -- ============================================
--- CLIENTE
+-- CLIENTE (DEBE IR EN sitio_web_cliente)
 -- ============================================
-INSERT INTO reservas_cliente (nombre, apellido, telefono, correo, identificacion)
-VALUES ('Carlos', 'Jiménez', '88888888', 'carlos@example.com', '111111111');
+
+
+
+INSERT INTO sitio_web_cliente 
+(usuario_id, direccion_id, telefono, fecha_nacimiento, fecha_registro, activo)
+VALUES (
+    (SELECT id FROM administracion_usuario WHERE username = 'carlosj'),
+    NULL,
+    '88888888',
+    NULL,
+    NOW(),
+    1
+);
+
+
+
 
 -- ============================================
 -- RESERVAS Y FECHAS RESERVADAS
 -- ============================================
 
 -- 🔸 Crear una reserva para cada habitación excepto la 1 y la 8
-INSERT INTO reservas_reserva (cliente_id, habitacion_id, fecha_inicio, fecha_fin, total,canal_reservacion, metodo_pago)
-SELECT 1, id, '2025-11-09', '2025-11-10', 100, 'sitio', 'efectivo'
+INSERT INTO reservas_reserva (cliente_id, habitacion_id, fecha_inicio, fecha_fin, total, canal_reservacion, metodo_pago)
+SELECT 
+    (SELECT id FROM sitio_web_cliente ORDER BY id LIMIT 1) AS cliente_id,
+    id,
+    '2025-11-09',
+    '2025-11-10',
+    100,
+    'sitio',
+    'efectivo'
 FROM reservas_habitacion
 WHERE id NOT IN (1,8);
 
--- 🔸 Registrar las fechas reservadas para esas habitaciones
+-- 🔸 Registrar las fechas reservadas
 INSERT INTO reservas_fechareservada (habitacion_id, fecha, reserva_id)
 SELECT r.habitacion_id, '2025-11-09', r.id FROM reservas_reserva r
 UNION ALL
