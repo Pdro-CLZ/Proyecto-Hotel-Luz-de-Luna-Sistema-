@@ -14,7 +14,7 @@
 
 <body class="menu-bg">
 <main>
-    <h1>Registrar Zona de Limpieza</h1>
+    <h1 style="color: #1A3A2E;">Registrar Zona de Limpieza</h1>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -30,7 +30,7 @@
         </div>
         {% endfor %}
 
-        <h3 style="margin-top: 30px;">Tareas de la Zona</h3>
+        <h1 style="margin-top: 30px; color: #1A3A2E;">Tareas de la Zona</h1>
         <div id="tareas-container">
         {{ formset.management_form }}
         {% for form in formset %}
@@ -64,16 +64,17 @@
             </div>
             {% endif %}
 
-        <button type="button" class="btn btn-danger remove-tarea">Eliminar Tarea</button>
+        <button type="button" class="btn btn-danger remove-tarea" style="background: #852d23;">Eliminar Tarea</button>
     </div>
     {% endfor %}
 </div>
 
-        <button type="button" id="add-tarea" class="btn btn-secondary">Agregar Tarea</button>
+        <button type="button" id="add-tarea" class="boton-neutral" style="width: 50%;">Agregar Tarea</button>
 
-        <div class="button-group" style="margin-top: 20px;">
+        <div style="margin-top: 20px;">
+            <h1 style="margin-top: 30px; color: #1A3A2E;">¿Lista la Zona?</h1>
             <button type="submit" class="btn btn-success">Guardar Zona</button>
-            <button type="button" onclick="window.location.href='/limpieza/zonas'" class="btn btn-dark">Cancelar</button>
+            <button type="button" onclick="window.location.href='/limpieza/zonas'" class="boton-volver">Cancelar</button>
         </div>
     </form>
 </main>

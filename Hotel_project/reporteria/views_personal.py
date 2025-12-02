@@ -8,8 +8,10 @@ from openpyxl import Workbook
 from datetime import date
 from personal.models import Empleado, Asistencia
 from administracion.models import Rol
+from administracion.decorators import rol_requerido
 
 #  Exportar a Excel
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -30,6 +32,7 @@ def exportar_excel(datos, titulo):
 
 
 #  Exportar a PDF
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)
@@ -41,6 +44,7 @@ def exportar_pdf(template_name, context, nombre_archivo):
 
 
 #  Vista principal del reporte
+@rol_requerido("Administrador","Empleado_Nivel1")
 def reporte_personal(request):
     mes = int(request.GET.get("mes", date.today().month))
     anio = int(request.GET.get("anio", date.today().year))

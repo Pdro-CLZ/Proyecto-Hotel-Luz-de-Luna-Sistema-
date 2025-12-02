@@ -9,13 +9,14 @@ from openpyxl.utils import get_column_letter
 
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from administracion.decorators import rol_requerido
 
 ESTADOS_HABITACION = [
     ('ocupada', 'Ocupada'),
     ('disponible', 'Disponible'),
 ]
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def reporte_reservas(request):
 
     fecha_inicio = request.GET.get('fecha_inicio')
@@ -72,7 +73,7 @@ def reporte_reservas(request):
     }
     return render(request, 'reporteria/reporte_reservas.html', context)
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_reservas_excel(reservas_qs):
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -107,7 +108,7 @@ def exportar_reservas_excel(reservas_qs):
     wb.save(response)
     return response
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_reservas_pdf(reservas_qs):
     buffer = BytesIO()
     p = canvas.Canvas(buffer)

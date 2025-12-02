@@ -16,6 +16,7 @@ from django.views.generic.edit import FormView
 from .models import Usuario, PasswordResetToken
 from personal.models import Empleado
 from .forms import ModificarMiUsuarioForm, RegistroUsuarioForm, LoginForm, EditarUsuarioForm
+from .decorators import rol_requerido
 
 User = get_user_model()
 
@@ -174,6 +175,7 @@ def modificar_mi_usuario(request):
 
 
 # ------------------ REGISTRO Y EDICIÓN DE USUARIOS ------------------
+@rol_requerido("Administrador")
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def registrar_usuario(request):
@@ -192,7 +194,7 @@ def registrar_usuario(request):
         "mostrar_modal": mostrar_modal
     })
 
-
+@rol_requerido("Administrador")
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def modificar_usuario(request, usuario_id):
@@ -222,7 +224,7 @@ def modificar_usuario(request, usuario_id):
 
     return render(request, "administracion/modificar_usuario.html", {"form": form, "usuario": usuario})
 
-
+@rol_requerido("Administrador")
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def activar_inactivar_usuario(request, usuario_id):
@@ -233,6 +235,7 @@ def activar_inactivar_usuario(request, usuario_id):
 
 
 # ------------------ LINK USUARIO-EMPLEADO ------------------
+@rol_requerido("Administrador")
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def linkear_usuario_empleado(request):
@@ -259,6 +262,7 @@ def linkear_usuario_empleado(request):
 
 
 # ------------------ RESET DE CONTRASEÑA ------------------
+@rol_requerido("Administrador")
 @login_required
 @user_passes_test(lambda u: u.rol and u.rol.nombre == "Administrador")
 def generar_reset_link(request, user_id):
@@ -316,15 +320,34 @@ def reset_password_view(request, token):
 
 
 # ------------------ APPS HOME ------------------
+@login_required
 def apps_home(request):
-    apps = [
-        {"name": "Administración", "url": "dashboard_admin"},
-        {"name": "Personal", "url": "marcar_asistencia"},
-        {"name": "Contabilidad", "url": "contabilidad_panel"},
-        {"name": "Inventario", "url": "lista_inventario"},
-        {"name": "Limpieza", "url": "index_limpieza"},
-        {"name": "Marketing", "url": "dashboard_marketing"},
-        {"name": "Reportería", "url": "reporteria:submenu_reporteria"},
-        {"name": "Reservas", "url": "index_reservas"},
+    user = request.user
+    rol = user.rol.nombre if user.rol else None
+
+    todas_las_apps = [
+        {"name": "Administración", "url": "dashboard_admin", "id": "admin"},
+        {"name": "Personal", "url": "marcar_asistencia", "id": "personal"},
+        {"name": "Contabilidad", "url": "contabilidad_panel", "id": "contabilidad"},
+        {"name": "Inventario", "url": "lista_inventario", "id": "inventario"},
+        {"name": "Limpieza", "url": "index_limpieza", "id": "limpieza"},
+        {"name": "Marketing", "url": "dashboard_marketing", "id": "marketing"},
+        {"name": "Reportería", "url": "reporteria:submenu_reporteria", "id": "reporteria"},
+        {"name": "Reservas", "url": "index_reservas", "id": "reservas"},
     ]
+
+    if rol == "Administrador":
+        apps = todas_las_apps 
+
+    elif rol == "Empleado_Nivel1":
+        apps = [app for app in todas_las_apps if app["id"] != "admin"]
+
+    elif rol == "Empleado_Nivel2":
+        permitidas = ["personal", "limpieza", "inventario", "reservas"]
+        apps = [app for app in todas_las_apps if app["id"] in permitidas]
+
+    else:
+        apps = []
+
     return render(request, "administracion/apps_home.html", {"apps": apps})
+

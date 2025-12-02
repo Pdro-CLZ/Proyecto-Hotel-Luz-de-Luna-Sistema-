@@ -7,9 +7,10 @@ from datetime import time, datetime, timedelta
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-
+from administracion.decorators import rol_requerido
 
 # -------------------- MARCAR ASISTENCIA --------------------
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def marcar_asistencia(request):
     user = request.user 
@@ -90,6 +91,7 @@ def marcar_asistencia(request):
 
 
 # -------------------- LISTA EMPLEADOS --------------------
+@rol_requerido("Administrador")
 def lista_empleados(request):
     empleados = Empleado.objects.all()
     roles = Rol.objects.all()
@@ -125,6 +127,7 @@ def lista_empleados(request):
 
 
 # -------------------- AGREGAR EMPLEADO --------------------
+@rol_requerido("Administrador")
 def agregar_empleado(request):
     roles = Rol.objects.all()
     paises = Pais.objects.all()
@@ -163,6 +166,7 @@ def agregar_empleado(request):
 
 
 # -------------------- EDITAR EMPLEADO --------------------
+@rol_requerido("Administrador")
 def editar_empleado(request, id):
     empleado = get_object_or_404(Empleado, id=id)
     roles = Rol.objects.all()
@@ -202,6 +206,7 @@ def editar_empleado(request, id):
 
 
 # -------------------- INACTIVAR EMPLEADO --------------------
+@rol_requerido("Administrador")
 def inactivar_empleado(request, id):
     empleado = get_object_or_404(Empleado, id=id)
 
@@ -213,6 +218,7 @@ def inactivar_empleado(request, id):
 
 
 # -------------------- SELECCIONAR EMPLEADO --------------------
+@rol_requerido("Administrador")
 def seleccionar_empleado(request):
     mensaje = None
     if request.method == "POST":
@@ -229,6 +235,7 @@ def seleccionar_empleado(request):
 
 
 # -------------------- ROLES --------------------
+@rol_requerido("Administrador")
 def lista_roles(request):
     query = request.GET.get('buscar')
     estado = request.GET.get("estado")
@@ -247,7 +254,7 @@ def lista_roles(request):
         "estado": estado,
     })
 
-
+@rol_requerido("Administrador")
 def agregar_rol(request):
     if request.method == 'POST':
         form = RolForm(request.POST)
@@ -259,7 +266,7 @@ def agregar_rol(request):
 
     return render(request, 'personal/agregar_rol.html', {'form': form})
 
-
+@rol_requerido("Administrador")
 def editar_rol(request, id):
     rol = get_object_or_404(Rol, id=id)
     if request.method == 'POST':
@@ -272,13 +279,13 @@ def editar_rol(request, id):
 
     return render(request, 'personal/editar_rol.html', {'form': form, 'rol': rol})
 
-
+@rol_requerido("Administrador")
 def eliminar_rol(request, id):
     rol = get_object_or_404(Rol, id=id)
     rol.delete()
     return redirect('roles')
 
-
+@rol_requerido("Administrador")
 def inactivar_rol(request, id):
     rol = get_object_or_404(Rol, id=id)
     rol.activo = not rol.activo
@@ -289,6 +296,7 @@ def inactivar_rol(request, id):
 
 
 # -------------------- VISUALIZAR TIEMPOS --------------------
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def visualizar_tiempos(request):
     empleados = Empleado.objects.filter(activo=True)
     roles = Rol.objects.filter(activo=True)

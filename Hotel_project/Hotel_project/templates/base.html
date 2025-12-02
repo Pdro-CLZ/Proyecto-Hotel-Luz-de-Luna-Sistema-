@@ -3,24 +3,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Hotel Project{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hotel Project - Sistema Administrativo{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'base.css' %}">
 </head>
 <body>
     <div class="sidebar">
-        <h2>Hotel Admin</h2>
-        <a href="{% url 'apps_home' %}">Inicio</a>
-        <a href="{% url 'dashboard_admin' %}">Administración</a>
-        <a href="{% url 'marcar_asistencia' %}">Personal</a>
-        <a href="{% url 'dashboard_marketing' %}">Marketing</a>
-        <a href="{% url 'lista_inventario' %}">Inventario</a>
-        <a href="{% url 'index_limpieza' %}">Limpieza</a>
-        <a href="{% url 'contabilidad_panel' %}">Contabilidad</a>
-        <a href="{% url 'index_reservas' %}">Reservas</a>
-        <a href="{% url 'index' %}">Sitio</a>
-        <a href="{% url 'reporteria:submenu_reporteria' %}">Reportería</a>
+        <h2>Luz de Luna</h2>
 
-        <a href="{% url 'logout' %}">Cerrar sesión</a>
+        <a href="{% url 'apps_home' %}">Inicio</a>
+
+        {% if request.user.rol.nombre == "Administrador" %}
+            <a href="{% url 'dashboard_admin' %}">Administración</a>
+            <a href="{% url 'marcar_asistencia' %}">Personal</a>
+            <a href="{% url 'dashboard_marketing' %}">Marketing</a>
+            <a href="{% url 'lista_inventario' %}">Inventario</a>
+            <a href="{% url 'index_limpieza' %}">Limpieza</a>
+            <a href="{% url 'contabilidad_panel' %}">Contabilidad</a>
+            <a href="{% url 'index_reservas' %}">Reservas</a>
+            <a href="{% url 'reporteria:submenu_reporteria' %}">Reportería</a>
+
+        {% elif request.user.rol.nombre == "Empleado_Nivel1" %}
+            <a href="{% url 'marcar_asistencia' %}">Personal</a>
+            <a href="{% url 'dashboard_marketing' %}">Marketing</a>
+            <a href="{% url 'lista_inventario' %}">Inventario</a>
+            <a href="{% url 'index_limpieza' %}">Limpieza</a>
+            <a href="{% url 'contabilidad_panel' %}">Contabilidad</a>
+            <a href="{% url 'index_reservas' %}">Reservas</a>
+            <a href="{% url 'reporteria:submenu_reporteria' %}">Reportería</a>
+
+        {% elif request.user.rol.nombre == "Empleado_Nivel2" %}
+            <a href="{% url 'marcar_asistencia' %}">Personal</a>
+            <a href="{% url 'lista_inventario' %}">Inventario</a>
+            <a href="{% url 'index_limpieza' %}">Limpieza</a>
+            <a href="{% url 'index_reservas' %}">Reservas</a>
+
+        {% elif request.user.rol.nombre == "cliente" %}
+        {% endif %}
+
+        <a href="{% url 'index' %}">Sitio Web</a>
+
+        <a href="{% url 'logout' %}" style="margin-top: 15px;">Cerrar sesión</a>
     </div>
 
     <div class="content">

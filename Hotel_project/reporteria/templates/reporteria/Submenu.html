@@ -1,185 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Reportería{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Submenú - Reportería</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-
-    <style>
-        body {
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(180deg, #d3ddb1 0%, #f7f6d9 40%, #f0f4e0 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-
-        .reporteria-wrapper {
-            max-width: 1000px;
-            width: 100%;
-            padding: 20px;
-        }
-
-        .reporteria-card {
-            background: #fbfae8;
-            border-radius: 24px;
-            box-shadow: 0 18px 30px rgba(0,0,0,0.12);
-            padding: 32px 40px 36px;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-        }
-
-        .reporteria-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .reporteria-header-title {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .reporteria-header-title h2 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: 700;
-            color: #4c6424;
-        }
-
-        .reporteria-header-title span {
-            font-size: 14px;
-            color: #6e7b3b;
-        }
-
-        .reporteria-tag {
-            font-size: 13px;
-            padding: 6px 14px;
-            border-radius: 999px;
-            background: #e3edc0;
-            color: #4b5c23;
-            border: 1px solid rgba(121, 140, 60, 0.4);
-        }
-
-        .reporteria-grid {
-            margin-top: 10px;
-        }
-
-        .report-card {
-            background: #f2f7dc;
-            border-radius: 18px;
-            padding: 18px 18px 16px;
-            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .report-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 16px 26px rgba(0, 0, 0, 0.12);
-            background: #edf4cf;
-            text-decoration: none;
-        }
-
-        .report-info-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #42501f;
-            margin: 0;
-        }
-
-        .report-info-desc {
-            font-size: 13px;
-            color: #6b7542;
-            margin: 2px 0 0;
-        }
-
-        .report-link {
-            text-decoration: none;
-        }
-    </style>
+    <title>Reportería</title>
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
 </head>
-<body>
 
-<div class="reporteria-wrapper">
-    <div class="reporteria-card">
+<body class="menu-bg">
+<main class="menu-container">
 
-        <div class="reporteria-header">
-            <div class="reporteria-header-title">
-                <h2>Reportería</h2>
-                <span>Selecciona el tipo de reporte que deseas consultar</span>
+    <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+            <h1>Reportería</h1>
+            <div>
+                <a href="{% url 'apps_home' %}" class="boton-verde">Volver al Inicio</a>
             </div>
-            <span class="reporteria-tag">Módulo de reportes del hotel</span>
         </div>
 
-        <div class="row g-3 reporteria-grid">
+    <div class="grid-menu">
+        <a href="{% url 'reporteria:reporte_financiero' %}" class="menu-item">
+            <h3 style="margin: 0 0 10px 0; color: inherit;">Reporte Financiero</h3>
+            <p style="margin: 0; font-size: 0.95em; opacity: 0.9;">Ingresos, egresos y resumen económico del hotel.</p>
+        </a>
 
-            <div class="col-md-6">
-                <a href="{% url 'reporteria:reporte_financiero' %}" class="report-link">
-                    <div class="report-card">
-                        <div>
-                            <p class="report-info-title">Reporte Financiero</p>
-                            <p class="report-info-desc">Ingresos, egresos y resumen económico del hotel.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+        <a href="{% url 'reporteria:reporte_limpieza' %}" class="menu-item">
+            <h3 style="margin: 0 0 10px 0; color: inherit;">Reporte de Limpieza</h3>
+            <p style="margin: 0; font-size: 0.95em; opacity: 0.9;">Estado de limpieza y seguimiento de habitaciones.</p>
+        </a>
 
-            <div class="col-md-6">
-                <a href="{% url 'reporteria:reporte_limpieza' %}" class="report-link">
-                    <div class="report-card">
-                        <div>
-                            <p class="report-info-title">Reporte de Limpieza</p>
-                            <p class="report-info-desc">Estado de limpieza y seguimiento de habitaciones.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+        <a href="{% url 'reporteria:reporte_personal' %}" class="menu-item">
+            <h3 style="margin: 0 0 10px 0; color: inherit;">Reporte de Personal</h3>
+            <p style="margin: 0; font-size: 0.95em; opacity: 0.9;">Información del personal y su distribución.</p>
+        </a>
 
-            <div class="col-md-6">
-                <a href="{% url 'reporteria:reporte_personal' %}" class="report-link">
-                    <div class="report-card">
-                        <div>
-                            <p class="report-info-title">Reporte de Personal</p>
-                            <p class="report-info-desc">Información del personal y su distribución.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+        <a href="{% url 'reporteria:reporte_inventario' %}" class="menu-item">
+            <h3 style="margin: 0 0 10px 0; color: inherit;">Reporte de Inventario</h3>
+            <p style="margin: 0; font-size: 0.95em; opacity: 0.9;">Control de productos, suministros y stock.</p>
+        </a>
 
-            <div class="col-md-6">
-                <a href="{% url 'reporteria:reporte_inventario' %}" class="report-link">
-                    <div class="report-card">
-                        <div>
-                            <p class="report-info-title">Reporte de Inventario</p>
-                            <p class="report-info-desc">Control de productos, suministros y stock.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-md-6 offset-md-3">
-                <a href="{% url 'reporteria:reporte_reservas' %}" class="report-link">
-                    <div class="report-card">
-                        <div>
-                            <p class="report-info-title">Reporte de Reservas</p>
-                            <p class="report-info-desc">Histórico y análisis de reservas por fecha y canal.</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-        </div>
-
+        <a href="{% url 'reporteria:reporte_reservas' %}" class="menu-item">
+            <h3 style="margin: 0 0 10px 0; color: inherit;">Reporte de Reservas</h3>
+            <p style="margin: 0; font-size: 0.95em; opacity: 0.9;">Histórico y análisis de reservas por fecha y canal.</p>
+        </a>
     </div>
-</div>
-
+</main>
 </body>
 </html>
+{% endblock %}

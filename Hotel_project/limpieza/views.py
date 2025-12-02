@@ -7,7 +7,9 @@ from django.utils import timezone
 from .models import ZonaLimpieza, TareaLimpieza
 from .forms import ZonaLimpiezaForm, TareaLimpiezaForm
 
+from administracion.decorators import rol_requerido
 
+@rol_requerido("Administrador","Empleado_Nivel1")
 @login_required
 def registrar_zona(request):
     TareaFormSet = modelformset_factory(TareaLimpieza, form=TareaLimpiezaForm, extra=1, can_delete=True)
@@ -47,17 +49,20 @@ def registrar_zona(request):
 
 
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def index_limpieza(request):
     return render(request, 'limpieza/index_limpieza.html')
 
 
 @login_required
+@rol_requerido("Administrador","Empleado_Nivel1")
 def lista_zonas(request):
     zonas = ZonaLimpieza.objects.all().order_by('-fecha_registro')
     return render(request, 'limpieza/lista_zonas.html', {'zonas': zonas})
 
 
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel2")
 def editar_zona(request, zona_id):
     zona = get_object_or_404(ZonaLimpieza, id=zona_id)
     TareaFormSet = modelformset_factory(TareaLimpieza, form=TareaLimpiezaForm, extra=0, can_delete=True, max_num=10)
@@ -98,6 +103,7 @@ def editar_zona(request, zona_id):
 
 
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def lista_zonas_empleado(request):
     habitaciones = ZonaLimpieza.objects.filter(is_habitacion=True).order_by('nombre')
     otras_zonas = ZonaLimpieza.objects.filter(is_habitacion=False).order_by('nombre')
@@ -106,7 +112,7 @@ def lista_zonas_empleado(request):
         'otras_zonas': otras_zonas
     })
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def gestionar_zona(request, zona_id):
     zona = get_object_or_404(ZonaLimpieza, id=zona_id)
@@ -131,7 +137,7 @@ def gestionar_zona(request, zona_id):
         'mensaje_alerta': mensaje_alerta
     })
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def cambiar_estado_tarea(request, tarea_id):
     tarea = get_object_or_404(TareaLimpieza, id=tarea_id)

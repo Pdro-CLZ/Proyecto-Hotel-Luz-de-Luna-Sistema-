@@ -4,9 +4,11 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Contabilidad, CierreMensual, CierreAnual
 import datetime
-
+from administracion.decorators import rol_requerido
+from .models import CierreMensual, CierreAnual
 
 # PANEL PRINCIPAL
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def contabilidad_panel(request):
     mes = request.GET.get('mes')
     anio = request.GET.get('anio')
@@ -60,8 +62,7 @@ def contabilidad_panel(request):
 
 
 # AGREGAR INGRESO
-from .models import CierreMensual, CierreAnual
-
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def agregar_ingreso(request):
     if request.method == 'POST':
         fecha = request.POST.get('fecha')
@@ -109,6 +110,7 @@ def agregar_ingreso(request):
 
 
 # AGREGAR GASTO
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def agregar_gasto(request):
     if request.method == 'POST':
         fecha = request.POST.get('fecha')
@@ -157,6 +159,7 @@ def agregar_gasto(request):
 
 
 # EDITAR INGRESO
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def editar_ingreso(request, id):
     ingreso = get_object_or_404(Contabilidad, id=id, tipo='Ingreso')
 
@@ -184,6 +187,7 @@ def editar_ingreso(request, id):
 
 
 # EDITAR GASTO
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def editar_gasto(request, id):
     gasto = get_object_or_404(Contabilidad, id=id, tipo='Gasto')
 
@@ -210,6 +214,7 @@ def editar_gasto(request, id):
     return render(request, 'contabilidad/editar_gasto.html', {'registro': gasto})
 
 # ====== CIERRE MENSUAL ======
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def cierre_mensual(request):
     hoy = datetime.date.today()
 
@@ -266,6 +271,7 @@ def cierre_mensual(request):
 
 
 # ====== CIERRE ANUAL ======
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def cierre_anual(request):
     hoy = datetime.date.today()
 

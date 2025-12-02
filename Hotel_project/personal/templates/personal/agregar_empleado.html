@@ -13,82 +13,101 @@
     <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
 </head>
 
-<body class="menu-bg">
-<main>
-    <h1>Agregar Empleado</h1>
+<body class="login-bg">
+    <div class="login-container">
+        <h2>Agregar Empleado</h2>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-
-        {% for field in form %}
-        <div class="form-field">
-            {{ field.label_tag }}
-            {{ field }}
-            {% if field.errors %}
-            <div class="error my-1">{{ field.errors|striptags }}</div>
-            {% endif %}
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% endif %}
 
-        <div class="form-field">
-            <label for="direccion_exacta">Dirección Exacta:</label>
-            <textarea id="direccion_exacta" name="direccion_exacta" rows="3">{{ direccion.direccion_exacta|default_if_none:'' }}</textarea>
+        {% if no_usuarios_disponibles %}
+        <div class="message message-error" style="background-color: #e2c43e; color: #000; border-left-color: #d4a574;">
+            No hay usuarios disponibles sin empleado asignado.<br>
+            Debe crear un usuario primero antes de crear el empleado. 
+            <a href="{% url 'registro' %}" class="boton-verde" style="display: inline-block; margin-top: 10px; padding: 10px 20px; font-size: 0.9em;">
+                Crear Usuario
+            </a>
         </div>
+        {% endif %}
 
-        <div class="form-field">
-            <label for="pais">País:</label>
-            <select id="pais" name="pais">
-                {% for pais in paises %}
-                <option value="{{ pais.id }}"
-                    {% if direccion.pais and direccion.pais.id == pais.id %}selected{% endif %}>{{ pais.nombre }}</option>
+        <form method="POST" id="agregarForm">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <h3>Datos del Empleado</h3>
+            <div>
+                {% for field in form %}
+                {% if field.name != 'direccion_exacta' and field.name != 'pais' and field.name != 'provincia' and field.name != 'canton' and field.name != 'distrito' %}
+                <div class="form-field">
+                    {{ field.label_tag }} 
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="error my-1">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
                 {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-field">
-            <label for="provincia">Provincia:</label>
-            <select id="provincia" name="provincia">
-                {% for provincia in provincias %}
-                <option value="{{ provincia.id }}"
-                    {% if direccion.provincia and direccion.provincia.id == provincia.id %}selected{% endif %}>{{ provincia.nombre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-field">
-            <label for="canton">Cantón:</label>
-            <select id="canton" name="canton">
-                {% for canton in cantones %}
-                <option value="{{ canton.id }}"
-                    {% if direccion.canton and direccion.canton.id == canton.id %}selected{% endif %}>{{ canton.nombre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-field">
-            <label for="distrito">Distrito:</label>
-            <select id="distrito" name="distrito">
-                {% for distrito in distritos %}
-                <option value="{{ distrito.id }}"
-                    {% if direccion.distrito and direccion.distrito.id == distrito.id %}selected{% endif %}>{{ distrito.nombre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div style="margin-top: 20px;">
-                {% if no_usuarios_disponibles %}
-            <div style="background-color: #e2c43e; color: #000; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
-                No hay usuarios disponibles sin empleado asignado.<br>
-                Debe crear un usuario primero antes de crear el empleado. Aquí: <a href="{% url 'registro' %}"></a>.
             </div>
-            {% endif %}
-        </div>
-        <div class="button-group">
-            <button type="submit">Agregar Empleado</button>
-            <button type="button" onclick="window.location.href='/personal/empleados'">Cancelar</button>
-        </div>
-    </form>
-</main>
+
+            <h3>Dirección</h3>
+            <div>
+                <div class="form-field">
+                    <label for="direccion_exacta">Dirección Exacta:</label>
+                    <textarea id="direccion_exacta" name="direccion_exacta" rows="3">{{ direccion.direccion_exacta|default_if_none:'' }}</textarea>
+                </div>
+
+                <div class="form-field">
+                    <label for="pais">País:</label>
+                    <select id="pais" name="pais">
+                        {% for pais in paises %}
+                        <option value="{{ pais.id }}"
+                            {% if direccion.pais and direccion.pais.id == pais.id %}selected{% endif %}>{{ pais.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="provincia">Provincia:</label>
+                    <select id="provincia" name="provincia">
+                        {% for provincia in provincias %}
+                        <option value="{{ provincia.id }}"
+                            {% if direccion.provincia and direccion.provincia.id == provincia.id %}selected{% endif %}>{{ provincia.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="canton">Cantón:</label>
+                    <select id="canton" name="canton">
+                        {% for canton in cantones %}
+                        <option value="{{ canton.id }}"
+                            {% if direccion.canton and direccion.canton.id == canton.id %}selected{% endif %}>{{ canton.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="distrito">Distrito:</label>
+                    <select id="distrito" name="distrito">
+                        {% for distrito in distritos %}
+                        <option value="{{ distrito.id }}"
+                            {% if direccion.distrito and direccion.distrito.id == distrito.id %}selected{% endif %}>{{ distrito.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
+                <button type="submit" class="boton-verde">Agregar Empleado</button>
+                <a href="{% url 'empleados' %}" class="boton-volver">Cancelar</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
 {% endblock %}

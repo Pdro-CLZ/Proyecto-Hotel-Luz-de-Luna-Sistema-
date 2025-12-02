@@ -6,9 +6,10 @@ from xhtml2pdf import pisa
 from openpyxl import Workbook
 from inventario.models import Inventario
 from datetime import timedelta
-
+from administracion.decorators import rol_requerido
 
 # Exportar Excel
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -29,6 +30,7 @@ def exportar_excel(datos, titulo):
 
 
 #  Exportar PDF
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)
@@ -40,6 +42,7 @@ def exportar_pdf(template_name, context, nombre_archivo):
 
 
 #  Vista principal
+@rol_requerido("Administrador","Empleado_Nivel1")
 def reporte_inventario(request):
     tipo_filtro = request.GET.get("tipo", "")
     bajo_stock = request.GET.get("bajo_stock", "")

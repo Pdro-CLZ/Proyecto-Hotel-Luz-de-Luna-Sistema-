@@ -5,23 +5,34 @@ from django.contrib.auth.decorators import login_required
 from datetime import timedelta, date, datetime
 from django.db import transaction
 from django.contrib import messages
-from .models import Habitacion, FechaReservada, Cliente, Reserva, PrecioHabitacion
+from sitio_web.models import Cliente  
+from administracion.models import Usuario 
+from .models import Habitacion, FechaReservada, Reserva, PrecioHabitacion
 from decimal import Decimal
-
+from django.contrib.auth.hashers import make_password
+from administracion.decorators import rol_requerido
 
 @login_required
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 def index_reservas(request):
-    hoy = timezone.localdate()
+    fecha_seleccionada = request.GET.get("fecha")
 
-    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    if fecha_seleccionada:
+        try:
+            fecha_base = date.fromisoformat(fecha_seleccionada)
+        except:
+            fecha_base = timezone.localdate()
+    else:
+        fecha_base = timezone.localdate()
+
+    inicio_semana = fecha_base - timedelta(days=fecha_base.weekday())
     dias = [inicio_semana + timedelta(days=i) for i in range(7)]
     fin_semana = dias[-1]
-
     habitaciones = Habitacion.objects.all().order_by('id')
 
     fechas_reservadas = FechaReservada.objects.filter(
         fecha__range=(inicio_semana, fin_semana)
-    ).select_related('habitacion', 'reserva__cliente')
+    ).select_related('habitacion', 'reserva__cliente__usuario')
 
     reservado_map = {}
     for fr in fechas_reservadas:
@@ -43,7 +54,7 @@ def index_reservas(request):
     }
     return render(request, 'index_reservas.html', context)
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def agregar_reserva(request):
     if request.method == "POST":
@@ -94,7 +105,7 @@ def agregar_reserva(request):
 
     return render(request, "agregar_reserva.html")
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def buscar_cliente(request):
     if request.method == 'POST':
@@ -103,7 +114,10 @@ def buscar_cliente(request):
         fecha_fin = request.POST.get('fecha_fin')
         habitacion_id = request.POST.get('habitacion_id')
 
-        cliente = Cliente.objects.filter(identificacion=identificacion).first()
+        cliente = Cliente.objects.select_related('usuario').filter(
+            usuario__cedula=identificacion
+        ).first()
+
         if cliente:
             return redirect('nueva_reserva_cliente',
                             habitacion_id=habitacion_id,
@@ -119,11 +133,11 @@ def buscar_cliente(request):
 
     return HttpResponse("Método no permitido.", status=405)
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id=None):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
-    cliente = Cliente.objects.filter(id=cliente_id).first()
+    cliente = Cliente.objects.filter(id=cliente_id).select_related("usuario").first()
 
     if isinstance(fecha_inicio, str):
         fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
@@ -132,12 +146,20 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
 
     if request.method == 'POST':
         if not cliente:
+
+            usuario = Usuario.objects.create(
+                username=request.POST['identificacion'],
+                first_name=request.POST['first_name'],
+                last_name=request.POST['last_name'],
+                cedula=request.POST['identificacion'],
+                email=request.POST['correo'],
+                password=make_password('Pass123!'),
+                rol_id=4,
+            )
+            
             cliente = Cliente.objects.create(
-                nombre=request.POST['nombre'],
-                apellido=request.POST['apellido'],
+                usuario=usuario,
                 telefono=request.POST['telefono'],
-                correo=request.POST['correo'],
-                identificacion=request.POST['identificacion']
             )
 
         metodo_pago = request.POST.get('metodo_pago')
@@ -158,13 +180,12 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
         'fecha_fin': fecha_fin,
     })
 
-
+@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
 @login_required
 @transaction.atomic
 def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id, metodo_pago, canal_reservacion):
-    """Resumen final de la reserva y confirmación"""
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
-    cliente = get_object_or_404(Cliente, pk=cliente_id)
+    cliente = get_object_or_404(Cliente.objects.select_related("usuario"), pk=cliente_id)
 
     if isinstance(fecha_inicio, str):
         fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()

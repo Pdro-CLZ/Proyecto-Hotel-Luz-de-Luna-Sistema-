@@ -1,4 +1,5 @@
 from django.db import models
+from sitio_web.models import Cliente
 
 
 class Amenidad(models.Model):
@@ -12,7 +13,6 @@ class Amenidad(models.Model):
 class Habitacion(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     amenidades = models.ManyToManyField(Amenidad, related_name='habitaciones')
-    
 
     def __str__(self):
         return self.nombre
@@ -32,17 +32,6 @@ class PrecioHabitacion(models.Model):
 
     def __str__(self):
         return f"{self.habitacion.nombre} - {self.fecha}: ₡{self.precio}"
-
-
-class Cliente(models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=15)
-    correo = models.EmailField(max_length=100)
-    identificacion = models.CharField(max_length=20, unique=True)
-
-    def __str__(self):
-        return f"{self.nombre} {self.apellido}"
 
 
 class Reserva(models.Model):
@@ -76,7 +65,6 @@ class Reserva(models.Model):
 
     def __str__(self):
         return f"Reserva {self.id} - {self.cliente} ({self.habitacion.nombre})"
-
 
 
 class FechaReservada(models.Model):

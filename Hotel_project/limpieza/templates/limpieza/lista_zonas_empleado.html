@@ -16,8 +16,6 @@
 <body class="menu-bg">
     <div class="menu-container">
 
-        <button class="boton-verde" onclick="window.location.href='/limpieza'">Volver</button>
-
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <h2>Zonas de Limpieza Disponibles</h2>
         </div>
@@ -48,7 +46,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a class="btn btn-sm btn-primary text-white" href="{% url 'gestionar_zona' zona.id %}">Gestionar</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'gestionar_zona' zona.id %}">Gestionar</a>
                         </td>
                     </tr>
                     {% empty %}
@@ -86,7 +84,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a class="btn btn-sm btn-primary text-white" href="{% url 'gestionar_zona' zona.id %}">Gestionar</a>
+                            <a class="btn btn-sm btn-primary" href="{% url 'gestionar_zona' zona.id %}">Gestionar</a>
                         </td>
                     </tr>
                     {% empty %}

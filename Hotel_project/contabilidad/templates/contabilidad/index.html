@@ -12,11 +12,13 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
-  <!-- ENCABEZADO -->
-  <header>
-    <h1>Módulo de Contabilidad</h1>
-  </header>
+<body class="menu-bg">
+  <div class="menu-container">
+
+  <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+           <h1>Contabilidad</h1>
+  </div>
+
 
   <!-- MENSAJES -->
   {% if messages %}
@@ -50,7 +52,7 @@
 
     <label for="anio">Año:</label>
     <input type="number" name="anio" value="{{ anio }}" min="2020" max="2100" style="width:100px;">
-    <button type="submit" class="btn-guardar">Filtrar</button>
+    <button type="submit" class="boton-verde">Filtrar</button>
   </form>
 </section>
 
@@ -72,15 +74,15 @@
   </section>
 
   {% if sin_datos %}
-  <p class="mensaje error" style="text-align:center;">No existen registros disponibles</p>
+  <p class="mensaje error pb-3" style="text-align:center; margin-bottom: 30px;">No existen registros disponibles</p>
   {% endif %}
 
   <!-- ACCIONES -->
   <section class="acciones">
-    <a href="{% url 'agregar_ingreso' %}" class="btn-volver" style="background-color:#858b65;">Registrar Ingreso</a>
-    <a href="{% url 'agregar_gasto' %}" class="btn-volver" style="background-color:#858b65;">Registrar Gasto</a>
-    <a href="{% url 'cierre_mensual' %}" class="btn-volver" style="background-color:#858b65;">Cierre Mensual</a>
-    <a href="{% url 'cierre_anual' %}" class="btn-volver" style="background-color:#858b65;">Cierre Anual</a>
+    <a href="{% url 'agregar_ingreso' %}" class="btn-volver">Registrar Ingreso</a>
+    <a href="{% url 'agregar_gasto' %}" class="btn-volver">Registrar Gasto</a>
+    <a href="{% url 'cierre_mensual' %}" class="btn-volver">Cierre Mensual</a>
+    <a href="{% url 'cierre_anual' %}" class="btn-volver">Cierre Anual</a>
   </section>
 
   <!-- TABLA DE INGRESOS -->
@@ -88,7 +90,7 @@
     <div class="tabla-header">
       <h2>Ingresos</h2>
     </div>
-    <table>
+    <table class="menu-table">
       <thead>
         <tr>
           <th>Fecha</th>
@@ -123,7 +125,7 @@
     <div class="tabla-header">
       <h2>Gastos</h2>
     </div>
-    <table>
+    <table class="menu-table">
       <thead>
         <tr>
           <th>Fecha</th>
@@ -152,7 +154,7 @@
       </tbody>
     </table>
   </section>
-
+</div>
 </body>
 </html>
 {% endblock %}

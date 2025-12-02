@@ -17,34 +17,36 @@
 <body class="menu-bg">
 
 <div class="menu-container">
-    <div class="d-flex justify-content-between mb-3">
-        <button class="boton-verde" onclick="window.location.href='/personal/'">Volver</button>
-    </div>
-
-    <div class="menu-header d-flex justify-content-center align-items-center mb-3">
+    <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
         <h2>Visualizar Tiempos de Asistencia</h2>
     </div>
 
-    <form method="get" class="d-flex gap-2 mb-3 flex-wrap align-items-center">
-        <input type="date" name="fecha" value="{{ fecha }}" class="form-control" style="max-width:200px;">
-        <select name="puesto" class="form-select" style="max-width:200px;">
-            <option value="">--Todos los Puestos--</option>
-            {% for puesto in puestos %}
-                <option value="{{ puesto.id }}" {% if puesto.id|stringformat:"s" == puesto_id %}selected{% endif %}>
-                    {{ puesto.nombre }}
-                </option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-primary">Filtrar</button>
+    <!-- Filtros -->
+    <form method="get" style="margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+            <input type="date" name="fecha" value="{{ fecha }}" class="form-control" style="width: 250px;">
+            
+            <select name="rol" class="form-select" style="width: 250px;">
+                <option value="">-- Todos los Roles --</option>
+                {% for rol in roles %}
+                    <option value="{{ rol.id }}" {% if rol.id|stringformat:"s" == rol_id %}selected{% endif %}>
+                        {{ rol.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="boton-verde">Filtrar</button>
     </form>
 
-    <div style="overflow-x:auto;">
+    <!-- Tabla de tiempos -->
+    <div style="margin-right: 40px;">
         <table class="menu-table">
             <thead>
                 <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
-                    <th>Puesto</th>
+                    <th>Rol</th>
                     <th>Hora Llegada</th>
                     <th>Hora Salida</th>
                     <th>Horas Trabajadas</th>
@@ -56,7 +58,7 @@
                     <tr>
                         <td>{{ asistencia.empleado.nombre }}</td>
                         <td>{{ asistencia.empleado.apellido }}</td>
-                        <td>{{ asistencia.empleado.puesto.nombre }}</td>
+                        <td>{{ asistencia.empleado.usuario.rol.nombre }}</td>
                         <td>{{ asistencia.hora_llegada|default:"-" }}</td>
                         <td>{{ asistencia.hora_salida|default:"-" }}</td>
                         <td>{{ asistencia.horas_trabajadas|default:"-" }}</td>
@@ -64,11 +66,11 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="6" style="text-align:center; color:rgb(0, 0, 0); font-weight:bold;">
+                        <td colspan="6" style="text-align:center;">
                             {% if fecha and not puesto_id %}
-                                Debe seleccionar un puesto
-                            {% elif fecha and puesto_id %}
                                 No hay registros para la fecha seleccionada
+                            {% elif fecha and puesto_id %}
+                                No hay registros para la fecha y el puesto seleccionados
                             {% else %}
                                 No hay registros de empleados
                             {% endif %}

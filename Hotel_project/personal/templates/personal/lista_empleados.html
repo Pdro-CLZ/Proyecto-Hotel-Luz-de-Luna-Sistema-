@@ -17,41 +17,43 @@
 <body class="menu-bg">
 
     <div class="menu-container">
-        <button class="boton-verde" onclick="window.location.href='/personal'">Volver</button>
-        <button class="boton-verde" onclick="window.location.href='/personal/empleados/agregar'">Agregar Empleado</button>
-        <!-- Boton Desactivado -->
-        <!-- <button class="boton-verde" onclick="window.location.href='/personal/empleados/seleccionar'">Seleccionar por ID</button> -->
 
         <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
             <h2>Gestión de Empleados</h2>
+             <div>
+                <button class="boton-verde" onclick="window.location.href='/personal/empleados/agregar'">Agregar Empleado</button>
+                <!-- Boton Desactivado -->
+                <!-- <button class="boton-verde" onclick="window.location.href='/personal/empleados/seleccionar'">Seleccionar por ID</button> -->
+            </div>
         </div>
 
         <!-- Filtros -->
-        <form method="get" style="margin-bottom: 20px; display:flex; gap:10px; align-items:center;">
-            <input type="text" name="buscar" placeholder="Buscar empleado" value="{{ request.GET.buscar }}"
-                class="form-control" style="width: 250px; display:inline-block;">
+        <form method="get" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                <input type="text" name="buscar" placeholder="Buscar empleado" value="{{ request.GET.buscar }}"
+                    class="form-control" style="width: 250px;">
 
-            <select name="rol" class="form-select" style="width: 250px; display:inline-block;">
-                <option value="">-- Todos los Roles --</option>
-                {% for rol in roles %}
-                <option value="{{ rol.id }}"
-                    {% if rol_id and rol.id|stringformat:"s" == rol_id|stringformat:"s" %}selected{% endif %}>
-                    {{ rol.nombre }}
-                </option>
-                {% endfor %}
-            </select>
+                <select name="rol" class="form-select" style="width: 250px;">
+                    <option value="">-- Todos los Roles --</option>
+                    {% for rol in roles %}
+                    <option value="{{ rol.id }}" {% if rol_id and rol.id|stringformat:"s" == rol_id|stringformat:"s" %}selected{% endif %}>
+                        {{ rol.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
 
-            <select name="estado" class="form-select" style="width: 200px;">
-                <option value="">-- Todos --</option>
-                <option value="1" {% if request.GET.estado == "1" %}selected{% endif %}>Activos</option>
-                <option value="0" {% if request.GET.estado == "0" %}selected{% endif %}>Inactivos</option>
-            </select>
+                <select name="estado" class="form-select" style="width: 200px;">
+                    <option value="">-- Todos --</option>
+                    <option value="1" {% if request.GET.estado == "1" %}selected{% endif %}>Activos</option>
+                    <option value="0" {% if request.GET.estado == "0" %}selected{% endif %}>Inactivos</option>
+                </select>
+            </div>
 
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <button type="submit" class="boton-verde">Filtrar</button>
         </form>
 
         <!-- Tabla de empleados -->
-        <div style="overflow-x:auto; margin-top: 20px;">
+        <div style="margin-right: 40px;">
             <table class="menu-table">
                 <thead>
                     <tr>
@@ -80,19 +82,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a class="btn btn-sm btn-primary text-white" data-bs-toggle="modal"
+                            <a class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#modalEmpleado{{ empleado.id }}">Ver más</a>
-                            <a class="btn btn-sm btn-dark text-white"
+                            <a class="btn btn-sm btn-dark"
                                 href="{% url 'editar_empleado' empleado.id %}">Editar</a>
 
                             {% if empleado.activo %}
-                            <a class="btn btn-sm btn-danger text-white my-2"
+                            <a class="btn btn-sm btn-danger"
                                 href="{% url 'inactivar_empleado' empleado.id %}"
                                 onclick="return confirm('¿Estás seguro de inactivar este empleado?')">
                                 Inactivar
                             </a>
                             {% else %}
-                            <a class="btn btn-sm btn-success text-white my-2"
+                            <a class="btn btn-sm btn-success"
                                 href="{% url 'inactivar_empleado' empleado.id %}"
                                 onclick="return confirm('¿Deseas activar este empleado?')">
                                 Activar

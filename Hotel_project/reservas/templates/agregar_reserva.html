@@ -16,8 +16,8 @@
         .error { color: red; font-style: italic; }
     </style>
 </head>
-<body class="menu-bg">
-<main class="menu-container">
+<body class="login-bg">
+<main class="login-container">
     <h2>Agregar Reserva</h2>
     <div class="form-container">
         {% if error %}
@@ -36,7 +36,7 @@
             <button class="boton-verde" type="submit">Ver habitaciones disponibles</button>
         </form>
         <br>
-        <a href="{% url 'index_reservas' %}" class="boton-verde">← Volver</a>
+        <a href="{% url 'index_reservas' %}" class="boton-volver" style="margin-top: 0px;">Volver</a>
     </div>
 </main>
 </body>

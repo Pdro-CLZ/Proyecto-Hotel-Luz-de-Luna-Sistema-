@@ -12,115 +12,146 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
+<body class="login-bg">
+  <div class="login-container formulario-largo">
+    <h2>Cierre Anual</h2>
 
-  <h1 style="text-align:center;">Cierre Anual</h1>
-
- 
-  {% if messages %}
-  <div class="mensajes" style="text-align:center; margin:10px 0;">
-    {% for message in messages %}
-    {% if 'error' in message.tags %}
-    <p style="color:red; font-weight:bold;">{{ message }}</p>
-    {% else %}
-    <p style="color:green; font-weight:bold;">{{ message }}</p>
+    <!-- MENSAJES - Igual que cierre mensual -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <p class="{{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
     {% endif %}
-    {% endfor %}
+
+    <form method="POST" id="cierreAnualForm">
+      {% csrf_token %}
+      
+      <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
+        <!-- Año -->
+        <div class="form-field" style="flex: 1; min-width: 200px; max-width: 300px;">
+          <label for="anio">Año</label>
+          <input type="number" name="anio" id="anio" value="{{ anio|default:2025 }}" 
+                 class="form-control" min="2020" max="2100">
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
+        <button type="submit" class="boton-verde">Generar Cierre</button>
+        <a href="{% url 'contabilidad_panel' %}" class="boton-volver">Volver al Panel</a>
+      </div>
+    </form>
+
+    <!-- Resultados del Cierre -->
+    {% if ingresos is not None %}
+    <div style="margin-top: 40px;">
+      <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <!-- Total Ingresos -->
+        <div class="result-box" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
+          <h3>Total Ingresos</h3>
+          <p>₡{{ ingresos|floatformat:2 }}</p>
+        </div>
+
+        <!-- Total Gastos -->
+        <div class="result-box" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+          <h3>Total Gastos</h3>
+          <p>₡{{ gastos|floatformat:2 }}</p>
+        </div>
+
+        <!-- Utilidad -->
+        <div class="result-box" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+          <h3>Utilidad</h3>
+          <p>₡{{ utilidad|floatformat:2 }}</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Tablas de detalles -->
+    {% if ingresos_lista or gastos_lista %}
+    <div style="margin-top: 40px;">
+      <h3 style="text-align: center; margin-bottom: 30px; color: var(--color-oscuro); position: relative;">
+        Resumen del año {{ anio }}
+        <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: var(--color-acento); border-radius: 2px;"></div>
+      </h3>
+
+      <!-- Tabla de Ingresos -->
+      {% if ingresos_lista %}
+      <div style="margin-bottom: 40px;">
+        <h4 style="color: #2ecc71; margin-bottom: 15px; text-align: center; font-weight: 600;">Ingresos</h4>
+        <div style="overflow-x: auto;">
+          <table class="menu-table" style="font-size: 0.9em;">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Método de Pago</th>
+                <th>Categoría</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ingreso in ingresos_lista %}
+              <tr>
+                <td>{{ ingreso.fecha }}</td>
+                <td>{{ ingreso.metodo_pago }}</td>
+                <td>{{ ingreso.categoria }}</td>
+                <td>{{ ingreso.descripcion }}</td>
+                <td style="color: #2ecc71; font-weight: 600;">₡{{ ingreso.monto|floatformat:2 }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" style="text-align:center; padding: 20px; color: var(--color-secundario); font-style: italic;">
+                  No hay ingresos registrados
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Tabla de Gastos -->
+      {% if gastos_lista %}
+      <div>
+        <h4 style="color: #e74c3c; margin-bottom: 15px; text-align: center; font-weight: 600;">Gastos</h4>
+        <div style="overflow-x: auto;">
+          <table class="menu-table" style="font-size: 0.9em;">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Método de Pago</th>
+                <th>Categoría</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gasto in gastos_lista %}
+              <tr>
+                <td>{{ gasto.fecha }}</td>
+                <td>{{ gasto.metodo_pago }}</td>
+                <td>{{ gasto.categoria }}</td>
+                <td>{{ gasto.descripcion }}</td>
+                <td style="color: #e74c3c; font-weight: 600;">₡{{ gasto.monto|floatformat:2 }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" style="text-align:center; padding: 20px; color: var(--color-secundario); font-style: italic;">
+                  No hay gastos registrados
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
-  {% endif %}
-
-  <form method="POST" style="text-align:center;">
-    {% csrf_token %}
-    <label>Año:</label>
-    <input type="number" name="anio" value="{{ anio|default:2025 }}" min="2020" max="2100">
-    <button type="submit" class="btn-guardar">Generar Cierre</button>
-  </form>
-
-  {% if ingresos is not None %}
-  <section class="totales">
-    <div class="total-box">
-      <h3>Total Ingresos</h3>
-      <p>₡{{ ingresos|floatformat:2 }}</p>
-    </div>
-    <div class="total-box">
-      <h3>Total Gastos</h3>
-      <p>₡{{ gastos|floatformat:2 }}</p>
-    </div>
-    <div class="total-box">
-      <h3>Utilidad</h3>
-      <p>₡{{ utilidad|floatformat:2 }}</p>
-    </div>
-  </section>
-  {% endif %}
-
- <div style="text-align:center; margin:40px 0 60px 0;">
-  <a href="{% url 'contabilidad_panel' %}" class="btn-volver">Volver al Panel</a>
-</div>
-
-
-  {% if ingresos_lista or gastos_lista %}
-  <section class="tabla-container">
-    <h2>Resumen del año {{ anio }}</h2>
-
-    <h3>Ingresos</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Método de Pago</th>
-          <th>Categoría</th>
-          <th>Descripción</th>
-          <th>Monto</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ingreso in ingresos_lista %}
-        <tr>
-          <td>{{ ingreso.fecha }}</td>
-          <td>{{ ingreso.metodo_pago }}</td>
-          <td>{{ ingreso.categoria }}</td>
-          <td>{{ ingreso.descripcion }}</td>
-          <td>₡{{ ingreso.monto|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" style="text-align:center;">No hay ingresos registrados</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <h3 style="margin-top:30px;">Gastos</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Método de Pago</th>
-          <th>Categoría</th>
-          <th>Descripción</th>
-          <th>Monto</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for gasto in gastos_lista %}
-        <tr>
-          <td>{{ gasto.fecha }}</td>
-          <td>{{ gasto.metodo_pago }}</td>
-          <td>{{ gasto.categoria }}</td>
-          <td>{{ gasto.descripcion }}</td>
-          <td>₡{{ gasto.monto|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" style="text-align:center;">No hay gastos registrados</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
-  {% endif %}
-
 </body>
-
 </html>
 {% endblock %}

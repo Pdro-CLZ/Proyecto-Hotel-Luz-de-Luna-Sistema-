@@ -9,10 +9,9 @@ from django.db.models import Sum
 from xhtml2pdf import pisa
 from openpyxl import Workbook
 from contabilidad.models import Contabilidad
-
+from administracion.decorators import rol_requerido
 
 #  FUNCIONES AUXILIARES
-
 def meses():
     return [
         (1, "Enero"), (2, "Febrero"), (3, "Marzo"), (4, "Abril"),
@@ -20,7 +19,7 @@ def meses():
         (9, "Septiembre"), (10, "Octubre"), (11, "Noviembre"), (12, "Diciembre")
     ]
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -40,7 +39,7 @@ def exportar_excel(datos, titulo):
     wb.save(response)
     return response
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)
@@ -53,7 +52,7 @@ def exportar_pdf(template_name, context, nombre_archivo):
 
 
 #  VISTA PRINCIPAL
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def reporte_financiero(request):
     hoy = datetime.date.today()
     mes = int(request.GET.get("mes", hoy.month))

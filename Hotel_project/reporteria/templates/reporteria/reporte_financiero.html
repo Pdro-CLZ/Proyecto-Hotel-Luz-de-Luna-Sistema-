@@ -1,149 +1,223 @@
+{% extends 'base.html' %}
+{% block title %}Reporte Financiero{% endblock %}
+
+{% block content %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>{{ titulo }} | Reporte Financiero</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'personal/css/styles1.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-light">
-<div class="container py-4">
+<body class="menu-bg">
+<div class="menu-container">
 
-    <h2 class="mb-4 text-center"> {{ titulo }} del Hotel</h2>
-
-    <!--  Formulario de filtros -->
-    <form method="get" class="row g-3 mb-4">
-
-        <div class="col-md-3">
-            <label class="form-label">Mes</label>
-            <select name="mes" class="form-select">
-                {% for m,v in meses %}
-                    <option value="{{ m }}" {% if mes == m %}selected{% endif %}>{{ v }}</option>
-                {% endfor %}
-            </select>
+     <div class="menu-header" style="display:flex; justify-content: space-between; align-items: center;">
+        <h2>{{ titulo }} del Hotel</h2>
+        <div>
+            <a href="/reporteria" class="boton-verde">Volver a Reportería</a>
         </div>
+    </div>
 
-        <div class="col-md-2">
-            <label class="form-label">Año</label>
-            <input type="number" name="anio" class="form-control" value="{{ anio }}">
-        </div>
+    <!-- Formulario de filtros -->
+    <div class="filtros">
+        <form method="get" class="row g-3" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; align-items: center;">
+            <div>
+                <label class="form-label">Mes</label>
+                <select name="mes" style="padding: 14px 20px; border-radius: 10px; border: 2px solid var(--color-claro); background: white; color: var(--color-texto); font-size: 1em; min-width: 200px;">
+                    {% for m,v in meses %}
+                        <option value="{{ m }}" {% if mes == m %}selected{% endif %}>{{ v }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="col-md-2 align-self-end">
-            <button class="btn btn-primary w-100">Filtrar</button>
-        </div>
+            <div>
+                <label class="form-label">Año</label>
+                <input type="number" name="anio" style="padding: 14px 20px; border-radius: 10px; border: 2px solid var(--color-claro); background: white; color: var(--color-texto); font-size: 1em; min-width: 150px;" value="{{ anio }}">
+            </div>
 
-        <div class="col-md-2 align-self-end text-end">
-            <a href="?mes={{ mes }}&anio={{ anio }}&tipo={{ tipo_reporte }}&exportar=excel" class="btn btn-success w-100 mb-2"> Excel</a>
-            <a href="?mes={{ mes }}&anio={{ anio }}&tipo={{ tipo_reporte }}&exportar=pdf" class="btn btn-danger w-100"> PDF</a>
-        </div>
-    </form>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="boton-verde" style="min-width: 120px;">Filtrar</button>
+                <a href="?mes={{ mes }}&anio={{ anio }}&tipo={{ tipo_reporte }}&exportar=excel" class="boton-neutral" style="min-width: 120px;">Excel</a>
+                <a href="?mes={{ mes }}&anio={{ anio }}&tipo={{ tipo_reporte }}&exportar=pdf" class="boton-verde" style="min-width: 120px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">PDF</a>
+            </div>
+        </form>
+    </div>
 
     <!-- Tablas de ingresos y egresos -->
-    <div class="row">
-        <div class="col-md-6">
-            <h5>Ingresos por Categoría</h5>
-            <table class="table table-sm table-striped">
-                <thead><tr><th>Categoría</th><th>Monto</th></tr></thead>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 30px;">
+        <div>
+            <h3 style="color: var(--color-principal); margin-bottom: 20px; text-align: center; position: relative; display: inline-block; width: 100%;">
+                Ingresos por Categoría
+                <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
+            </h3>
+            <table class="menu-table">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {% for i in ingresos %}
-                        <tr><td>{{ i.categoria }}</td><td>₡{{ i.total }}</td></tr>
+                        <tr>
+                            <td>{{ i.categoria }}</td>
+                            <td>₡{{ i.total }}</td>
+                        </tr>
                     {% empty %}
-                        <tr><td colspan="2" class="text-center text-muted">Sin datos</td></tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center; color: var(--color-secundario); font-style: italic;">Sin datos</td>
+                        </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
-                    <tr><th>Total</th><th>₡{{ total_ingresos }}</th></tr>
+                    <tr style="background: var(--color-claro);">
+                        <th style="color: var(--color-claro);">Total</th>
+                        <th style="color: var(--color-claro);">₡{{ total_ingresos }}</th>
+                    </tr>
                 </tfoot>
             </table>
         </div>
 
-        <div class="col-md-6">
-            <h5>Egresos por Área</h5>
-            <table class="table table-sm table-striped">
-                <thead><tr><th>Área</th><th>Monto</th></tr></thead>
+        <div>
+            <h3 style="color: var(--color-principal); margin-bottom: 20px; text-align: center; position: relative; display: inline-block; width: 100%;">
+                Egresos por Área
+                <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
+            </h3>
+            <table class="menu-table">
+                <thead>
+                    <tr>
+                        <th>Área</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {% for e in egresos %}
-                        <tr><td>{{ e.categoria }}</td><td>₡{{ e.total }}</td></tr>
+                        <tr>
+                            <td>{{ e.categoria }}</td>
+                            <td>₡{{ e.total }}</td>
+                        </tr>
                     {% empty %}
-                        <tr><td colspan="2" class="text-center text-muted">Sin datos</td></tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center; color: var(--color-secundario); font-style: italic;">Sin datos</td>
+                        </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
-                    <tr><th>Total</th><th>₡{{ total_egresos }}</th></tr>
+                    <tr style="background: var(--color-claro);">
+                        <th style="color: var(--color-claro);">Total</th>
+                        <th style="color: var(--color-claro);">₡{{ total_egresos }}</th>
+                    </tr>
                 </tfoot>
             </table>
         </div>
     </div>
 
     <!-- Gráfico comparativo -->
-    <h5 class="mt-4 text-center">Comparativo con Mes Anterior</h5>
-    <canvas id="chartBalance" height="100"></canvas>
-
-    <!--  Datos del gráfico en formato JSON -->
-<script id="chart-data" type="application/json">
-    {
-        "actual_mes": [{{ total_ingresos|floatformat:2 }}, {{ total_egresos|floatformat:2 }}, {{ utilidad|floatformat:2 }}],
-        "anterior_mes": [{{ ingresos_mes_ant|floatformat:2 }}, {{ egresos_mes_ant|floatformat:2 }}, {{ utilidad_mes_ant|floatformat:2 }}],
-        "actual_anio": [{{ ingresos_anio_act|floatformat:2 }}, {{ egresos_anio_act|floatformat:2 }}, {{ utilidad_anio_act|floatformat:2 }}],
-        "anterior_anio": [{{ ingresos_anio_ant|floatformat:2 }}, {{ egresos_anio_ant|floatformat:2 }}, {{ utilidad_anio_ant|floatformat:2 }}],
-        "label_mes_actual": "{{ anio }}-{{ mes }}",
-        "label_mes_anterior": "Mes anterior",
-        "label_anio_actual": "Año {{ anio }}",
-        "label_anio_anterior": "Año {{ anio|add:'-1' }}"
-    }
-</script>
-
-<script>
-    const dataEl = document.getElementById("chart-data");
-    const chartData = JSON.parse(dataEl.textContent);
-    const ctx = document.getElementById("chartBalance");
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Ingresos', 'Egresos', 'Utilidad'],
-            datasets: [
-                {
-                    label: chartData.label_mes_actual,
-                    data: chartData.actual_mes,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                },
-                {
-                    label: chartData.label_mes_anterior,
-                    data: chartData.anterior_mes,
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                },
-                {
-                    label: chartData.label_anio_actual,
-                    data: chartData.actual_anio,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                },
-                {
-                    label: chartData.label_anio_anterior,
-                    data: chartData.anterior_anio,
-                    backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                },
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 50000 }
-                }
-            }
-        }
-    });
-</script>
-
-    <!-- Resumen final -->
-    <div class="alert alert-info mt-4 text-center">
-        <strong>Resumen:</strong> Ingresos ₡{{ total_ingresos }} – Egresos ₡{{ total_egresos }}
-        → <strong>Utilidad ₡{{ utilidad }}</strong>
+    <h3 style="color: var(--color-principal); margin: 40px 0 20px 0; text-align: center; position: relative; display: inline-block; width: 100%;">
+        Comparativo con Mes Anterior
+        <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
+    </h3>
+    
+    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(44, 95, 79, 0.15); border: 1px solid var(--color-claro); margin-bottom: 30px;">
+        <canvas id="chartBalance" height="100"></canvas>
     </div>
 
+    <!-- Datos del gráfico en formato JSON -->
+    <script id="chart-data" type="application/json">
+        {
+            "actual_mes": [{{ total_ingresos|floatformat:2 }}, {{ total_egresos|floatformat:2 }}, {{ utilidad|floatformat:2 }}],
+            "anterior_mes": [{{ ingresos_mes_ant|floatformat:2 }}, {{ egresos_mes_ant|floatformat:2 }}, {{ utilidad_mes_ant|floatformat:2 }}],
+            "actual_anio": [{{ ingresos_anio_act|floatformat:2 }}, {{ egresos_anio_act|floatformat:2 }}, {{ utilidad_anio_act|floatformat:2 }}],
+            "anterior_anio": [{{ ingresos_anio_ant|floatformat:2 }}, {{ egresos_anio_ant|floatformat:2 }}, {{ utilidad_anio_ant|floatformat:2 }}],
+            "label_mes_actual": "{{ anio }}-{{ mes }}",
+            "label_mes_anterior": "Mes anterior",
+            "label_anio_actual": "Año {{ anio }}",
+            "label_anio_anterior": "Año {{ anio|add:'-1' }}"
+        }
+    </script>
+
+    <script>
+        const dataEl = document.getElementById("chart-data");
+        const chartData = JSON.parse(dataEl.textContent);
+        const ctx = document.getElementById("chartBalance");
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Ingresos', 'Egresos', 'Utilidad'],
+                datasets: [
+                    {
+                        label: chartData.label_mes_actual,
+                        data: chartData.actual_mes,
+                        backgroundColor: 'rgba(44, 95, 79, 0.8)',
+                        borderColor: 'rgba(44, 95, 79, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: chartData.label_mes_anterior,
+                        data: chartData.anterior_mes,
+                        backgroundColor: 'rgba(139, 115, 85, 0.8)',
+                        borderColor: 'rgba(139, 115, 85, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: chartData.label_anio_actual,
+                        data: chartData.actual_anio,
+                        backgroundColor: 'rgba(212, 165, 116, 0.8)',
+                        borderColor: 'rgba(212, 165, 116, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: chartData.label_anio_anterior,
+                        data: chartData.anterior_anio,
+                        backgroundColor: 'rgba(58, 120, 99, 0.8)',
+                        borderColor: 'rgba(58, 120, 99, 1)',
+                        borderWidth: 1
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'var(--color-texto)'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 50000,
+                            color: 'var(--color-texto)'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: 'var(--color-texto)'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- Resumen final -->
+    <div class="message message-success" style="margin-top: 40px; text-align: center;">
+        <strong>Resumen:</strong> Ingresos ₡{{ total_ingresos }} – Egresos ₡{{ total_egresos }}
+        → <strong style="color: white;">Utilidad ₡{{ utilidad }}</strong>
+    </div>
 </div>
 </body>
 </html>
+{% endblock %}

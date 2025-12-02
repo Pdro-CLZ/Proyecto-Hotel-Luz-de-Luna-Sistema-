@@ -3,15 +3,18 @@ from django.contrib import messages
 from .models import PlantillaMarketing, ContactoMarketing, CampaniaMarketing
 import threading
 from django.core.mail import EmailMessage
+from administracion.decorators import rol_requerido
 
 def dashboard_marketing(request):
     return render(request, 'marketing/dashboard.html')
 
 # --- Plantillas ---
+@rol_requerido("Administrador","Empleado_Nivel1")
 def lista_plantillas(request):
     plantillas = PlantillaMarketing.objects.all()
     return render(request, 'marketing/lista_plantillas.html', {'plantillas': plantillas})
 
+@rol_requerido("Administrador","Empleado_Nivel1")
 def crear_plantilla(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -25,6 +28,7 @@ def crear_plantilla(request):
         return redirect('lista_plantillas')
     return render(request, 'marketing/crear_plantilla.html')
 
+@rol_requerido("Administrador","Empleado_Nivel1")
 def editar_plantilla(request, pk):
     plantilla = get_object_or_404(PlantillaMarketing, pk=pk)
     if request.method == 'POST':
@@ -38,12 +42,14 @@ def editar_plantilla(request, pk):
         return redirect('lista_plantillas')
     return render(request, 'marketing/editar_plantilla.html', {'plantilla': plantilla})
 
+@rol_requerido("Administrador","Empleado_Nivel1")
 def eliminar_plantilla(request, pk):
     plantilla = get_object_or_404(PlantillaMarketing, pk=pk)
     plantilla.delete()
     messages.success(request, "Plantilla eliminada correctamente.")
     return redirect('lista_plantillas')
 
+@rol_requerido("Administrador","Empleado_Nivel1")
 def crear_campania(request):
     plantillas = PlantillaMarketing.objects.all()
     contactos = ContactoMarketing.objects.all()
@@ -67,7 +73,7 @@ def crear_campania(request):
     
     return render(request, 'marketing/crear_campania.html', {'plantillas': plantillas})
 
-
+@rol_requerido("Administrador","Empleado_Nivel1")
 def enviar_emails(contactos, plantilla):
     for contacto in contactos:
         email = EmailMessage(
