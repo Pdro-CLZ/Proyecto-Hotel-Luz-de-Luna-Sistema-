@@ -21,7 +21,7 @@ from .forms import PrecioRangoForm
 # INDEX RESERVAS
 # ---------------------------------------------------------------------
 @login_required
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def index_reservas(request):
     fecha_seleccionada = request.GET.get("fecha")
 
@@ -67,7 +67,7 @@ def index_reservas(request):
 # AGREGAR RESERVA
 # ---------------------------------------------------------------------
 @login_required
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def agregar_reserva(request):
     if request.method == "POST":
         fecha_inicio = request.POST.get("fecha_inicio")
@@ -122,7 +122,7 @@ def agregar_reserva(request):
 # BUSCAR CLIENTE
 # ---------------------------------------------------------------------
 @login_required
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def buscar_cliente(request):
     if request.method == 'POST':
         identificacion = request.POST.get('identificacion')
@@ -154,7 +154,7 @@ def buscar_cliente(request):
 # NUEVA RESERVA CLIENTE
 # ---------------------------------------------------------------------
 @login_required
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id=None):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
     cliente = Cliente.objects.filter(id=cliente_id).select_related("usuario").first()
@@ -204,7 +204,7 @@ def nueva_reserva_cliente(request, habitacion_id, fecha_inicio, fecha_fin, clien
 # CONFIRMAR RESERVA
 # ---------------------------------------------------------------------
 @login_required
-@rol_requerido("Administrador", "Empleado_Nivel1", "Empleado_Nivel2")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 @transaction.atomic
 def confirmar_reserva(request, habitacion_id, fecha_inicio, fecha_fin, cliente_id, metodo_pago, canal_reservacion):
     habitacion = get_object_or_404(Habitacion, pk=habitacion_id)
