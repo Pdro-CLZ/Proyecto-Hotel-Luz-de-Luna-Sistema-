@@ -343,7 +343,7 @@ def apps_home(request):
         apps = [app for app in todas_las_apps if app["id"] != "admin"]
 
     elif rol == "Empleado_Nivel2":
-        permitidas = ["personal", "limpieza", "inventario", "reservas"]
+        permitidas = ["personal", "limpieza", "inventario"]
         apps = [app for app in todas_las_apps if app["id"] in permitidas]
 
     else:
