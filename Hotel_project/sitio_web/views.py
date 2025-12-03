@@ -238,6 +238,7 @@ from reservas.models import Habitacion, FechaReservada, PrecioHabitacion
 from .forms import ConsultaDisponibilidadForm
 from .models import Amenidad
 
+@login_required
 def consultar_disponibilidad(request):
     habitaciones_disponibles = []
     precios_totales = {}
@@ -308,7 +309,44 @@ from django.core.exceptions import ValidationError
 
 from reservas.models import Habitacion, PrecioHabitacion
 
+# sitio_web/views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from reservas.models import Habitacion, PrecioHabitacion
+from datetime import datetime
+from django.contrib import messages
+
+# sitio_web/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from datetime import datetime, timedelta
+from django.db import models
+import paypalrestsdk
+
+from reservas.models import Habitacion, PrecioHabitacion, Reserva, FechaReservada, Cliente
+
+
+# sitio_web/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from datetime import datetime, timedelta
+from django.db import models
+import paypalrestsdk
+
+from reservas.models import Habitacion, PrecioHabitacion, Reserva, FechaReservada, Cliente
+
+
+@login_required
 def reservar_habitacion(request, habitacion_id):
+    """
+    Vista para reservar habitación.
+    Solo guarda en sesión lo necesario y redirige al pago PayPal.
+    """
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
 
     fecha_inicio = request.session.get('fecha_inicio')
@@ -318,67 +356,36 @@ def reservar_habitacion(request, habitacion_id):
         messages.error(request, "Debes seleccionar un rango de fechas antes de reservar.")
         return redirect('consultar_disponibilidad')
 
+    # Convertir a date si vienen como string
     if isinstance(fecha_inicio, str):
         fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
     if isinstance(fecha_fin, str):
         fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
 
     if request.method == 'POST':
-        nombre = request.POST.get('nombre', '').strip()
-        correo = request.POST.get('correo', '').strip()
-        telefono = request.POST.get('telefono', '').strip()
-        cedula = request.POST.get('cedula', '').strip()
-
-        errores = []
-
-        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', nombre):
-            errores.append("El nombre debe tener al menos 3 letras y solo contener caracteres alfabéticos.")
-
-        try:
-            validate_email(correo)
-        except ValidationError:
-            errores.append("El correo electrónico no es válido.")
-
-        if not re.match(r'^\d{8}$', telefono):
-            errores.append("El número de teléfono debe tener exactamente 8 dígitos.")
-
-        if not re.match(r'^\d{9}$', cedula):
-            errores.append("La cédula debe tener exactamente 9 dígitos.")
-
-        if errores:
-            for e in errores:
-                messages.error(request, e)
-        else:
-            # Guardamos datos en sesión para crear reserva después del pago
-            request.session['cliente_datos'] = {
-                "nombre": nombre,
-                "correo": correo,
-                "telefono": telefono,
-                "cedula": cedula,
-            }
-            request.session['habitacion_id'] = habitacion.id
-
-            return redirect('crear_pago_paypal')
+        # Guardamos en sesión solo lo necesario
+        request.session['habitacion_id'] = habitacion.id
+        return redirect('crear_pago_paypal')
 
     return render(request, 'sitio_web/form_reserva.html', {'habitacion': habitacion})
 
-import paypalrestsdk
-from django.shortcuts import redirect
-from django.conf import settings
-from reservas.models import Habitacion, PrecioHabitacion
-from datetime import datetime
 
+@login_required
 def crear_pago_paypal(request):
-    cliente = request.session.get("cliente_datos")
+    """
+    Crea un pago de PayPal usando la información del usuario logueado y la habitación.
+    """
+    usuario = request.user
+    cliente = getattr(usuario, 'cliente', None)
     habitacion_id = request.session.get("habitacion_id")
     fecha_inicio = request.session.get("fecha_inicio")
     fecha_fin = request.session.get("fecha_fin")
 
-    if not cliente or not habitacion_id:
-        messages.error(request, "Debe completar el formulario de reserva.")
+    if not habitacion_id or not cliente or not fecha_inicio or not fecha_fin:
+        messages.error(request, "No se puede procesar la reserva. Completa el proceso nuevamente.")
         return redirect('consultar_disponibilidad')
 
-    habitacion = Habitacion.objects.get(id=habitacion_id)
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
 
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
     fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
@@ -388,7 +395,6 @@ def crear_pago_paypal(request):
         habitacion=habitacion,
         fecha__range=(fecha_inicio, fecha_fin)
     ).aggregate(total=models.Sum('precio'))
-
     total = total_qs['total'] or 0
 
     # Crear pago PayPal
@@ -415,7 +421,6 @@ def crear_pago_paypal(request):
     })
 
     if payment.create():
-        # Buscar y redirigir a PayPal
         for link in payment.links:
             if link.rel == "approval_url":
                 return redirect(link.href)
@@ -423,12 +428,13 @@ def crear_pago_paypal(request):
         messages.error(request, "Error creando pago con PayPal.")
         return redirect('consultar_disponibilidad')
 
-from django.shortcuts import render
-from reservas.models import Reserva, Cliente, FechaReservada
-from datetime import timedelta
-from django.core.mail import send_mail
 
+@login_required
 def paypal_success(request):
+    """
+    Vista que PayPal llama tras el pago exitoso.
+    Crea la reserva y envía el correo de confirmación.
+    """
     payment_id = request.GET.get('paymentId')
     payer_id = request.GET.get('PayerID')
 
@@ -437,23 +443,17 @@ def paypal_success(request):
     if not payment.execute({"payer_id": payer_id}):
         return render(request, "sitio_web/error_pago.html")
 
-    # Recuperar datos guardados
-    cliente_datos = request.session.get('cliente_datos')
     habitacion_id = request.session.get('habitacion_id')
     fecha_inicio = datetime.strptime(request.session['fecha_inicio'], "%Y-%m-%d").date()
     fecha_fin = datetime.strptime(request.session['fecha_fin'], "%Y-%m-%d").date()
 
-    habitacion = Habitacion.objects.get(id=habitacion_id)
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+    usuario = request.user
 
-    # Crear o recuperar cliente
+    # Obtener o crear cliente
     cliente, _ = Cliente.objects.get_or_create(
-        identificacion=cliente_datos["cedula"],
-        defaults={
-            "nombre": cliente_datos["nombre"],
-            "apellido": "",
-            "telefono": cliente_datos["telefono"],
-            "correo": cliente_datos["correo"]
-        }
+        usuario=usuario,
+        defaults={"telefono": getattr(usuario.cliente, 'telefono', '')}
     )
 
     # Calcular total
@@ -461,10 +461,9 @@ def paypal_success(request):
         habitacion=habitacion,
         fecha__range=(fecha_inicio, fecha_fin)
     ).aggregate(total=models.Sum('precio'))
-
     total = precios["total"] or 0
 
-    # Crear reserva real
+    # Crear reserva
     reserva = Reserva.objects.create(
         habitacion=habitacion,
         cliente=cliente,
@@ -475,7 +474,7 @@ def paypal_success(request):
         canal_reservacion="sitio"
     )
 
-    # Registrar cada día
+    # Registrar cada día reservado
     dia = fecha_inicio
     while dia <= fecha_fin:
         FechaReservada.objects.create(
@@ -485,44 +484,40 @@ def paypal_success(request):
         )
         dia += timedelta(days=1)
 
-    # Enviar correo
+    # Enviar correo de confirmación
     send_mail(
         "Confirmación de Reserva",
         f"Tu reserva del {fecha_inicio} al {fecha_fin} ha sido confirmada.",
         None,
-        [cliente.correo],
+        [usuario.email],
         fail_silently=True
     )
 
+    # Limpiar sesión
+    for key in ['habitacion_id', 'fecha_inicio', 'fecha_fin']:
+        if key in request.session:
+            del request.session[key]
+
     return render(request, "sitio_web/reserva_confirmada.html", {"reserva": reserva})
 
-# sitio_web/views.py
 
-from django.shortcuts import render, redirect
-from django.contrib import messages # Asegúrate de importar esto
-
+@login_required
 def paypal_cancel(request):
     """
-    Muestra la página de cancelación después de que el usuario cancela el pago
-    en la pasarela de PayPal.
+    Vista que PayPal llama si el usuario cancela el pago.
     """
-    
-    # 1. Mostrar un mensaje al usuario
     messages.warning(request, "El proceso de pago fue cancelado. No se realizó ningún cargo.")
-    
-    # 2. (Opcional pero recomendado) Limpiar datos sensibles de la sesión 
-    #    para evitar que se intenten usar en procesos futuros no deseados.
-    if 'cliente_datos' in request.session:
-        del request.session['cliente_datos']
-    if 'habitacion_id' in request.session:
-        del request.session['habitacion_id']
-    if 'fecha_inicio' in request.session:
-        del request.session['fecha_inicio']
-    if 'fecha_fin' in request.session:
-        del request.session['fecha_fin']
-        
-    # 3. Renderizar el template de cancelación
+
+    # Limpiar datos de sesión
+    for key in ['habitacion_id', 'fecha_inicio', 'fecha_fin']:
+        if key in request.session:
+            del request.session[key]
+
     return render(request, "sitio_web/cancelado.html")
+
+
+
+
 
 
 def reserva_confirmada(request, reserva_id):

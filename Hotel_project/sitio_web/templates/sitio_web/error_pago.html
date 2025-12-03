@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% tr "Reserva Confirmada - Hotel Luz de Luna" %}</title>
+    <title>{% tr "Pago Cancelado - Hotel Luz de Luna" %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
@@ -13,8 +13,9 @@
             --color-hover: #3D7A63;
             --color-claro: #F5F1E8;
             --color-oscuro: #1A3A2E;
-            --color-confirm: #28A745;
+            --color-cancel: #DC3545;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--color-claro) 0%, #FFFFFF 100%);
@@ -23,6 +24,7 @@
             display: flex;
             flex-direction: column;
         }
+
         header.bg-primary {
             background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-oscuro) 100%) !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -30,19 +32,104 @@
             top: 0;
             z-index: 1000;
         }
-        header h1 { font-weight: 600; letter-spacing: 1px; font-size: 1.8rem; }
-        .nav-link { transition: all 0.3s ease; position: relative; font-weight: 500; padding: 8px 15px !important; }
-        .nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: var(--color-hover); transition: all 0.3s ease; transform: translateX(-50%); }
-        .nav-link:hover::after { width: 80%; }
-        .nav-link:hover { color: var(--color-hover) !important; transform: translateY(-2px); }
-        main { flex: 1; padding: 40px 20px; }
-        .container-form { max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); text-align: center; }
-        .text-confirm-custom { color: var(--color-confirm) !important; font-weight: 700; }
-        .btn-principal-action { background: linear-gradient(135deg, var(--color-principal), var(--color-hover)); color: white; border: none; padding: 12px 35px; border-radius: 50px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(44, 95, 79, 0.3); text-decoration: none; display: inline-block; }
-        .btn-principal-action:hover { background-color: var(--color-hover); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(44, 95, 79, 0.4); }
-        .card { background-color: #F8F9FA; border-radius: 15px; padding: 20px; margin-top: 25px; border: 1px solid #E0E0E0; }
-        footer { background: linear-gradient(135deg, var(--color-oscuro) 0%, var(--color-principal) 100%); color: white; text-align: center; padding: 30px 20px; margin-top: auto; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1); }
-        footer p { margin: 0; font-size: 1rem; letter-spacing: 0.5px; }
+
+        header h1 {
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            padding: 8px 15px !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--color-hover);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        .nav-link:hover {
+            color: var(--color-hover) !important;
+            transform: translateY(-2px);
+        }
+
+        main {
+            flex: 1;
+            padding: 40px 20px;
+        }
+
+        .container-form {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .text-cancel-custom {
+            color: var(--color-cancel) !important;
+            font-weight: 700;
+        }
+
+        .btn-principal-action {
+            background: linear-gradient(135deg, var(--color-principal), var(--color-hover));
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(44, 95, 79, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-principal-action:hover {
+            background-color: var(--color-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(44, 95, 79, 0.4);
+        }
+
+        .card {
+            background-color: #F8F9FA;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid #E0E0E0;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--color-oscuro) 0%, var(--color-principal) 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 
@@ -71,20 +158,13 @@
 
     <main>
         <div class="container-form">
-            <h2 class="text-confirm-custom mb-3">✅ {% tr "¡Reserva confirmada!" %}</h2>
-            <p class="lead">{% tr "Gracias" %} {{ reserva.cliente.usuario.first_name }} {% tr "por reservar con nosotros." %}</p>
+            <h2 class="text-cancel-custom mb-3">🚫 {% tr "Pago Cancelado" %}</h2>
+            <p class="lead">{% tr "La transacción con PayPal ha sido cancelada o no se completó." %}</p>
 
             <div class="card shadow-sm">
-                <h5 class="mb-3">{% tr "Detalles de la reserva" %}</h5>
-                <p><strong>{% tr "Habitación:" %}</strong> {{ reserva.habitacion.nombre }}</p>
-                <p><strong>{% tr "Fechas:" %}</strong> {% tr "del" %} {{ reserva.fecha_inicio|date:"d M, Y" }} {% tr "al" %} {{ reserva.fecha_fin|date:"d M, Y" }}</p>
-                <p><strong>{% tr "Total:" %}</strong> ₡{{ reserva.total|floatformat:0 }}</p>
+                <p>{% tr "No se ha realizado ningún cargo y la habitación no ha sido reservada." %}</p>
+                <p class="mt-3 text-muted">{% tr "Si fue un error, puedes regresar e intentar el proceso de reserva de nuevo." %}</p>
             </div>
-
-            <p class="mt-4">
-                {% tr "Se ha enviado un correo de confirmación a" %} 
-                <strong>{{ reserva.cliente.usuario.email }}</strong>.
-            </p>
 
             <div class="mt-4">
                 <a href="{% url 'consultar_disponibilidad' %}" class="btn btn-principal-action">{% tr "Volver a Consultar Disponibilidad" %}</a>
@@ -96,4 +176,5 @@
         <p>&copy; Hotel Luz de Luna. Todos los derechos reservados.</p>
     </footer>
 </body>
+
 </html>

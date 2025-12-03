@@ -182,3 +182,7 @@ paypalrestsdk.configure({
     "client_id": PAYPAL_CLIENT_ID,
     "client_secret": PAYPAL_SECRET,
 })
+
+# settings.py
+LOGIN_URL = 'login_cliente'  # O el nombre de la URL de tu vista de login
+

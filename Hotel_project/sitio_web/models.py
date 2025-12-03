@@ -16,7 +16,8 @@ class Cliente(models.Model):
 
     class Meta:
         verbose_name = "Cliente"
-        verbose_name_plural = "Clientes" 
+        verbose_name_plural = "Clientes"
+
 
 class Amenidad(models.Model):
     id = models.AutoField(primary_key=True)
