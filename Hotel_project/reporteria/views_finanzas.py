@@ -19,7 +19,7 @@ def meses():
         (9, "Septiembre"), (10, "Octubre"), (11, "Noviembre"), (12, "Diciembre")
     ]
 
-@rol_requerido("Administrador","Empleado_Nivel1")
+
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -39,7 +39,7 @@ def exportar_excel(datos, titulo):
     wb.save(response)
     return response
 
-@rol_requerido("Administrador","Empleado_Nivel1")
+
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)

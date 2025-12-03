@@ -9,7 +9,6 @@ from datetime import timedelta
 from administracion.decorators import rol_requerido
 
 # Exportar Excel
-@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -30,7 +29,6 @@ def exportar_excel(datos, titulo):
 
 
 #  Exportar PDF
-@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)
