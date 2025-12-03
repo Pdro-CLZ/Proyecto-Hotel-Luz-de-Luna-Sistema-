@@ -11,7 +11,6 @@ from limpieza.models import TareaLimpieza, ZonaLimpieza
 from administracion.models import Usuario
 
 # Función auxiliar para exportar Excel
-@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_excel(datos, titulo):
     wb = Workbook()
     ws = wb.active
@@ -32,7 +31,6 @@ def exportar_excel(datos, titulo):
 
 
 # Función auxiliar para exportar PDF
-@rol_requerido("Administrador","Empleado_Nivel1")
 def exportar_pdf(template_name, context, nombre_archivo):
     template = get_template(template_name)
     html = template.render(context)
