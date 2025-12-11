@@ -61,15 +61,15 @@
   <section class="totales">
     <div class="total-box">
       <h3>Ingresos del mes</h3>
-      <p>₡{{ total_ingresos|floatformat:2 }}</p>
+      <p>${{ total_ingresos|floatformat:2 }}</p>
     </div>
     <div class="total-box">
       <h3>Gastos del mes</h3>
-      <p>₡{{ total_gastos|floatformat:2 }}</p>
+      <p>${{ total_gastos|floatformat:2 }}</p>
     </div>
     <div class="total-box">
       <h3>Utilidad</h3>
-      <p>₡{{ utilidad|floatformat:2 }}</p>
+      <p>${{ utilidad|floatformat:2 }}</p>
     </div>
   </section>
 
@@ -108,7 +108,7 @@
           <td>{{ ingreso.metodo_pago }}</td>
           <td>{{ ingreso.categoria }}</td>
           <td>{{ ingreso.descripcion }}</td>
-          <td>₡{{ ingreso.monto|floatformat:2 }}</td>
+          <td>${{ ingreso.monto|floatformat:2 }}</td>
           <td><a href="{% url 'editar_ingreso' ingreso.id %}" class="btn-editar">Editar</a></td>
         </tr>
         {% empty %}
@@ -143,7 +143,7 @@
           <td>{{ gasto.metodo_pago }}</td>
           <td>{{ gasto.categoria }}</td>
           <td>{{ gasto.descripcion }}</td>
-          <td>₡{{ gasto.monto|floatformat:2 }}</td>
+          <td>${{ gasto.monto|floatformat:2 }}</td>
           <td><a href="{% url 'editar_gasto' gasto.id %}" class="btn-editar">Editar</a></td>
         </tr>
         {% empty %}

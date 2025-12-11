@@ -64,7 +64,7 @@
                     {% for i in ingresos %}
                         <tr>
                             <td>{{ i.categoria }}</td>
-                            <td>₡{{ i.total }}</td>
+                            <td>${{ i.total }}</td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -75,7 +75,7 @@
                 <tfoot>
                     <tr style="background: var(--color-claro);">
                         <th style="color: var(--color-claro);">Total</th>
-                        <th style="color: var(--color-claro);">₡{{ total_ingresos }}</th>
+                        <th style="color: var(--color-claro);">${{ total_ingresos }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -97,7 +97,7 @@
                     {% for e in egresos %}
                         <tr>
                             <td>{{ e.categoria }}</td>
-                            <td>₡{{ e.total }}</td>
+                            <td>${{ e.total }}</td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -108,7 +108,7 @@
                 <tfoot>
                     <tr style="background: var(--color-claro);">
                         <th style="color: var(--color-claro);">Total</th>
-                        <th style="color: var(--color-claro);">₡{{ total_egresos }}</th>
+                        <th style="color: var(--color-claro);">${{ total_egresos }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -125,23 +125,10 @@
         <canvas id="chartBalance" height="100"></canvas>
     </div>
 
-    <!-- Datos del gráfico en formato JSON -->
-    <script id="chart-data" type="application/json">
-        {
-            "actual_mes": [{{ total_ingresos|floatformat:2 }}, {{ total_egresos|floatformat:2 }}, {{ utilidad|floatformat:2 }}],
-            "anterior_mes": [{{ ingresos_mes_ant|floatformat:2 }}, {{ egresos_mes_ant|floatformat:2 }}, {{ utilidad_mes_ant|floatformat:2 }}],
-            "actual_anio": [{{ ingresos_anio_act|floatformat:2 }}, {{ egresos_anio_act|floatformat:2 }}, {{ utilidad_anio_act|floatformat:2 }}],
-            "anterior_anio": [{{ ingresos_anio_ant|floatformat:2 }}, {{ egresos_anio_ant|floatformat:2 }}, {{ utilidad_anio_ant|floatformat:2 }}],
-            "label_mes_actual": "{{ anio }}-{{ mes }}",
-            "label_mes_anterior": "Mes anterior",
-            "label_anio_actual": "Año {{ anio }}",
-            "label_anio_anterior": "Año {{ anio|add:'-1' }}"
-        }
-    </script>
-
+    <!-- Script del gráfico: usamos el JSON que viene desde la vista -->
     <script>
-        const dataEl = document.getElementById("chart-data");
-        const chartData = JSON.parse(dataEl.textContent);
+        const chartData = {{ chart_data|safe }}; 
+
         const ctx = document.getElementById("chartBalance");
 
         new Chart(ctx, {
@@ -214,8 +201,8 @@
 
     <!-- Resumen final -->
     <div class="message message-success" style="margin-top: 40px; text-align: center;">
-        <strong>Resumen:</strong> Ingresos ₡{{ total_ingresos }} – Egresos ₡{{ total_egresos }}
-        → <strong style="color: white;">Utilidad ₡{{ utilidad }}</strong>
+        <strong>Resumen:</strong> Ingresos ${{ total_ingresos }} – Egresos ${{ total_egresos }}
+        → <strong style="color: white;">Utilidad ${{ utilidad }}</strong>
     </div>
 </div>
 </body>

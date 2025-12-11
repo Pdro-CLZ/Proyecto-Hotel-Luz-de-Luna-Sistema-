@@ -49,8 +49,9 @@ def reporte_personal(request):
     area_id = request.GET.get("area")
     empleado_id = request.GET.get("empleado")
 
-    #  Obtener roles (áreas de trabajo)
-    areas = Rol.objects.all().order_by("nombre")
+    #  Áreas de trabajo (roles) SIN el rol Cliente
+    #  Ajustá el nombre si en tu DB se llama distinto (ej: "Usuario Cliente")
+    areas = Rol.objects.exclude(nombre__iexact="Cliente").order_by("nombre")
 
     #  Filtrar asistencias del mes/año
     asistencias = Asistencia.objects.filter(fecha__year=anio, fecha__month=mes)
@@ -72,7 +73,10 @@ def reporte_personal(request):
         # Tareas completadas (solo si existe TareaLimpieza)
         try:
             from limpieza.models import TareaLimpieza
-            tareas_completadas = TareaLimpieza.objects.filter(usuario_modifica=emp.usuario, estado="Realizada").count()
+            tareas_completadas = TareaLimpieza.objects.filter(
+                usuario_modifica=emp.usuario,
+                estado="Realizada"
+            ).count()
         except Exception:
             tareas_completadas = 0
 
@@ -116,7 +120,11 @@ def reporte_personal(request):
             "anio": anio,
             "area": next((a.nombre for a in areas if str(a.id) == str(area_id)), "Todas"),
         }
-        return exportar_pdf("reporteria/reporte_personal_pdf.html", context_pdf, f"Rendimiento_Personal_{mes}_{anio}")
+        return exportar_pdf(
+            "reporteria/reporte_personal_pdf.html",
+            context_pdf,
+            f"Rendimiento_Personal_{mes}_{anio}"
+        )
 
     #  Render normal
     context = {
