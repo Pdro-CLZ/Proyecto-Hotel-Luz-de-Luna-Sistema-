@@ -5,13 +5,16 @@ from decimal import Decimal
 from io import BytesIO
 import calendar
 import datetime
+import json
 from django.db.models import Sum
 from xhtml2pdf import pisa
 from openpyxl import Workbook
 from contabilidad.models import Contabilidad
 from administracion.decorators import rol_requerido
 
-#  FUNCIONES AUXILIARES
+
+# ============ FUNCIONES AUXILIARES ============
+
 def meses():
     return [
         (1, "Enero"), (2, "Febrero"), (3, "Marzo"), (4, "Abril"),
@@ -50,9 +53,9 @@ def exportar_pdf(template_name, context, nombre_archivo):
     return response
 
 
+# ============ VISTA PRINCIPAL REPORTE FINANCIERO ============
 
-#  VISTA PRINCIPAL
-@rol_requerido("Administrador","Empleado_Nivel1")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def reporte_financiero(request):
     hoy = datetime.date.today()
     mes = int(request.GET.get("mes", hoy.month))
@@ -86,57 +89,104 @@ def reporte_financiero(request):
         .annotate(total=Sum("monto"))
         .order_by("categoria")
     )
+
     total_ingresos = ingresos.aggregate(suma=Sum("total"))["suma"] or Decimal(0)
     total_egresos = egresos.aggregate(suma=Sum("total"))["suma"] or Decimal(0)
     utilidad = total_ingresos - total_egresos
 
-    #  Mes anterior
+    # ===== MES ANTERIOR =====
     mes_anterior = mes - 1 if mes > 1 else 12
     anio_anterior = anio if mes > 1 else anio - 1
     inicio_mes_ant = datetime.date(anio_anterior, mes_anterior, 1)
-    fin_mes_ant = datetime.date(anio_anterior, mes_anterior, calendar.monthrange(anio_anterior, mes_anterior)[1])
+    fin_mes_ant = datetime.date(
+        anio_anterior,
+        mes_anterior,
+        calendar.monthrange(anio_anterior, mes_anterior)[1],
+    )
 
     ingresos_mes_ant = (
-        Contabilidad.objects.filter(tipo="Ingreso", fecha__range=[inicio_mes_ant, fin_mes_ant])
-        .aggregate(total=Sum("monto"))["total"] or Decimal(0)
+        Contabilidad.objects.filter(
+            tipo="Ingreso", fecha__range=[inicio_mes_ant, fin_mes_ant]
+        ).aggregate(total=Sum("monto"))["total"]
+        or Decimal(0)
     )
     egresos_mes_ant = (
-        Contabilidad.objects.filter(tipo="Gasto", fecha__range=[inicio_mes_ant, fin_mes_ant])
-        .aggregate(total=Sum("monto"))["total"] or Decimal(0)
+        Contabilidad.objects.filter(
+            tipo="Gasto", fecha__range=[inicio_mes_ant, fin_mes_ant]
+        ).aggregate(total=Sum("monto"))["total"]
+        or Decimal(0)
     )
     utilidad_mes_ant = ingresos_mes_ant - egresos_mes_ant
 
-    #  Año anterior completo
+    # ===== AÑO ANTERIOR COMPLETO =====
     inicio_anio_ant = datetime.date(anio - 1, 1, 1)
     fin_anio_ant = datetime.date(anio - 1, 12, 31)
     ingresos_anio_ant = (
-        Contabilidad.objects.filter(tipo="Ingreso", fecha__range=[inicio_anio_ant, fin_anio_ant])
-        .aggregate(total=Sum("monto"))["total"] or Decimal(0)
+        Contabilidad.objects.filter(
+            tipo="Ingreso", fecha__range=[inicio_anio_ant, fin_anio_ant]
+        ).aggregate(total=Sum("monto"))["total"]
+        or Decimal(0)
     )
     egresos_anio_ant = (
-        Contabilidad.objects.filter(tipo="Gasto", fecha__range=[inicio_anio_ant, fin_anio_ant])
-        .aggregate(total=Sum("monto"))["total"] or Decimal(0)
+        Contabilidad.objects.filter(
+            tipo="Gasto", fecha__range=[inicio_anio_ant, fin_anio_ant]
+        ).aggregate(total=Sum("monto"))["total"]
+        or Decimal(0)
     )
     utilidad_anio_ant = ingresos_anio_ant - egresos_anio_ant
 
-    #  Año actual completo
+    # ===== AÑO ACTUAL COMPLETO =====
     inicio_anio_act = datetime.date(anio, 1, 1)
     fin_anio_act = datetime.date(anio, 12, 31)
     ingresos_anio_act = (
-        Contabilidad.objects.filter(tipo="Ingreso", fecha__range=[inicio_anio_act, fin_anio_act])
-        .aggregate(total=Sum("monto"))["total"] or Decimal(0)
+        Contabilidad.objects.filter(
+            tipo="Ingreso", fecha__range=[inicio_anio_act, fin_anio_act]
+        ).aggregate(total=Sum("monto"))["total"]
+        or Decimal(0)
     )
     egresos_anio_act = (
-        Contabilidad.objects.filter(tipo="Gasto", fecha__range=[inicio_anio_act, fin_anio_act])
-        .aggregate(total=Sum("monto"))["total"] or Decimal(0)
+        Contabilidad.objects.filter(
+            tipo="Gasto", fecha__range=[inicio_anio_act, fin_anio_act]
+        ).aggregate(total=Sum("monto"))["total"]
+        or Decimal(0)
     )
     utilidad_anio_act = ingresos_anio_act - egresos_anio_act
 
-    #  Exportar
+    # ===== DATOS PARA EL GRÁFICO =====
+    chart_data = {
+        "actual_mes": [
+            float(total_ingresos),
+            float(total_egresos),
+            float(utilidad),
+        ],
+        "anterior_mes": [
+            float(ingresos_mes_ant),
+            float(egresos_mes_ant),
+            float(utilidad_mes_ant),
+        ],
+        "actual_anio": [
+            float(ingresos_anio_act),
+            float(egresos_anio_act),
+            float(utilidad_anio_act),
+        ],
+        "anterior_anio": [
+            float(ingresos_anio_ant),
+            float(egresos_anio_ant),
+            float(utilidad_anio_ant),
+        ],
+        "label_mes_actual": f"{anio}-{mes}",
+        "label_mes_anterior": "Mes anterior",
+        "label_anio_actual": f"Año {anio}",
+        "label_anio_anterior": f"Año {anio - 1}",
+    }
+    chart_data_json = json.dumps(chart_data)
+
+    # ===== EXPORTAR =====
     exportar = request.GET.get("exportar")
     if exportar == "excel":
         return exportar_excel(ingresos, f"Reporte_Financiero_{mes}_{anio}")
-    elif exportar == "pdf":
+
+    if exportar == "pdf":
         context_pdf = {
             "anio": anio,
             "mes": dict(meses())[mes],
@@ -147,9 +197,13 @@ def reporte_financiero(request):
             "utilidad": utilidad,
             "titulo": titulo,
         }
-        return exportar_pdf("reporteria/reporte_financiero_pdf.html", context_pdf, f"Reporte_Financiero_{mes}_{anio}")
+        return exportar_pdf(
+            "reporteria/reporte_financiero_pdf.html",
+            context_pdf,
+            f"Reporte_Financiero_{mes}_{anio}",
+        )
 
-    #  Contexto para template
+    # ===== CONTEXTO HTML =====
     context = {
         "meses": meses(),
         "mes": mes,
@@ -161,7 +215,6 @@ def reporte_financiero(request):
         "total_ingresos": total_ingresos,
         "total_egresos": total_egresos,
         "utilidad": utilidad,
-        # Comparaciones
         "ingresos_mes_ant": ingresos_mes_ant,
         "egresos_mes_ant": egresos_mes_ant,
         "utilidad_mes_ant": utilidad_mes_ant,
@@ -171,7 +224,7 @@ def reporte_financiero(request):
         "ingresos_anio_ant": ingresos_anio_ant,
         "egresos_anio_ant": egresos_anio_ant,
         "utilidad_anio_ant": utilidad_anio_ant,
+        "chart_data": chart_data_json,
     }
 
     return render(request, "reporteria/reporte_financiero.html", context)
-

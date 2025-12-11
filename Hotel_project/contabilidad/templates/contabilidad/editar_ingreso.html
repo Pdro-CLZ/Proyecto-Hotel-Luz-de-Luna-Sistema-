@@ -3,6 +3,7 @@
 
 {% block content %}
 {% load static %}
+{% load l10n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -65,8 +66,8 @@
         <!-- Monto -->
         <div class="form-field">
           <label for="monto">Monto</label>
-          <input type="number" name="monto" id="monto" step="0.01" min="0" 
-                 value="{{ registro.monto }}" required class="form-control">
+          <input type="number" name="monto" id="monto" step="0.01" min="0"
+                  value="{{ registro.monto|unlocalize }}" required class="form-control">
         </div>
       </div>
 
