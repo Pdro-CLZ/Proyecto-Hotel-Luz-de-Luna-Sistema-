@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Hotel Project - Sistema Administrativo{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'base.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 </head>
 <body>
     <div class="sidebar">
@@ -49,5 +57,21 @@
         {% block content %}
         {% endblock %}
     </div>
+    <script>
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            timeOut: "4000"
+        };
+
+        {% if messages %}
+            {% for message in messages %}
+                toastr["{{ message.tags }}"]("{{ message|escapejs }}");
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
 </body>
 </html>

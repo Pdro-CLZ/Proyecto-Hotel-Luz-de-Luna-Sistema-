@@ -49,37 +49,65 @@ def eliminar_plantilla(request, pk):
     messages.success(request, "Plantilla eliminada correctamente.")
     return redirect('lista_plantillas')
 
-@rol_requerido("Administrador","Empleado_Nivel1")
+@rol_requerido("Administrador", "Empleado_Nivel1")
 def crear_campania(request):
     plantillas = PlantillaMarketing.objects.all()
     contactos = ContactoMarketing.objects.all()
-    
+
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         plantilla_id = request.POST.get('plantilla')
+
+        # Validación básica
+        if not nombre:
+            messages.error(request, "Debe ingresar un nombre para la campaña.")
+            return redirect("crear_campania")
+
+        if not plantilla_id:
+            messages.error(request, "Debe seleccionar una plantilla.")
+            return redirect("crear_campania")
+
+        # Obtiene la plantilla o manda 404 si no existe
         plantilla = get_object_or_404(PlantillaMarketing, pk=plantilla_id)
-        
-        # Crear la campaña en la base de datos
-        campania = CampaniaMarketing.objects.create(nombre=nombre, plantilla=plantilla)
+
+        # Creamos campaña
+        campania = CampaniaMarketing.objects.create(
+            nombre=nombre,
+            plantilla=plantilla,
+            estado="Enviando"
+        )
+
+        # Asigna contactos a la campaña
         campania.contactos.set(contactos)
         campania.save()
-        
+
         # Enviar correos en segundo plano
-        thread = threading.Thread(target=enviar_emails, args=(contactos, plantilla))
+        thread = threading.Thread(
+            target=enviar_emails,
+            args=(campania.id,)  # importante: pasamos ID, no objetos
+        )
         thread.start()
-        
+
         messages.success(request, "Campaña creada. Los correos se están enviando en segundo plano.")
         return redirect('dashboard_marketing')
-    
-    return render(request, 'marketing/crear_campania.html', {'plantillas': plantillas})
 
-@rol_requerido("Administrador","Empleado_Nivel1")
-def enviar_emails(contactos, plantilla):
+    return render(request, 'marketing/crear_campania.html', {
+        'plantillas': plantillas,
+        'contactos': contactos
+    })
+
+
+def enviar_emails(campania_id):
+    # Se vuelve a traer la campaña dentro del thread
+    campania = CampaniaMarketing.objects.get(pk=campania_id)
+    plantilla = campania.plantilla
+    contactos = campania.contactos.all()
+
     for contacto in contactos:
         email = EmailMessage(
             subject=plantilla.asunto,
             body=plantilla.contenido_html,
-            from_email=None,  # usa DEFAULT_FROM_EMAIL
+            from_email=None,
             to=[contacto.correo],
         )
         email.content_subtype = "html"
@@ -89,4 +117,9 @@ def enviar_emails(contactos, plantilla):
             email.attach_file(plantilla.imagen.path)
 
         email.send(fail_silently=True)
+
+    # Al finalizar, marcamos la campaña como completada
+    campania.estado = "Completada"
+    campania.save()
+
 
