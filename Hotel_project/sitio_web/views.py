@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect,  get_object_or_404
 from django.contrib import messages
 from django.db import transaction
 from administracion.models import Rol, Usuario
+from marketing.models import ContactoMarketing
 from personal.models import Direccion, Pais, Provincia, Canton, Distrito
 from sitio_web.models import Cliente
 from .forms import RegistroClienteForm
@@ -66,7 +67,7 @@ def registro_cliente(request):
                 email=form.cleaned_data["email"],
                 cedula=form.cleaned_data["cedula"],
                 first_name=form.cleaned_data["nombre"],
-                last_name=form.cleaned_data["apellido"],  
+                last_name=form.cleaned_data["apellido"],
                 rol=rol_cliente,
                 is_active=False,
             )
@@ -94,6 +95,14 @@ def registro_cliente(request):
             distrito_obj = Distrito.objects.filter(nombre__iexact=distrito_nombre).first()
             if not distrito_obj:
                 distrito_obj = Distrito.objects.create(nombre=distrito_nombre)
+            # --- Nuevo: registrar contacto para marketing ---
+            ContactoMarketing.objects.get_or_create(
+                correo=form.cleaned_data["email"],
+                defaults={
+                    "nombre": form.cleaned_data["nombre"],
+                    "apellido": form.cleaned_data["apellido"]
+                }
+            )
 
             direccion = Direccion.objects.create(
                 direccion_exacta=form.cleaned_data["direccion_exacta"],
