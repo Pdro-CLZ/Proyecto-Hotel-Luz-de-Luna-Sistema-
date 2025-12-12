@@ -20,6 +20,10 @@ TRANSLATIONS = {
     'Cerrar sesión': {'es': 'Cerrar sesión', 'en': 'Log out'},
     'Hola,': {'es': 'Hola,', 'en': 'Hello,'},
 
+        'Cerrar': {'es': 'Cerrar', 'en': 'Close'},
+        'Anterior': {'es': 'Anterior', 'en': 'Previous'},
+        'Siguiente': {'es': 'Siguiente', 'en': 'Next'},
+
     # Index / hero
     'Bienvenido al Hotel Luz de Luna': {
         'es': 'Bienvenido al Hotel Luz de Luna',
@@ -133,7 +137,7 @@ TRANSLATIONS = {
     },
 
     # habitaciones
-    "Habitación 1": {
+    "Habitación 1": { 
         "es": "Habitación 1",  
         "en": "Room 1",
     },
@@ -271,4 +275,68 @@ TRANSLATIONS.update({
         'Sin amenidades registradas': {'es': 'Sin amenidades registradas', 'en': 'No amenities registered'},
         'Precios por fecha': {'es': 'Precios por fecha', 'en': 'Prices by date'},
                     
-})
+
+        'Surf': {'es': 'Surf', 'en': 'Surf'},
+        'Surf description': {
+            'es': 'Una de las mayores atracciones de Santa Teresa es el surf. Cuenta con kilómetros de playas vírgenes con varios puntos de surf para principiantes como para surfistas profesionales. Nuestro hotel puede organizar lecciones de surf o un fotógrafo de surf para usted.',
+            'en': 'One of the main attractions of Santa Teresa is surfing. It offers kilometers of pristine beaches with surf spots for beginners and professional surfers. Our hotel can arrange surf lessons or a surf photographer for you.'
+        },
+        'Varios puntos de la costa': {'es': 'Varios puntos de la costa', 'en': 'Various coastal spots'},
+
+        'Yoga': {'es': 'Yoga', 'en': 'Yoga'},
+        'Yoga description': {
+            'es': 'Para relajarse durante sus vacaciones, usted puede practicar yoga. Varios lugares en Santa Teresa ofrecen clases de yoga de diferentes estilos y niveles. También es perfecto para estirar los músculos para prepararse para el surf.',
+            'en': 'To relax during your vacation, you can practice yoga. Several venues in Santa Teresa offer yoga classes of different styles and levels. It is also perfect to stretch the muscles to prepare for surfing.'
+        },
+        'Varios estudios en la zona': {'es': 'Varios estudios en la zona', 'en': 'Various studios in the area'},
+
+        'Canopy Tour': {'es': 'Canopy Tour', 'en': 'Canopy Tour'},
+        'Canopy description': {
+            'es': 'Se deslizan a través de las copas de los árboles de la selva en Mal País, junto al Parque Nacional Cabo Blanco. Esta es una aventura alrededor de un kilómetro con 9 cables y 11 plataformas elevadas en los árboles gigantescos.',
+            'en': 'Zip through the rainforest treetops in Mal País, next to Cabo Blanco National Park. This is about a one-kilometer adventure with 9 cables and 11 elevated platforms in the giant trees.'
+        },
+
+        'SUP': {'es': 'SUP', 'en': 'SUP (Stand-up paddle)'},
+        'SUP description': {
+            'es': 'Stand-up paddle (SUP) es un gran entrenamiento para todo el cuerpo y es muy fácil de aprender. En el agua, a menudo se ven tortugas, mantarrayas y otras formas de vida marina.',
+            'en': 'Stand-up paddle (SUP) is a great full-body workout and very easy to learn. On the water you can often see turtles, manta rays and other marine life.'
+        },
+        'Costa local': {'es': 'Costa local', 'en': 'Local coast'},
+
+        'ATV Tours': {'es': 'ATV Tours', 'en': 'ATV Tours'},
+        'ATV description': {
+            'es': 'Alquile una quadra para uno o más días para explorar de forma independiente todas las playas y lugares de interés en la zona de Santa Teresa y Mal País.',
+            'en': 'Rent an ATV for one or more days to independently explore all the beaches and points of interest in the Santa Teresa and Mal País area.'
+        },
+
+        'Tour a Montezuma': {'es': 'Tour a Montezuma', 'en': 'Montezuma Tour'},
+        'Montezuma description': {
+            'es': 'La localidad de Playa Montezuma es famosa por sus playas pintorescas, ríos y cascadas. Se puede nadar en las piscinas de la cascada o de un río en la selva, y después ir de compras en el pueblo y tomar el almuerzo o la cena.',
+            'en': 'The town of Playa Montezuma is famous for its picturesque beaches, rivers and waterfalls. You can swim in waterfall pools or a jungle river, then shop in town and have lunch or dinner.'
+        },
+
+        'Buceo en Isla Tortuga': {'es': 'Buceo en Isla Tortuga', 'en': 'Diving at Tortuga Island'},
+        'Tortuga description': {
+            'es': 'Un tour de un día completo, con todo incluido, a uno de los mejores puntos de buceo y snorkeling en la costa del Pacífico de Costa Rica. Después de un viaje de 50 minutos a bordo, se llega al paraíso tropical de la Isla Tortuga, donde se puede bucear en las aguas cristalinas.',
+            'en': 'A full-day, all-inclusive tour to one of the best diving and snorkeling spots on Costa Rica\'s Pacific coast. After a 50-minute boat trip you arrive at the tropical paradise of Isla Tortuga, where you can dive in crystal-clear waters.'
+        },
+        'Isla Tortuga': {'es': 'Isla Tortuga', 'en': 'Tortuga Island'},
+
+        'Pesca o Tour en Bote': {'es': 'Pesca o Tour en Bote', 'en': 'Fishing or Boat Tour'},
+        'Pesca description': {
+            'es': 'Durante una excursión en Mal País, de 3 horas con guía local, se puede ver manta rayas, tortugas marinas, delfines, ballenas, y tal vez usted coge un atún, pargo de aleta amarilla o una caballa.',
+            'en': 'During an excursion from Mal País, a 3-hour trip with a local guide, you may see manta rays, sea turtles, dolphins, whales, and maybe catch a tuna, yellowfin snapper or a mackerel.'
+        },
+
+        'Consultar precio': {'es': 'Consultar precio', 'en': 'Price on request'},
+
+        'Let us help organize': {
+            'es': 'Háganos saber si le podemos ayudar para organizar una de estas excursiones para usted!',
+            'en': 'Let us know if we can help organize one of these excursions for you!'
+        },
+        
+        'Nuestro hotel puede organizar lecciones de surf o un fotógrafo de surf para usted.': {
+            'es': 'Nuestro hotel puede organizar lecciones de surf o un fotógrafo de surf para usted.',
+            'en': 'Our hotel can arrange surf lessons or a surf photographer for you.'
+        },
+    })

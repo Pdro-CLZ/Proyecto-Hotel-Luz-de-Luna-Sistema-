@@ -4,6 +4,8 @@
 from django import template
 from django.conf import settings
 from ..translations import TRANSLATIONS
+import os
+from pathlib import Path
 
 register = template.Library()
 
@@ -47,3 +49,73 @@ def tr_var(text, context):
         return TRANSLATIONS.get(text, {}).get(lang, text)
     except Exception:
         return text
+
+
+@register.filter
+def short_name(user):
+    """Return short display name for a user: first token of first_name + first token of last_name.
+
+    Usage in templates: {{ request.user|short_name }}
+    Falls back to username if first/last name not available.
+    """
+    try:
+        if not user:
+            return ''
+        first = getattr(user, 'first_name', '') or ''
+        last = getattr(user, 'last_name', '') or ''
+        first_token = first.strip().split()[0] if first.strip() else ''
+        last_token = last.strip().split()[0] if last.strip() else ''
+        if first_token and last_token:
+            return f"{first_token} {last_token}"
+        if first_token:
+            return first_token
+        if last_token:
+            return last_token
+        return getattr(user, 'username', '')
+    except Exception:
+        return getattr(user, 'username', '')
+
+
+@register.simple_tag
+def room_images(room_id):
+    """Return a list of static-relative image paths for a given room id.
+
+    Example return: ['sitio_web/images/Habitacion 1/IMG_0028.webp', ...]
+    """
+    try:
+        base = Path(settings.BASE_DIR) / 'sitio_web' / 'static' / 'sitio_web' / 'images'
+        target_folder = base / f'Habitacion {room_id}'
+
+        allowed = {'.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'}
+
+        def list_images(folder: Path):
+            if not folder.exists() or not folder.is_dir():
+                return []
+            return [p.name for p in sorted(folder.iterdir()) if p.is_file() and p.suffix.lower() in allowed]
+
+        images = list_images(target_folder)
+
+        # If no images for the exact folder, try to find the closest existing Habitacion N folder
+        if not images:
+            candidates = []
+            for p in base.iterdir():
+                if p.is_dir() and p.name.lower().startswith('habitacion'):
+                    # try to extract a number
+                    parts = p.name.split()
+                    try:
+                        num = int(parts[-1])
+                        imglist = list_images(p)
+                        if imglist:
+                            candidates.append((num, p, imglist))
+                    except Exception:
+                        continue
+
+            if candidates:
+                # pick candidate with smallest absolute distance to requested id
+                candidates.sort(key=lambda t: (abs(t[0] - int(room_id)), t[0]))
+                chosen_num, chosen_folder, chosen_images = candidates[0]
+                return [f"sitio_web/images/{chosen_folder.name}/{name}" for name in chosen_images]
+
+        return [f"sitio_web/images/Habitacion {room_id}/{name}" for name in images]
+    except Exception:
+        return []

@@ -229,28 +229,32 @@
     {% load translate %}
     <!-- Encabezado / Navegación -->
     <header class="bg-primary text-white p-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="h3 m-0">Hotel Luz de Luna</h1>
-            <nav>
+        <div class="container d-flex justify-content-between align-items-center position-relative">
+            <nav class="d-flex align-items-center">
                 <ul class="nav">
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'index' %}">{% tr 'Inicio' %}</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr 'Actividades' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'habitaciones' %}">{% tr 'Habitaciones' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'consultar_disponibilidad' %}">{% tr 'Reservaciones' %}</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr 'Contacto' %}</a></li>
+                </ul>
+            </nav>
+
+            <div style="position:absolute;left:50%;transform:translateX(-50%);">
+                <a href="{% url 'index' %}"><img src="{% static 'sitio_web/images/moon.png' %}" alt="Hotel Luz de Luna" class="img-fluid rounded"></a>
+            </div>
+
+            <nav class="d-flex align-items-center">
+                <ul class="nav">
                     {% if request.user.is_authenticated %}
-                        <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr 'Cerrar sesión' %}</a></li>
+                        <li class="nav-item"><span class="nav-link text-white">{% tr "Hola," %} {{ request.user.username }}</span></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr "Perfil" %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr "Cerrar sesión" %}</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr 'Iniciar sesión' %}</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr "Iniciar sesión" %}</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr "Registrarse" %}</a></li>
                     {% endif %}
-                    <li class="nav-item ms-2">
-                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
-                    </li>
-                    
+                    <li class="nav-item ms-2"><a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a></li>
                 </ul>
             </nav>
         </div>
@@ -274,16 +278,6 @@
             </article>
 
             <article>
-                <img src="{% static 'sitio_web/images/COFFE.JPG' %}" alt="Tour de Café"
-                class="img-fluid rounded mb-2">
-                <h3>{% tr 'Tour de Café' %}</h3>
-                <p>{% tr 'Aprende sobre el proceso del café costarricense con degustación incluida.' %}</p>
-                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr '10 minutos del hotel' %}</p>
-                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr '$20 por persona' %}</p>
-                <p><strong>{% tr 'Contacto:' %}</strong> +506 9999-8888</p>
-            </article>
-
-            <article>
                 <img src="{% static 'sitio_web/images/horseback.png' %}" alt="Cabalgata Ecológica"
                 class="img-fluid rounded mb-2">
                 <h3>{% tr 'Cabalgata Ecológica' %}</h3>
@@ -292,7 +286,89 @@
                 <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr '$30 por persona' %}</p>
                 <p><strong>{% tr 'Contacto:' %}</strong> +506 7777-6666</p>
             </article>
+            
+            <article>
+                <img src="{% static 'sitio_web/images/surf.jpg' %}" alt="Surf"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Surf' %}</h3>
+                <p>{% tr 'Surf description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr 'Varios puntos de la costa' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/yoga.webp' %}" alt="Yoga"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Yoga' %}</h3>
+                <p>{% tr 'Yoga description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr 'Varios estudios en la zona' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/canopy.jpg' %}" alt="Canopy Tour"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Canopy Tour' %}</h3>
+                <p>{% tr 'Canopy description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> Mal País / Cabo Blanco</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/sup.jpg' %}" alt="SUP"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'SUP' %}</h3>
+                <p>{% tr 'SUP description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr 'Costa local' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/atv.jpg' %}" alt="ATV Tours"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'ATV Tours' %}</h3>
+                <p>{% tr 'ATV description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> Santa Teresa / Mal País</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/montezuma.jpg' %}" alt="Tour a Montezuma"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Tour a Montezuma' %}</h3>
+                <p>{% tr 'Montezuma description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> Playa Montezuma</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/tortuga.avif' %}" alt="Buceo en Isla Tortuga"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Buceo en Isla Tortuga' %}</h3>
+                <p>{% tr 'Tortuga description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> {% tr 'Isla Tortuga' %}</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
+
+            <article>
+                <img src="{% static 'sitio_web/images/fishing.webp' %}" alt="Pesca o Tour en Bote"
+                class="img-fluid rounded mb-2">
+                <h3>{% tr 'Pesca o Tour en Bote' %}</h3>
+                <p>{% tr 'Pesca description' %}</p>
+                <p><strong>{% tr 'Ubicación:' %}</strong> Mal País / Costa Pacífica</p>
+                <p><strong>{% tr 'Precio aproximado:' %}</strong> {% tr 'Consultar precio' %}</p>
+                <p><strong>{% tr 'Contacto:' %}</strong> +506 8888-7777</p>
+            </article>
         </section>
+        
+        <p class="mt-4"><em>{% tr 'Let us help organize' %}</em></p>
     </main>
 
     <!-- Pie de página -->

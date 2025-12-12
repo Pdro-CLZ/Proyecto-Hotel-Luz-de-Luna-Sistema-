@@ -266,7 +266,7 @@
 
     <form method="POST">
         {% csrf_token %}
-        
+         
         {% if form.non_field_errors %}
             <ul class="messages">
                 {% for error in form.non_field_errors %}

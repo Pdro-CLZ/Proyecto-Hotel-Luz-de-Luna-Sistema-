@@ -46,7 +46,6 @@
             flex: 1;
         }
 
-        /* Encabezado moderno con efecto glassmorphism */
         header.bg-primary {
             background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-oscuro) 100%) !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -447,41 +446,38 @@
 </head>
 
 <body>
+    {% load static %}
     {% load translate %}
 
 
     <!-- Encabezado / Navegación -->
     <header class="bg-primary text-white p-3">
-        <div class="container d-flex justify-content-between align-items-center">
-                    <h1 class="h3 m-0">Hotel Luz de Luna</h1>
-            <nav>
+        <div class="container d-flex justify-content-between align-items-center position-relative">
+            <nav class="d-flex align-items-center">
                 <ul class="nav">
                     <li class="nav-item"><a class="nav-link text-white" href="#habitaciones">{% tr 'Habitaciones' %}</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#servicios">{% tr 'Servicios' %}</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#reservaciones">{% tr 'Reservaciones' %}</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'actividades' %}">{% tr 'Actividades' %}</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contacto' %}">{% tr 'Contacto' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#actividades">{% tr 'Actividades' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#contacto">{% tr 'Contacto' %}</a></li>
+                </ul>
+            </nav>
 
-                    
+            <div style="position:absolute;left:50%;transform:translateX(-50%);">
+                <a href="{% url 'index' %}"><img src="{% static 'sitio_web/images/moon.png' %}" alt="Hotel Luz de Luna" class="img-fluid rounded"></a>
+            </div>
 
+            <nav class="d-flex align-items-center">
+                <ul class="nav">
                     {% if request.user.is_authenticated %}
                     <li class="nav-item"><span class="nav-link text-white">Hola, {{ request.user.username }}</span></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'perfil_cliente' %}">{% tr 'Perfil' %}</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'cerrar_sesion' %}">{% tr 'Cerrar sesión' %}</a></li>
                     {% else %}
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'login_cliente' %}">{% tr 'Iniciar sesión' %}</a></li>
-                    <li class="nav-item"><a class="nav-link text-white"
-                            href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'registro_cliente' %}">{% tr 'Registrarse' %}</a></li>
                     {% endif %}
-
-                    <li class="nav-item ms-2">
-                        <a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a>
-                    </li>
+                    <li class="nav-item ms-2"><a class="nav-link text-white" href="{% url 'set_language' 'es' %}?next={{ request.get_full_path }}">ES</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'set_language' 'en' %}?next={{ request.get_full_path }}">EN</a></li>
                 </ul>
             </nav>
         </div>
@@ -489,7 +485,6 @@
     <main>
         <!-- Sección Hero -->
         <section id="inicio" class="text-center p-5 bg-light">
-            {% load static %}
             <h2>{% tr 'Bienvenido al Hotel Luz de Luna' %}</h2>
             <p>{% tr 'Disfruta de una experiencia única de descanso y confort en un entorno natural y tranquilo.' %}</p>
             <img src="{% static 'sitio_web/images/header_hotel.svg' %}" alt="Hotel Luz de Luna" class="img-fluid rounded">
@@ -592,10 +587,10 @@
                         <p>{% tr 'Vive una experiencia natural a caballo por los alrededores del valle.' %}</p>
                     </div>
                     <div class="col-md-4">
-                        <img src="{% static 'sitio_web/images/coffe.jpg' %}" alt="Tour de café"
+                        <img src="{% static 'sitio_web/images/surf.jpg' %}" alt="Tour de café"
                             class="img-fluid rounded mb-2">
-                        <h3>{% tr 'Tour de Café' %}</h3>
-                        <p>{% tr 'Aprende sobre el proceso del café costarricense con degustación incluida.' %}</p>
+                        <h3>{% tr 'Surf' %}</h3>
+                        <p>{% tr 'Nuestro hotel puede organizar lecciones de surf o un fotógrafo de surf para usted.' %}</p>
                     </div>
                 </div>
                 <p><a class="btn btn-secondary mt-3" href="{% url 'actividades' %}">{% tr 'Ver más actividades' %}</a></p>
@@ -606,12 +601,14 @@
         <section id="contacto" class="container py-5">
             <h2>{% tr 'Contáctanos' %}</h2>
             <ul>
-                <li><strong>{% tr 'Teléfono' %}:</strong> +506 1234-5678</li>
+                <li><strong>{% tr 'Teléfono' %}:</strong>  (506) 2640 0280</li>
                 <li><strong>{% tr 'Correo electrónico' %}:</strong> info@hotelluzdeluna.com</li>
                 <li><strong>{% tr 'WhatsApp' %}:</strong> <a href="https://wa.me/50612345678" target="_blank">+506 1234-5678</a>
                 </li>
-                <li><strong>{% tr 'Dirección' %}:</strong> Avenida Central, San José, Costa Rica</li>
+                <li><strong>{% tr 'Dirección' %}:</strong> Santa Teresa, Provincia de Puntarenas, Santa Teresa, Costa Rica</li>
+                <a class="btn btn-secondary mt-3" href="{% url 'contacto' %}">{% tr 'Mas informacion' %}</a>
             </ul>
+            
         </section>
     </main>
 
