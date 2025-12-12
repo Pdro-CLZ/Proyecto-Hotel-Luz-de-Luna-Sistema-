@@ -56,7 +56,7 @@
     <!-- Resumen estadístico -->
     <div class="message" style="background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-oscuro) 100%); margin-top: 20px; margin-bottom: 30px;">
         <strong style="color: white; font-size: 1.1em;">Total de reservas: {{ total_reservas }}</strong> • 
-        <strong style="color: var(--color-acento); font-size: 1.1em;">Monto total: ₡{{ total_monto }}</strong>
+        <strong style="color: var(--color-acento); font-size: 1.1em;">Monto total: ${{ total_monto }}</strong>
     </div>
 
     <!-- Tabla de reservas -->
@@ -88,7 +88,7 @@
                             <td>{{ r.habitacion.nombre }}</td>
                             <td>{{ r.fecha_inicio }}</td>
                             <td>{{ r.fecha_fin }}</td>
-                            <td style="font-weight: 600; color: var(--color-principal);">₡{{ r.total }}</td>
+                            <td style="font-weight: 600; color: var(--color-principal);">${{ r.total }}</td>
                             <td>
                                 {% if r.canal_reservacion == "web" %}
                                 <span style="color: var(--color-success); font-weight: 500;">Web</span>
@@ -129,7 +129,7 @@
     <div class="message message-success" style="margin-top: 40px; text-align: center;">
         <strong>Resumen por canal:</strong>
         {% for canal in canales_resumen %}
-            <span>{{ canal.canal }}: {{ canal.cantidad }} (₡{{ canal.total }})</span>
+            <span>{{ canal.canal }}: {{ canal.cantidad }} (${{ canal.total }})</span>
             {% if not forloop.last %} • {% endif %}
         {% empty %}
             <span>Sin datos por canal</span>
