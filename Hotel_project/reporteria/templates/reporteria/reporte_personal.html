@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
 {% block title %}Reporte de Rendimiento del Personal{% endblock %}
 
 {% block content %}
@@ -58,8 +58,17 @@
 
             <div style="display: flex; gap: 10px;">
                 <button type="submit" class="boton-verde" style="min-width: 120px;">Filtrar</button>
-                <a href="?area={{ area_id }}&empleado={{ empleado_id }}&mes={{ mes }}&anio={{ anio }}&exportar=excel" class="boton-neutral" style="min-width: 120px;">Excel</a>
-                <a href="?area={{ area_id }}&empleado={{ empleado_id }}&mes={{ mes }}&anio={{ anio }}&exportar=pdf" class="boton-verde" style="min-width: 120px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">PDF</a>
+
+                <!-- EXPORTAR USANDO LOS FILTROS ACTUALES -->
+                <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}exportar=excel"
+                   class="boton-neutral" style="min-width: 120px;">
+                    Excel
+                </a>
+
+                <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}exportar=pdf"
+                   class="boton-verde" style="min-width: 120px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                    PDF
+                </a>
             </div>
         </form>
     </div>

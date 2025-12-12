@@ -62,9 +62,19 @@
             </div>
 
             <div style="display: flex; gap: 10px;">
+
+                <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}exportar=excel"
+                   class="boton-neutral" style="min-width: 120px;">
+                    Excel
+                </a>
+
+                <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}exportar=pdf"
+                   class="boton-verde" style="min-width: 120px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                    PDF
+                </a>
+
                 <button type="submit" class="boton-verde" style="min-width: 120px;">Filtrar</button>
-                <a href="?habitacion={{ habitacion_id }}&encargado={{ encargado_id }}&desde={{ fecha_inicio }}&hasta={{ fecha_fin }}&pendientes={{ mostrar_pendientes }}&exportar=excel" class="boton-neutral" style="min-width: 120px;">Excel</a>
-                <a href="?habitacion={{ habitacion_id }}&encargado={{ encargado_id }}&desde={{ fecha_inicio }}&hasta={{ fecha_fin }}&pendientes={{ mostrar_pendientes }}&exportar=pdf" class="boton-verde" style="min-width: 120px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">PDF</a>
+
             </div>
         </form>
     </div>
@@ -74,7 +84,7 @@
         Historial de Limpieza
         <span style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: var(--color-acento); border-radius: 2px;"></span>
     </h3>
-    
+
     <div class="tabla-scroll">
         <table class="menu-table">
             <thead>
@@ -94,11 +104,11 @@
                     <td>{{ t.usuario_modifica.username|default:"—" }}</td>
                     <td>
                         {% if t.estado == "Completada" %}
-                        <span style="color: var(--color-success); font-weight: 500;">Completada</span>
+                            <span style="color: var(--color-success); font-weight: 500;">Completada</span>
                         {% elif t.estado == "Pendiente" %}
-                        <span style="color: var(--color-error); font-weight: 500;">Pendiente</span>
+                            <span style="color: var(--color-error); font-weight: 500;">Pendiente</span>
                         {% else %}
-                        {{ t.estado }}
+                            {{ t.estado }}
                         {% endif %}
                     </td>
                     <td>{{ t.fecha_modificacion|date:"Y-m-d H:i" }}</td>
@@ -118,23 +128,7 @@
     {% if tareas %}
     <div class="message message-success" style="margin-top: 40px; text-align: center;">
         <strong>Resumen:</strong> 
-        <span>{{ tareas|length }} tareas registradas</span> • 
-        {% with completadas=tareas|length|default:0 %}
-            {% for t in tareas %}
-                {% if t.estado == "Completada" %}
-                    {% with completadas=completadas|add:1 %}{% endwith %}
-                {% endif %}
-            {% endfor %}
-            <span style="color: var(--color-success);">{{ completadas }} completadas</span> • 
-        {% endwith %}
-        {% with pendientes=tareas|length|default:0 %}
-            {% for t in tareas %}
-                {% if t.estado == "Pendiente" %}
-                    {% with pendientes=pendientes|add:1 %}{% endwith %}
-                {% endif %}
-            {% endfor %}
-            <span style="color: var(--color-error);">{{ pendientes }} pendientes</span>
-        {% endwith %}
+        <span>{{ tareas|length }} tareas registradas</span>
     </div>
     {% endif %}
 
