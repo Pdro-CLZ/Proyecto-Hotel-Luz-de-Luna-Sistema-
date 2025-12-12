@@ -19,6 +19,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 
 
 from django.db.models import Sum
@@ -39,8 +40,20 @@ def registro_cliente(request):
                 defaults={"descripcion": "Rol de cliente"}
             )
 
-            # Generar username único
-            base_username = f"{form.cleaned_data['nombre'].lower()}.{form.cleaned_data['apellido'].lower()}"
+            # Generar username único a partir del primer nombre y primer apellido
+            nombre_raw = form.cleaned_data['nombre'].strip()
+            apellido_raw = form.cleaned_data['apellido'].strip()
+            first_token = nombre_raw.split()[0] if nombre_raw else ''
+            last_token = apellido_raw.split()[0] if apellido_raw else ''
+
+            slug_first = slugify(first_token) or slugify(nombre_raw) or 'user'
+            slug_last = slugify(last_token) if last_token else ''
+
+            if slug_last:
+                base_username = f"{slug_first}.{slug_last}"
+            else:
+                base_username = slug_first
+
             username = base_username
             contador = 1
             while Usuario.objects.filter(username=username).exists():
@@ -60,11 +73,27 @@ def registro_cliente(request):
             usuario.set_password(form.cleaned_data["password1"])
             usuario.save()
 
-            # Crear dirección
-            pais_obj, _ = Pais.objects.get_or_create(nombre=form.cleaned_data["pais"])
-            provincia_obj, _ = Provincia.objects.get_or_create(nombre=form.cleaned_data["provincia"])
-            canton_obj, _ = Canton.objects.get_or_create(nombre=form.cleaned_data["canton"])
-            distrito_obj, _ = Distrito.objects.get_or_create(nombre=form.cleaned_data["distrito"])
+            # Crear dirección (reusar registros existentes evitando duplicados por mayúsculas/espacios)
+            pais_nombre = form.cleaned_data["pais"].strip()
+            prov_nombre = form.cleaned_data["provincia"].strip()
+            canton_nombre = form.cleaned_data["canton"].strip()
+            distrito_nombre = form.cleaned_data["distrito"].strip()
+
+            pais_obj = Pais.objects.filter(nombre__iexact=pais_nombre).first()
+            if not pais_obj:
+                pais_obj = Pais.objects.create(nombre=pais_nombre)
+
+            provincia_obj = Provincia.objects.filter(nombre__iexact=prov_nombre).first()
+            if not provincia_obj:
+                provincia_obj = Provincia.objects.create(nombre=prov_nombre)
+
+            canton_obj = Canton.objects.filter(nombre__iexact=canton_nombre).first()
+            if not canton_obj:
+                canton_obj = Canton.objects.create(nombre=canton_nombre)
+
+            distrito_obj = Distrito.objects.filter(nombre__iexact=distrito_nombre).first()
+            if not distrito_obj:
+                distrito_obj = Distrito.objects.create(nombre=distrito_nombre)
 
             direccion = Direccion.objects.create(
                 direccion_exacta=form.cleaned_data["direccion_exacta"],
@@ -144,6 +173,37 @@ def index(request):
     return render(request, 'sitio_web/index.html')
 
 def contacto(request):
+    # Handle contact form submission
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        mensaje = request.POST.get('mensaje', '').strip()
+
+        if not nombre or not correo or not mensaje:
+            messages.error(request, 'Por favor complete todos los campos del formulario.')
+            return render(request, 'sitio_web/contacto.html')
+
+        subject = f'Contacto desde sitio - {nombre}'
+        body = f"Nombre: {nombre}\nCorreo: {correo}\n\nMensaje:\n{mensaje}\n\nIP: {request.META.get('REMOTE_ADDR')}"
+
+        try:
+            # Send to the requested recipient
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                ['Pedroiclop@hotmail.com'],
+                fail_silently=False,
+            )
+            messages.success(request, 'Tu mensaje ha sido enviado. Gracias por contactarnos.')
+            # Use PRG pattern so the form fields are cleared and refresh is safe
+            return redirect('contacto')
+        except Exception as e:
+            # Log exception to console and show error to user
+            print('Error sending contact email:', e)
+            messages.error(request, 'No se pudo enviar el mensaje. Intente de nuevo más tarde.')
+            return render(request, 'sitio_web/contacto.html')
+
     return render(request, 'sitio_web/contacto.html')
 
 def actividades(request):
@@ -205,11 +265,27 @@ def editar_perfil(request):
             usuario.email = form.cleaned_data['email']
             usuario.save()
 
-            # Actualizar dirección
-            pais_obj, _ = Pais.objects.get_or_create(nombre=form.cleaned_data['pais'])
-            provincia_obj, _ = Provincia.objects.get_or_create(nombre=form.cleaned_data['provincia'])
-            canton_obj, _ = Canton.objects.get_or_create(nombre=form.cleaned_data['canton'])
-            distrito_obj, _ = Distrito.objects.get_or_create(nombre=form.cleaned_data['distrito'])
+            # Actualizar dirección (reusar registros existentes evitando duplicados por mayúsculas/espacios)
+            pais_nombre = form.cleaned_data['pais'].strip()
+            prov_nombre = form.cleaned_data['provincia'].strip()
+            canton_nombre = form.cleaned_data['canton'].strip()
+            distrito_nombre = form.cleaned_data['distrito'].strip()
+
+            pais_obj = Pais.objects.filter(nombre__iexact=pais_nombre).first()
+            if not pais_obj:
+                pais_obj = Pais.objects.create(nombre=pais_nombre)
+
+            provincia_obj = Provincia.objects.filter(nombre__iexact=prov_nombre).first()
+            if not provincia_obj:
+                provincia_obj = Provincia.objects.create(nombre=prov_nombre)
+
+            canton_obj = Canton.objects.filter(nombre__iexact=canton_nombre).first()
+            if not canton_obj:
+                canton_obj = Canton.objects.create(nombre=canton_nombre)
+
+            distrito_obj = Distrito.objects.filter(nombre__iexact=distrito_nombre).first()
+            if not distrito_obj:
+                distrito_obj = Distrito.objects.create(nombre=distrito_nombre)
 
             direccion = usuario.cliente.direccion
             direccion.direccion_exacta = form.cleaned_data['direccion_exacta']
