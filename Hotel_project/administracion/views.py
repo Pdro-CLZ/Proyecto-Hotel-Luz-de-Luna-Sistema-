@@ -220,10 +220,8 @@ def registrar_usuario(request):
                         "apellido": usuario.last_name
                     }
                 )
-
+            mostrar_modal = True
             messages.success(request, "Usuario registrado correctamente.")
-            return redirect("dashboard_admin")
-
 
     else:
         form = RegistroUsuarioForm()
@@ -249,7 +247,7 @@ def modificar_usuario(request, usuario_id):
             last_name = form.cleaned_data.get("last_name")
 
             if cedula and (not cedula.isdigit() or len(cedula) != 9):
-                form.add_error("cedula", "Formato inválido")
+                form.add_error("cedula", "Formato inválido o longitud menor a 9 digitos")
 
             if first_name and not first_name.isalpha():
                 form.add_error("first_name", "Solo letras permitidas")
@@ -288,7 +286,6 @@ def activar_inactivar_usuario(request, usuario_id):
     usuario.is_active = not usuario.is_active
     usuario.save()
     return redirect("dashboard_admin")
-
 
 
 # ---------------------------------------------------------

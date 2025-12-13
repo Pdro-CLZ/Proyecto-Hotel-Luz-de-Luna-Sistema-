@@ -9,6 +9,7 @@
     <meta charset="UTF-8">
     <title>Inventario</title>
     <link rel="stylesheet" href="{% static 'administracion/css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="menu-bg">
 
@@ -65,7 +66,13 @@
                     <td>{{ i.descripcion }}</td>
                     <td>{{ i.tipo }}</td>
                     <td>{{ i.cantidad }}</td>
-                    <td>{{ i.activo|yesno:"Sí,No" }}</td>
+                    <td>
+                        {% if i.activo %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactivo</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {% comment %}
                         Para evitar errores de Django: verificamos rol usando 'in' con string separado

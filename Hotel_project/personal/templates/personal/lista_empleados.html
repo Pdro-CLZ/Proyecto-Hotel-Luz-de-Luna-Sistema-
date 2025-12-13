@@ -72,7 +72,19 @@
                         <td>{{ empleado.nombre }}</td>
                         <td>{{ empleado.apellido }}</td>
                         <td>{{ empleado.usuario.cedula }}</td>
-                        <td>{{ empleado.usuario.rol.nombre }}</td>
+                        <td>
+                            {% if empleado.usuario.rol.nombre == "Cliente" %}
+                                <strong>{{ empleado.usuario.rol.nombre }}</strong>
+                                <div class="text-danger small mt-1">
+                                    Empleado con Rol Cliente, corregir en 
+                                    <a href="{% url 'dashboard_admin' %}" class="text-danger text-decoration-underline">
+                                        Usuarios
+                                    </a>
+                                </div>
+                            {% else %}
+                                {{ empleado.usuario.rol.nombre }}
+                            {% endif %}
+                        </td>
                         <td>{{ empleado.salario }}</td>
                         <td>
                             {% if empleado.activo %}

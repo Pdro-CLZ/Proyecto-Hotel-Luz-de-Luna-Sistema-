@@ -59,7 +59,7 @@
                     {% endfor %}
                 </div>
                 <div class="precio">
-                    Precio total: ₡{{ item.precio_total }} ({{ item.noches }} noches)
+                    Precio total: ${{ item.precio_total }} ({{ item.noches }} noches)
                 </div>
                 <form method="post" action="{% url 'buscar_cliente' %}" class="form-cedula">
                     {% csrf_token %}

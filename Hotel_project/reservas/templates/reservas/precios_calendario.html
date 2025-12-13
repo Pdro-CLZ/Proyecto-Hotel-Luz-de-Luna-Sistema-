@@ -154,7 +154,7 @@
                                 <td class="precio-cell"
                                     data-hab="{{ habitacion.id }}"
                                     data-fecha="{{ fecha }}">
-                                    ₡{{ precio|default:"0.00" }}
+                                    ${{ precio|default:"0.00" }}
                                 </td>
                             {% endwith %}
                         {% endfor %}
@@ -189,7 +189,7 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 5px; color: var(--color-oscuro); font-weight: 600;">Precio (₡):</label>
+                <label style="display: block; margin-bottom: 5px; color: var(--color-oscuro); font-weight: 600;">Precio ($):</label>
                 <input type="number" name="precio" step="0.01" required placeholder="0.00"
                        style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--color-claro);">
             </div>
