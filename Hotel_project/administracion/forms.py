@@ -23,14 +23,14 @@ class RegistroUsuarioForm(UserCreationForm):
     
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if not re.fullmatch(r"[A-Za-z ]+", username):
+        if not re.fullmatch(r"[A-Za-z@. ]+", username):
             raise ValidationError("Caracteres indebidos")
         return username
 
     def clean_cedula(self):
         cedula = self.cleaned_data.get('cedula')
         if not cedula.isdigit() or len(cedula) != 9:
-            raise ValidationError("Formato de cédula inválido")
+            raise ValidationError("Formato inválido o longitud menor a 9 digitos")
         if Usuario.objects.filter(cedula=cedula).exists():
             raise ValidationError("Este usuario ya se encuentra registrado")
         return cedula
@@ -69,7 +69,7 @@ class EditarUsuarioForm(forms.ModelForm):
         
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if not re.fullmatch(r"[A-Za-z ]+", username):
+        if not re.fullmatch(r"[A-Za-z@. ]+", username):
             raise ValidationError("Caracteres indebidos")
         return username
 

@@ -58,7 +58,7 @@
   <p><strong>Fechas:</strong> {{ fecha_inicio }} → {{ fecha_fin }}</p>
   <p><strong>Método de pago:</strong> {{ metodo_pago|title }}</p>
   <p><strong>Canal:</strong> {{ canal_reservacion|title }}</p>
-  <p><strong>Total:</strong> ₡{{ total }}</p>
+  <p><strong>Total:</strong> ${{ total }}</p>
 
   <form method="post">
     {% csrf_token %}

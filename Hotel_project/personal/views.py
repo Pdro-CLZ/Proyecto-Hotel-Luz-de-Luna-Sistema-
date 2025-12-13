@@ -94,7 +94,7 @@ def marcar_asistencia(request):
 @rol_requerido("Administrador")
 def lista_empleados(request):
     empleados = Empleado.objects.all()
-    roles = Rol.objects.all()
+    roles = Rol.objects.exclude(nombre='Cliente')
 
     # Filtro por búsqueda
     buscar = request.GET.get("buscar")
@@ -299,7 +299,7 @@ def inactivar_rol(request, id):
 @rol_requerido("Administrador", "Empleado_Nivel1")
 def visualizar_tiempos(request):
     empleados = Empleado.objects.filter(activo=True)
-    roles = Rol.objects.filter(activo=True)
+    roles = Rol.objects.filter(activo=True).exclude(nombre='Cliente')
 
     fecha = request.GET.get("fecha")
     rol_id = request.GET.get("rol")
