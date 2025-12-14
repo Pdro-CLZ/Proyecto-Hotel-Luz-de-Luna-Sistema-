@@ -26,13 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wl6y(52#f9_tktwoy6xn$enhqh-s+^-cyhfklzv1+b=on9ky4r'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -90,19 +88,22 @@ WSGI_APPLICATION = 'Hotel_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hotelprojectbd',   # Cambia por el nombre de tu BD
-        'USER': 'hotel_admin',          # Usuario MySQL
-        'PASSWORD': '12password34?!',     # Contraseña
-        'HOST': 'localhost',           # O la IP del servidor MySQL
-        'PORT': '3306',                # Puerto por defecto de MySQL
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST", "localhost"),
+        'PORT': os.getenv("DB_PORT", "3306"),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
 }
+
 
 
 
@@ -164,10 +165,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "administracion.Usuario"
 
 # settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
-DEFAULT_FROM_EMAIL = 'test@localhost'
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -178,7 +187,7 @@ PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
 
 paypalrestsdk.configure({
-    "mode": "sandbox",  # pruebas
+    "mode": os.getenv("PAYPAL_MODE", "sandbox"),
     "client_id": PAYPAL_CLIENT_ID,
     "client_secret": PAYPAL_SECRET,
 })
@@ -186,3 +195,4 @@ paypalrestsdk.configure({
 # settings.py
 LOGIN_URL = 'login_cliente'  # O el nombre de la URL de tu vista de login
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
