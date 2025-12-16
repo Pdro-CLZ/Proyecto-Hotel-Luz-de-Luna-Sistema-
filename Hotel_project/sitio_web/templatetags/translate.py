@@ -6,6 +6,7 @@ from django.conf import settings
 from ..translations import TRANSLATIONS
 import os
 from pathlib import Path
+import re
 
 register = template.Library()
 
@@ -115,7 +116,27 @@ def room_images(room_id):
                 candidates.sort(key=lambda t: (abs(t[0] - int(room_id)), t[0]))
                 chosen_num, chosen_folder, chosen_images = candidates[0]
                 return [f"sitio_web/images/{chosen_folder.name}/{name}" for name in chosen_images]
+        if images:
+            return [f"sitio_web/images/Habitacion {room_id}/{name}" for name in images]
 
-        return [f"sitio_web/images/Habitacion {room_id}/{name}" for name in images]
+        # As a last resort, attempt to parse the detalle_habitacion template for hardcoded image URLs
+        try:
+            tpl_path = Path(settings.BASE_DIR) / 'sitio_web' / 'templates' / 'sitio_web' / f'detalle_habitacion_{room_id}.html'
+            if tpl_path.exists():
+                text = tpl_path.read_text(encoding='utf-8', errors='ignore')
+                # Find all src attributes
+                matches = re.findall(r'src=["\']([^"\']+)["\']', text)
+                # keep only allowed extensions or absolute urls
+                result = []
+                for m in matches:
+                    lower = m.lower()
+                    if any(lower.endswith(ext) for ext in allowed) or lower.startswith('http://') or lower.startswith('https://'):
+                        result.append(m)
+                if result:
+                    return result
+        except Exception:
+            pass
+
+        return []
     except Exception:
         return []

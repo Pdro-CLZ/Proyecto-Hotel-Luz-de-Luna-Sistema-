@@ -427,7 +427,7 @@
                                                                 <div class="carousel-inner rounded">
                                                                     {% for img in room_images %}
                                                                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                                                            <img src="{% static img %}" class="d-block w-100" alt="{{ habitacion.nombre|tr_var:request }} - imagen {{ forloop.counter }}">
+                                                                            <img src="{{ img|img_url }}" class="d-block w-100" alt="{{ habitacion.nombre|tr_var:request }} - imagen {{ forloop.counter }}">
                                                                         </div>
                                                                     {% endfor %}
                                                                 </div>
